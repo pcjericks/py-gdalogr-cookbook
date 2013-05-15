@@ -190,10 +190,14 @@ Create Geometry from GML
     point = ogr.CreateGeometryFromGML(gml)
     print "%d,%d" % (point.GetX(), point.GetY())
 
+Create Geometry from WKB
+------------------------
 
+.. code-block:: python
 
+    from osgeo import ogr
+    from base64 import b64decode
 
-
-
-
-
+    wkb = b64decode("AIAAAAFBMkfmVwo9cUEjylouFHrhAAAAAAAAAAA=")
+    point = ogr.CreateGeometryFromWkb(wkb)
+    print "%d,%d" % (point.GetX(), point.GetY())
