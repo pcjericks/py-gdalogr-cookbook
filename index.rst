@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
    geometry.rst
-
+   
 Indices and tables
 ==================
 
