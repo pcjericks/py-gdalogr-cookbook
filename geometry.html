@@ -1,0 +1,207 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Geometry &mdash; Python GDAL/OGR Cookbook 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
+    <link rel="prev" title="Layers" href="layers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="layers.html" title="Layers"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="geometry">
+<h1>Geometry<a class="headerlink" href="#geometry" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="create-a-point">
+<h2>Create a Point<a class="headerlink" href="#create-a-point" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+<span class="n">point</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1198054.34</span><span class="p">,</span> <span class="mf">648493.09</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">point</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-linestring">
+<h2>Create a LineString<a class="headerlink" href="#create-a-linestring" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="n">line</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1116651.439379124</span><span class="p">,</span> <span class="mf">637392.6969887456</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1188804.0108498496</span><span class="p">,</span> <span class="mf">652655.7409537067</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1226730.3625203592</span><span class="p">,</span> <span class="mf">634155.0816022386</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1281307.30760719</span><span class="p">,</span> <span class="mf">636467.6640211721</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">line</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-polygon">
+<h2>Create a Polygon<a class="headerlink" href="#create-a-polygon" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Create ring</span>
+<span class="n">ring</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1161053.0218226474</span><span class="p">,</span> <span class="mf">667456.2684348812</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1214704.933941905</span><span class="p">,</span> <span class="mf">641092.8288590391</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1228580.428455506</span><span class="p">,</span> <span class="mf">682719.3123998424</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1218405.0658121984</span><span class="p">,</span> <span class="mf">721108.1805541387</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+
+<span class="c"># Create polygon</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">poly</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-polygon-with-holes">
+<h2>Create a Polygon with holes<a class="headerlink" href="#create-a-polygon-with-holes" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Create outer ring</span>
+<span class="n">outRing</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">outRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1154115.274565847</span><span class="p">,</span> <span class="mf">686419.4442701361</span><span class="p">)</span>
+<span class="n">outRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1154115.274565847</span><span class="p">,</span> <span class="mf">653118.2574374934</span><span class="p">)</span>
+<span class="n">outRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1165678.1866605144</span><span class="p">,</span> <span class="mf">653118.2574374934</span><span class="p">)</span>
+<span class="n">outRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1165678.1866605144</span><span class="p">,</span> <span class="mf">686419.4442701361</span><span class="p">)</span>
+<span class="n">outRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1154115.274565847</span><span class="p">,</span> <span class="mf">686419.4442701361</span><span class="p">)</span>
+
+<span class="c"># Create inner ring</span>
+<span class="n">innerRing</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">innerRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1149490.1097279799</span><span class="p">,</span> <span class="mf">691044.6091080031</span><span class="p">)</span>
+<span class="n">innerRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1149490.1097279799</span><span class="p">,</span> <span class="mf">648030.5761158396</span><span class="p">)</span>
+<span class="n">innerRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1191579.1097525698</span><span class="p">,</span> <span class="mf">648030.5761158396</span><span class="p">)</span>
+<span class="n">innerRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1191579.1097525698</span><span class="p">,</span> <span class="mf">691044.6091080031</span><span class="p">)</span>
+<span class="n">innerRing</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1149490.1097279799</span><span class="p">,</span> <span class="mf">691044.6091080031</span><span class="p">)</span>
+
+<span class="c"># Create polygon</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">outRing</span><span class="p">)</span>
+<span class="n">poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">innerRing</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">poly</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-multipoint">
+<h2>Create a MultiPoint<a class="headerlink" href="#create-a-multipoint" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">multipoint</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPoint</span><span class="p">)</span>
+
+<span class="n">point1</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+<span class="n">point1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1251243.7361610543</span><span class="p">,</span> <span class="mf">598078.7958668759</span><span class="p">)</span>
+<span class="n">multipoint</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">point1</span><span class="p">)</span>
+
+<span class="n">point2</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+<span class="n">point2</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1240605.8570339603</span><span class="p">,</span> <span class="mf">601778.9277371694</span><span class="p">)</span>
+<span class="n">multipoint</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">point2</span><span class="p">)</span>
+
+<span class="n">point3</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+<span class="n">point3</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1250318.7031934808</span><span class="p">,</span> <span class="mf">606404.0925750365</span><span class="p">)</span>
+<span class="n">multipoint</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">point3</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">multipoint</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Geometry</a><ul>
+<li><a class="reference internal" href="#create-a-point">Create a Point</a></li>
+<li><a class="reference internal" href="#create-a-linestring">Create a LineString</a></li>
+<li><a class="reference internal" href="#create-a-polygon">Create a Polygon</a></li>
+<li><a class="reference internal" href="#create-a-polygon-with-holes">Create a Polygon with holes</a></li>
+<li><a class="reference internal" href="#create-a-multipoint">Create a MultiPoint</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="layers.html"
+                        title="previous chapter">Layers</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/geometry.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="layers.html" title="Layers"
+             >previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Jared Erickson, Cort Daniel, Michael Payne.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

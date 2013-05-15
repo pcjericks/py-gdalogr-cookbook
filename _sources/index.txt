@@ -10,9 +10,12 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   
+   layers.rst
+   
 
-
-
+   geometry.rst
+   
 Indices and tables
 ==================
 
