@@ -24,6 +24,26 @@ Create a LineString
     line.AddPoint(1281307.30760719, 636467.6640211721)
     print line.ExportToWkt()
 
+Create a Polygon
+----------------
 
+.. code-block:: python
+    
+    from osgeo import ogr
+
+    # Create ring
+    ring = ogr.Geometry(ogr.wkbLinearRing)
+    ring.AddPoint(1179091.1646903288, 712782.8838459781)
+    ring.AddPoint(1161053.0218226474, 667456.2684348812)
+    ring.AddPoint(1214704.933941905, 641092.8288590391)
+    ring.AddPoint(1228580.428455506, 682719.3123998424) 
+    ring.AddPoint(1218405.0658121984, 721108.1805541387) 
+    ring.AddPoint(1179091.1646903288, 712782.8838459781)
+
+    # Create polygon
+    poly = ogr.Geometry(ogr.wkbPolygon)
+    poly.AddGeometry(ring)
+
+    print poly.ExportToWkt()
 
 
