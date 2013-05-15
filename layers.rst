@@ -20,3 +20,45 @@ View Auto Generated Ogr Help
     
     import osgeo.ogr
     print help(osgeo.ogr)
+    
+Is Ogr Driver Available by Driver Name
+------------------------------      
+    This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the "Code" column  ([`web site <http://www.gdal.org/ogr/ogr_formats.html>`_]).
+    
+    Code Example Source: [`web site <http://www.gdal.org/ogr/ogr_apitut.html>`_]
+    
+.. code-block:: python
+    
+    from osgeo import ogr
+    
+    ## Shapefile available?
+    driverName = "ESRI Shapefile"
+    drv = ogr.GetDriverByName( driverName )
+    if drv is None:
+        print "%s driver not available.\n" % driverName
+    else:
+        print  "%s driver IS available.\n" % driverName
+        
+    ## PostgreSQL available?
+    driverName = "PostgreSQL"
+    drv = ogr.GetDriverByName( driverName )
+    if drv is None:
+        print "%s driver not available.\n" % driverName
+    else:
+        print  "%s driver IS available.\n" % driverName
+        
+    ## Is File GeoDatabase available?
+    driverName = "FileGDB"
+    drv = ogr.GetDriverByName( driverName )
+    if drv is None:
+        print "%s driver not available.\n" % driverName
+    else:
+        print  "%s driver IS available.\n" % driverName
+        
+    ## SDE available?
+    driverName = "SDE"
+    drv = ogr.GetDriverByName( driverName )
+    if drv is None:
+        print "%s driver not available.\n" % driverName
+    else:
+        print  "%s driver IS available.\n" % driverName
