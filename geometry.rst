@@ -179,6 +179,16 @@ Create Geometry from GeoJSON
     point = ogr.CreateGeometryFromJson(geojson)
     print "%d,%d" % (point.GetX(), point.GetY())
 
+Create Geometry from GML
+------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    gml = """<gml:Point xmlns:gml="http://www.opengis.net/gml"><gml:coordinates>108420.33,753808.59</gml:coordinates></gml:Point>"""
+    point = ogr.CreateGeometryFromGML(gml)
+    print "%d,%d" % (point.GetX(), point.GetY())
 
 
 
