@@ -53,7 +53,67 @@
             
   <div class="section" id="layers">
 <h1>Layers<a class="headerlink" href="#layers" title="Permalink to this headline">¶</a></h1>
-<p>Python Gdal/Ogr Examples that affect Layers:</p>
+<div class="section" id="is-ogr-installed">
+<h2>Is Ogr Installed<a class="headerlink" href="#is-ogr-installed" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
+  <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+  <span class="k">print</span> <span class="s">&#39;Import of ogr from osgeo worked.  Hurray!</span><span class="se">\n</span><span class="s">&#39;</span>
+<span class="k">except</span><span class="p">:</span>
+  <span class="k">print</span> <span class="s">&#39;Import of ogr from osgeo failed</span><span class="se">\n\n</span><span class="s">&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="view-auto-generated-ogr-help">
+<h2>View Auto Generated Ogr Help<a class="headerlink" href="#view-auto-generated-ogr-help" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code simply prints out the auto-generated help on the imported module.  In this case it&#8217;s OGR.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">osgeo.ogr</span>
+<span class="k">print</span> <span class="n">help</span><span class="p">(</span><span class="n">osgeo</span><span class="o">.</span><span class="n">ogr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="is-ogr-driver-available-by-driver-name">
+<h2>Is Ogr Driver Available by Driver Name<a class="headerlink" href="#is-ogr-driver-available-by-driver-name" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the &#8220;Code&#8221; column  ([<a class="reference external" href="http://www.gdal.org/ogr/ogr_formats.html">web site</a>]).</p>
+<p>Code Example Source: [<a class="reference external" href="http://www.gdal.org/ogr/ogr_apitut.html">web site</a>]</p>
+</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c">## Shapefile available?</span>
+<span class="n">driverName</span> <span class="o">=</span> <span class="s">&quot;ESRI Shapefile&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span> <span class="n">driverName</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">drv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver not available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+
+<span class="c">## PostgreSQL available?</span>
+<span class="n">driverName</span> <span class="o">=</span> <span class="s">&quot;PostgreSQL&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span> <span class="n">driverName</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">drv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver not available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+
+<span class="c">## Is File GeoDatabase available?</span>
+<span class="n">driverName</span> <span class="o">=</span> <span class="s">&quot;FileGDB&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span> <span class="n">driverName</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">drv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver not available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+
+<span class="c">## SDE available?</span>
+<span class="n">driverName</span> <span class="o">=</span> <span class="s">&quot;SDE&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span> <span class="n">driverName</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">drv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver not available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -62,6 +122,16 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Layers</a><ul>
+<li><a class="reference internal" href="#is-ogr-installed">Is Ogr Installed</a></li>
+<li><a class="reference internal" href="#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
+<li><a class="reference internal" href="#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to Python GDAL/OGR Cookbook&#8217;s documentation!</a></p>

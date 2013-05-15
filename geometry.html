@@ -142,6 +142,72 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="create-a-multilinestring">
+<h2>Create a MultiLineString<a class="headerlink" href="#create-a-multilinestring" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">multiline</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiLineString</span><span class="p">)</span>
+
+<span class="n">line1</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString</span><span class="p">)</span>
+<span class="n">line1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1214242.4174581182</span><span class="p">,</span> <span class="mf">617041.9717021306</span><span class="p">)</span>
+<span class="n">line1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1234593.142744733</span><span class="p">,</span> <span class="mf">629529.9167643716</span><span class="p">)</span>
+<span class="n">multiline</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">line1</span><span class="p">)</span>
+
+<span class="n">line1</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString</span><span class="p">)</span>
+<span class="n">line1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1184641.3624957693</span><span class="p">,</span> <span class="mf">626754.8178616514</span><span class="p">)</span>
+<span class="n">line1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1219792.6152635587</span><span class="p">,</span> <span class="mf">606866.6090588232</span><span class="p">)</span>
+<span class="n">multiline</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">line1</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">multiline</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-multipolygon">
+<h2>Create a MultiPolygon<a class="headerlink" href="#create-a-multipolygon" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">multipolygon</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPolygon</span><span class="p">)</span>
+
+<span class="c"># Create ring #1</span>
+<span class="n">ring1</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1204067.0548148106</span><span class="p">,</span> <span class="mf">634617.5980860253</span><span class="p">)</span>
+<span class="n">ring1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1204067.0548148106</span><span class="p">,</span> <span class="mf">620742.1035724243</span><span class="p">)</span>
+<span class="n">ring1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1215167.4504256917</span><span class="p">,</span> <span class="mf">620742.1035724243</span><span class="p">)</span>
+<span class="n">ring1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1215167.4504256917</span><span class="p">,</span> <span class="mf">634617.5980860253</span><span class="p">)</span>
+<span class="n">ring1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1204067.0548148106</span><span class="p">,</span> <span class="mf">634617.5980860253</span><span class="p">)</span>
+
+<span class="c"># Create polygon #1</span>
+<span class="n">poly1</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">poly1</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring1</span><span class="p">)</span>
+<span class="n">multipolygon</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">poly1</span><span class="p">)</span>
+
+<span class="c"># Create ring #2</span>
+<span class="n">ring2</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring2</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179553.6811741155</span><span class="p">,</span> <span class="mf">647105.5431482664</span><span class="p">)</span>
+<span class="n">ring2</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179553.6811741155</span><span class="p">,</span> <span class="mf">626292.3013778647</span><span class="p">)</span>
+<span class="n">ring2</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1194354.20865529</span><span class="p">,</span> <span class="mf">626292.3013778647</span><span class="p">)</span>
+<span class="n">ring2</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1194354.20865529</span><span class="p">,</span> <span class="mf">647105.5431482664</span><span class="p">)</span>
+<span class="n">ring2</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179553.6811741155</span><span class="p">,</span> <span class="mf">647105.5431482664</span><span class="p">)</span>
+
+<span class="c"># Create polygon #2</span>
+<span class="n">poly2</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">poly2</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring2</span><span class="p">)</span>
+<span class="n">multipolygon</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">poly2</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">multipolygon</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-geometry-from-wkt">
+<h2>Create Geometry from WKT<a class="headerlink" href="#create-geometry-from-wkt" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;POINT (1120351.5712494177 741921.4223245403)&quot;</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s">,</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">GetX</span><span class="p">(),</span> <span class="n">point</span><span class="o">.</span><span class="n">GetY</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -158,6 +224,9 @@
 <li><a class="reference internal" href="#create-a-polygon">Create a Polygon</a></li>
 <li><a class="reference internal" href="#create-a-polygon-with-holes">Create a Polygon with holes</a></li>
 <li><a class="reference internal" href="#create-a-multipoint">Create a MultiPoint</a></li>
+<li><a class="reference internal" href="#create-a-multilinestring">Create a MultiLineString</a></li>
+<li><a class="reference internal" href="#create-a-multipolygon">Create a MultiPolygon</a></li>
+<li><a class="reference internal" href="#create-geometry-from-wkt">Create Geometry from WKT</a></li>
 </ul>
 </li>
 </ul>
