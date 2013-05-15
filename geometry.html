@@ -26,6 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
+    <link rel="next" title="Projection" href="projection.html" />
     <link rel="prev" title="Layers" href="layers.html" /> 
   </head>
   <body>
@@ -35,6 +36,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="projection.html" title="Projection"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="layers.html" title="Layers"
              accesskey="P">previous</a> |</li>
@@ -208,6 +212,47 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="create-geometry-from-geojson">
+<h2>Create Geometry from GeoJSON<a class="headerlink" href="#create-geometry-from-geojson" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">geojson</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[108420.33,753808.59]}&quot;&quot;&quot;</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromJson</span><span class="p">(</span><span class="n">geojson</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s">,</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">GetX</span><span class="p">(),</span> <span class="n">point</span><span class="o">.</span><span class="n">GetY</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-geometry-from-gml">
+<h2>Create Geometry from GML<a class="headerlink" href="#create-geometry-from-gml" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">gml</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;&lt;gml:Point xmlns:gml=&quot;http://www.opengis.net/gml&quot;&gt;&lt;gml:coordinates&gt;108420.33,753808.59&lt;/gml:coordinates&gt;&lt;/gml:Point&gt;&quot;&quot;&quot;</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromGML</span><span class="p">(</span><span class="n">gml</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s">,</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">GetX</span><span class="p">(),</span> <span class="n">point</span><span class="o">.</span><span class="n">GetY</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-geometry-from-wkb">
+<h2>Create Geometry from WKB<a class="headerlink" href="#create-geometry-from-wkb" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">b64decode</span>
+
+<span class="n">wkb</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="s">&quot;AIAAAAFBMkfmVwo9cUEjylouFHrhAAAAAAAAAAA=&quot;</span><span class="p">)</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkb</span><span class="p">(</span><span class="n">wkb</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s">,</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">GetX</span><span class="p">(),</span> <span class="n">point</span><span class="o">.</span><span class="n">GetY</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="count-points-in-a-geometry">
+<h2>Count Points in a Geometry<a class="headerlink" href="#count-points-in-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)&quot;</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Geometry has </span><span class="si">%i</span><span class="s"> points&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -227,6 +272,10 @@
 <li><a class="reference internal" href="#create-a-multilinestring">Create a MultiLineString</a></li>
 <li><a class="reference internal" href="#create-a-multipolygon">Create a MultiPolygon</a></li>
 <li><a class="reference internal" href="#create-geometry-from-wkt">Create Geometry from WKT</a></li>
+<li><a class="reference internal" href="#create-geometry-from-geojson">Create Geometry from GeoJSON</a></li>
+<li><a class="reference internal" href="#create-geometry-from-gml">Create Geometry from GML</a></li>
+<li><a class="reference internal" href="#create-geometry-from-wkb">Create Geometry from WKB</a></li>
+<li><a class="reference internal" href="#count-points-in-a-geometry">Count Points in a Geometry</a></li>
 </ul>
 </li>
 </ul>
@@ -234,6 +283,9 @@
   <h4>Previous topic</h4>
   <p class="topless"><a href="layers.html"
                         title="previous chapter">Layers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="projection.html"
+                        title="next chapter">Projection</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/geometry.txt"
@@ -262,6 +314,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="projection.html" title="Projection"
+             >next</a> |</li>
         <li class="right" >
           <a href="layers.html" title="Layers"
              >previous</a> |</li>
