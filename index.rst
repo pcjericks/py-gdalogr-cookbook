@@ -14,8 +14,8 @@ Contents:
    layers.rst
    
 
-
-
+   geometry.rst
+   
 Indices and tables
 ==================
 
