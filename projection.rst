@@ -1,11 +1,12 @@
 Projection
 ==========
 
-Create Projection From EPSG
----------------------------
+Create Projection
+-----------------
 
 .. code-block:: python
 
+
 	from osgeo import osr
 	spatialRef = osr.SpatialReference()
-	spatialRef.ImportFromEPSG(2927)
+	spatialRef.ImportFromEPSG(2927) 	# from EPSG

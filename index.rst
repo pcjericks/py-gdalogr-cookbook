@@ -12,9 +12,9 @@ Contents:
    :maxdepth: 2
    
    layers.rst
-   
-
    geometry.rst
+   projection.rst
+	
    
 Indices and tables
 ==================
