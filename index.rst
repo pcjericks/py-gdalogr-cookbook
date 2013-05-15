@@ -11,7 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-
+   geometry.rst
 
 Indices and tables
 ==================
