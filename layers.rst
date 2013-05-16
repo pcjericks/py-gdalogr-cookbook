@@ -20,7 +20,28 @@ View Auto Generated Ogr Help
     
     import osgeo.ogr
     print help(osgeo.ogr)
-    
+
+Get List of Ogr Drivers Alphabetically (A- Z)
+-------------------------------------
+
+    It's always driven me a little nuts that the command line ogr2ogr --formats returns a 'random' list of drivers.  This code returns the list of OGR drivers alphabetically from A - Z.  .  
+   
+.. code-block:: python
+    import ogr
+    cnt = ogr.GetDriverCount()
+    formatsList = []  # Empty List
+
+    for i in range(cnt):
+        driver = ogr.GetDriver(i)
+        driverName = driver.GetName()
+        if not driverName in formatsList:
+            formatsList.append(driverName)
+
+    formatsList.sort() # Sorting the messy list of ogr drivers 
+
+    for i in formatsList:
+        print i
+     
 Is Ogr Driver Available by Driver Name
 ------------------------------      
     This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the "Code" column  ([`web site <http://www.gdal.org/ogr/ogr_formats.html>`_]).  This is the same names returned when you enter ``ogrinfo --formats`` on the command line.  
