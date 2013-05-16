@@ -27,6 +27,7 @@ Get List of Ogr Drivers Alphabetically (A- Z)
     It's always driven me a little nuts that the command line ogr2ogr --formats returns a 'random' list of drivers.  This code returns the list of OGR drivers alphabetically from A - Z.  .  
    
 .. code-block:: python
+
     import ogr
     cnt = ogr.GetDriverCount()
     formatsList = []  # Empty List
