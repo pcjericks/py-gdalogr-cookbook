@@ -57,6 +57,21 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="get-projection">
+<h2>Get Projection<a class="headerlink" href="#get-projection" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;ESRI Shapefile&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">r&#39;c:\data\yourshpfile.shp&#39;</span><span class="p">)</span>
+<span class="c"># from Layer</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">spatialRef</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
+<span class="c"># from Geometry</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+<span class="n">spatialRef</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetSpatialReference</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -69,6 +84,7 @@
   <ul>
 <li><a class="reference internal" href="#">Projection</a><ul>
 <li><a class="reference internal" href="#create-projection">Create Projection</a></li>
+<li><a class="reference internal" href="#get-projection">Get Projection</a></li>
 </ul>
 </li>
 </ul>

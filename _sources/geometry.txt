@@ -212,3 +212,91 @@ Count Points in a Geometry
     wkt = "LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
     geom = ogr.CreateGeometryFromWkt(wkt)
     print "Geometry has %i points" % (geom.GetPointCount())
+
+Count Geometries in a Geometry
+-------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "MULTIPOINT (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
+    geom = ogr.CreateGeometryFromWkt(wkt)
+    print "Geometry has %i geometries" % (geom.GetGeometryCount())
+
+Iterate over Geometries in a Geometry
+-------------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "MULTIPOINT (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
+    geom = ogr.CreateGeometryFromWkt(wkt)
+    for i in range(0, geom.GetGeometryCount()):
+        g = geom.GetGeometryRef(i)
+        print "%i). %s" %(i, g.ExportToWkt())
+
+
+Iterate over Points in a Geometry
+-------------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
+    geom = ogr.CreateGeometryFromWkt(wkt)
+    for i in range(0, geom.GetPointCount()):
+        # GetPoint returns a tuple not a Geometry
+        pt = geom.GetPoint(i)
+        print "%i). POINT (%d %d)" %(i, pt[0], pt[1])
+
+Buffer a Geometry
+-----------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "POINT (1198054.34 648493.09)"
+    pt = ogr.CreateGeometryFromWkt(wkt)
+    bufferDistance = 500
+    poly = pt.Buffer(bufferDistance)
+    print "%s buffered by %d is %s" % (pt.ExportToWkt(), bufferDistance, poly.ExportToWkt())
+
+Calculate Envelope of a Geometry
+--------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
+    geom = ogr.CreateGeometryFromWkt(wkt)
+    # Get Evenlope return a tuple (minX, maxX, minY, maxY)
+    env = geom.GetEnvelope()
+    print "minX: %d, minY: %d, maxX: %d, maxY: %d" %(env[0],env[2],env[1],env[3])
+
+
+Calculate the Area of a Geometry
+--------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "POLYGON ((1162440.5712740074 672081.4332727483, 1162440.5712740074 647105.5431482664, 1195279.2416228633 647105.5431482664, 1195279.2416228633 672081.4332727483, 1162440.5712740074 672081.4332727483))"
+    poly = ogr.CreateGeometryFromWkt(wkt)
+    print "Area = %d" % poly.GetArea()
+
+Calculate the Length of a Geometry
+----------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
+    geom = ogr.CreateGeometryFromWkt(wkt)
+    print "Length = %d" % geom.Length()

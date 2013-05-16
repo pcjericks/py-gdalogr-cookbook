@@ -75,7 +75,7 @@
 <div class="section" id="is-ogr-driver-available-by-driver-name">
 <h2>Is Ogr Driver Available by Driver Name<a class="headerlink" href="#is-ogr-driver-available-by-driver-name" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the &#8220;Code&#8221; column  ([<a class="reference external" href="http://www.gdal.org/ogr/ogr_formats.html">web site</a>]).</p>
+<div><p>This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the &#8220;Code&#8221; column  ([<a class="reference external" href="http://www.gdal.org/ogr/ogr_formats.html">web site</a>]).  This is the same names returned when you enter <tt class="docutils literal"><span class="pre">ogrinfo</span> <span class="pre">--formats</span></tt> on the command line.</p>
 <p>Code Example Source: [<a class="reference external" href="http://www.gdal.org/ogr/ogr_apitut.html">web site</a>]</p>
 </div></blockquote>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
@@ -114,6 +114,98 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="get-shapefile-feature-count">
+<h2>Get Shapefile Feature Count<a class="headerlink" href="#get-shapefile-feature-count" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example opens a shapefile and returns the number of features in it.  Solution mined from: [<a class="reference external" href="http://www.gis.usu.edu/~chrisg/python/2009/lectures/ospy_slides1.pdf">web site</a>]</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">daShapefile</span> <span class="o">=</span> <span class="s">r&quot;C:\Temp\Voting_Centers_and_Ballot_Sites.shp&quot;</span>
+
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;ESRI Shapefile&#39;</span><span class="p">)</span>
+
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">daShapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># 0 means read-only. 1 means writeable.</span>
+
+<span class="c"># Check to see if shapefile is found.</span>
+<span class="k">if</span> <span class="n">dataSource</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Could not open </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">daShapefile</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Opened </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">daShapefile</span><span class="p">)</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+    <span class="n">featureCount</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;Number of features in </span><span class="si">%s</span><span class="s">: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">daShapefile</span><span class="p">),</span><span class="n">featureCount</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-shapefile-fields-get-the-user-defined-fields">
+<h2>Get Shapefile Fields - Get the user defined fields<a class="headerlink" href="#get-shapefile-fields-get-the-user-defined-fields" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example returns the field names of the user defined (created) fields.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">daShapefile</span> <span class="o">=</span> <span class="s">r&quot;C:\Temp\Voting_Centers_and_Ballot_Sites.shp&quot;</span>
+
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">daShapefile</span><span class="p">)</span>
+<span class="n">daLayer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">layerDefinition</span> <span class="o">=</span> <span class="n">daLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+    <span class="k">print</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-new-layer-from-the-extent-of-an-existing-layer">
+<h2>Create a new Layer from the extent of an existing Layer<a class="headerlink" href="#create-a-new-layer-from-the-extent-of-an-existing-layer" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/layer_extent.png" src="_images/layer_extent.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c"># Get a Layer&#39;s Extent</span>
+<span class="n">inShapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">inDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="n">inDriver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">inShapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">inLayer</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">extent</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetExtent</span><span class="p">()</span>
+
+<span class="c"># Create a Polygon from the extent tuple</span>
+<span class="n">ring</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+<span class="c"># Save extent to a new Shapefile</span>
+<span class="n">outShapefile</span> <span class="o">=</span> <span class="s">&quot;states_extent.shp&quot;</span>
+<span class="n">outDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+
+<span class="c"># Remove output shapefile if it already exists</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">):</span>
+    <span class="n">outDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+
+<span class="c"># Create the output shapefile</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">outDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&quot;states_extent&quot;</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+
+<span class="c"># Add an ID field</span>
+<span class="n">idField</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTInteger</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">idField</span><span class="p">)</span>
+
+<span class="c"># Create the feature and set values</span>
+<span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+<span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+<span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+
+<span class="c"># Close DataSource</span>
+<span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -128,6 +220,9 @@
 <li><a class="reference internal" href="#is-ogr-installed">Is Ogr Installed</a></li>
 <li><a class="reference internal" href="#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
 <li><a class="reference internal" href="#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
+<li><a class="reference internal" href="#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
+<li><a class="reference internal" href="#get-shapefile-fields-get-the-user-defined-fields">Get Shapefile Fields - Get the user defined fields</a></li>
+<li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
 </ul>
 </li>
 </ul>

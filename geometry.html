@@ -253,6 +253,85 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="count-geometries-in-a-geometry">
+<h2>Count Geometries in a Geometry<a class="headerlink" href="#count-geometries-in-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;MULTIPOINT (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)&quot;</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Geometry has </span><span class="si">%i</span><span class="s"> geometries&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryCount</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="iterate-over-geometries-in-a-geometry">
+<h2>Iterate over Geometries in a Geometry<a class="headerlink" href="#iterate-over-geometries-in-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;MULTIPOINT (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)&quot;</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryCount</span><span class="p">()):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%i</span><span class="s">). </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="iterate-over-points-in-a-geometry">
+<h2>Iterate over Points in a Geometry<a class="headerlink" href="#iterate-over-points-in-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)&quot;</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">()):</span>
+    <span class="c"># GetPoint returns a tuple not a Geometry</span>
+    <span class="n">pt</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%i</span><span class="s">). POINT (</span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">)&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="buffer-a-geometry">
+<h2>Buffer a Geometry<a class="headerlink" href="#buffer-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;POINT (1198054.34 648493.09)&quot;</span>
+<span class="n">pt</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="n">bufferDistance</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">bufferDistance</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> buffered by </span><span class="si">%d</span><span class="s"> is </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">(),</span> <span class="n">bufferDistance</span><span class="p">,</span> <span class="n">poly</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calculate-envelope-of-a-geometry">
+<h2>Calculate Envelope of a Geometry<a class="headerlink" href="#calculate-envelope-of-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)&quot;</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="c"># Get Evenlope return a tuple (minX, maxX, minY, maxY)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetEnvelope</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&quot;minX: </span><span class="si">%d</span><span class="s">, minY: </span><span class="si">%d</span><span class="s">, maxX: </span><span class="si">%d</span><span class="s">, maxY: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">env</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">env</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">env</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calculate-the-area-of-a-geometry">
+<h2>Calculate the Area of a Geometry<a class="headerlink" href="#calculate-the-area-of-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;POLYGON ((1162440.5712740074 672081.4332727483, 1162440.5712740074 647105.5431482664, 1195279.2416228633 647105.5431482664, 1195279.2416228633 672081.4332727483, 1162440.5712740074 672081.4332727483))&quot;</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Area = </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">poly</span><span class="o">.</span><span class="n">GetArea</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calculate-the-length-of-a-geometry">
+<h2>Calculate the Length of a Geometry<a class="headerlink" href="#calculate-the-length-of-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)&quot;</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Length = </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">geom</span><span class="o">.</span><span class="n">Length</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -276,6 +355,13 @@
 <li><a class="reference internal" href="#create-geometry-from-gml">Create Geometry from GML</a></li>
 <li><a class="reference internal" href="#create-geometry-from-wkb">Create Geometry from WKB</a></li>
 <li><a class="reference internal" href="#count-points-in-a-geometry">Count Points in a Geometry</a></li>
+<li><a class="reference internal" href="#count-geometries-in-a-geometry">Count Geometries in a Geometry</a></li>
+<li><a class="reference internal" href="#iterate-over-geometries-in-a-geometry">Iterate over Geometries in a Geometry</a></li>
+<li><a class="reference internal" href="#iterate-over-points-in-a-geometry">Iterate over Points in a Geometry</a></li>
+<li><a class="reference internal" href="#buffer-a-geometry">Buffer a Geometry</a></li>
+<li><a class="reference internal" href="#calculate-envelope-of-a-geometry">Calculate Envelope of a Geometry</a></li>
+<li><a class="reference internal" href="#calculate-the-area-of-a-geometry">Calculate the Area of a Geometry</a></li>
+<li><a class="reference internal" href="#calculate-the-length-of-a-geometry">Calculate the Length of a Geometry</a></li>
 </ul>
 </li>
 </ul>
