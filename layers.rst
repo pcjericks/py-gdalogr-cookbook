@@ -89,3 +89,22 @@ Get Shapefile Feature Count
         layer = dataSource.GetLayer()
         featureCount = layer.GetFeatureCount()  
         print "Number of features in %s: %d" % (os.path.basename(daShapefile),featureCount)
+        
+        
+ Get Shapefile Fields
+ --------------------
+ 
+    This code example returns the field names of the user defined (created) fields.  
+
+.. code-block:: python
+
+    daShapefile = r"C:\Temp\Voting_Centers_and_Ballot_Sites.shp"
+
+    dataSource = ogr.Open(daShapefile)
+    daLayer = dataSource.GetLayer(0)
+    layerDefinition = daLayer.GetLayerDefn()
+
+
+    for i in range(layerDefinition.GetFieldCount()):
+        print layerDefinition.GetFieldDefn(i).GetName() 
+    
