@@ -161,3 +161,65 @@ Create a new Layer from the extent of an existing Layer
     # Close DataSource
     inDataSource.Destroy()
     outDataSource.Destroy()
+
+Save centroids of input Layer to an output Layer
+------------------------------------------------
+
+Inspired by: http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-with-python-and-ogr/
+
+.. image:: images/layer_centroids.png
+
+.. code-block:: python
+
+    from osgeo import ogr
+    import os
+
+    # Get the input Layer
+    inShapefile = "states.shp"
+    inDriver = ogr.GetDriverByName("ESRI Shapefile")
+    inDataSource = inDriver.Open(inShapefile, 0)
+    inLayer = inDataSource.GetLayer()
+
+    # Create the output Layer
+    outShapefile = "states_centroids.shp"
+    outDriver = ogr.GetDriverByName("ESRI Shapefile")
+
+    # Remove output shapefile if it already exists
+    if os.path.exists(outShapefile):
+        outDriver.DeleteDataSource(outShapefile)
+
+    # Create the output shapefile
+    outDataSource = outDriver.CreateDataSource(outShapefile)
+    outLayer = outDataSource.CreateLayer("states_centroids", geom_type=ogr.wkbPoint)
+
+    # Add input Layer Fields to the output Layer
+    inLayerDefn = inLayer.GetLayerDefn()
+    for i in range(0, inLayerDefn.GetFieldCount()):
+        fieldDefn = inLayerDefn.GetFieldDefn(i)
+        outLayer.CreateField(fieldDefn)
+
+    # Get the output Layer's Feature Definition
+    outLayerDefn = outLayer.GetLayerDefn()
+
+    # Add features to the ouput Layer
+    inLayer.ResetReading()
+    inFeature = inLayer.GetNextFeature()
+    while inFeature is not None:
+        # Create output Feature
+        outFeature = ogr.Feature(outLayerDefn)
+        # Add field values from input Layer
+        for i in range(0, outLayerDefn.GetFieldCount()):
+            outFeature.SetField(outLayerDefn.GetFieldDefn(i).GetNameRef(), inFeature.GetField(i))
+        # Set geometry as centroid    
+        geom = inFeature.GetGeometryRef()
+        centroid = geom.Centroid()
+        outFeature.SetGeometry(centroid)
+        # Add new feature to output Layer
+        outLayer.CreateFeature(outFeature)
+        inFeature = inLayer.GetNextFeature()
+
+    # Close DataSources
+    inDataSource.Destroy()
+    outDataSource.Destroy()
+
+
