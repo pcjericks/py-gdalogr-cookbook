@@ -91,8 +91,8 @@ Get Shapefile Feature Count
         print "Number of features in %s: %d" % (os.path.basename(daShapefile),featureCount)
         
         
- Get Shapefile Fields
- --------------------
+Get Shapefile Fields - Get the user defined fields
+---------------------------------------------------
  
     This code example returns the field names of the user defined (created) fields.  
 
