@@ -112,6 +112,42 @@ Get Shapefile Feature Count
         featureCount = layer.GetFeatureCount()  
         print "Number of features in %s: %d" % (os.path.basename(daShapefile),featureCount)
 
+        
+    
+Get All PostGIS layers in a PostgreSQL Database
+---------------------------------------------
+
+    This returns all the layers in a database of your choosing sorted in alphabetical order (of course).  Just fill in the missing information and it should work.  
+    
+.. code-block:: python
+
+    from osgeo import ogr
+
+    databaseServer = "<IP of database server OR Name of database server"
+    databaseName = "<Name of database>"
+    databaseUser = "<User name>"
+    databasePW = "<User password>"
+
+
+    connString = "PG: host=%s dbname=%s user=%s password=%s" %(databaseServer,databaseName,databaseUser,databasePW)
+
+    conn = ogr.Open(connString)
+
+    layerList = []
+    for i in conn:
+        daLayer = i.GetName()
+        if not daLayer in layerList:
+            layerList.append(daLayer)
+
+    layerList.sort()
+
+    for j in layerList:
+        print j
+        
+    conn.Destroy()
+
+    
+        
 Iterate over Features
 ---------------------
  
@@ -194,7 +230,9 @@ Get Shapefile Fields - Get the user defined fields
     This code example returns the field names of the user defined (created) fields.  
 
 .. code-block:: python
-
+    
+    from osgeo import ogr
+    
     daShapefile = r"C:\Temp\Voting_Centers_and_Ballot_Sites.shp"
 
     dataSource = ogr.Open(daShapefile)
@@ -287,6 +325,8 @@ Create a new Layer from the extent of an existing Layer
     # Close DataSource
     inDataSource.Destroy()
     outDataSource.Destroy()
+    
+
 
 Save centroids of input Layer to an output Layer
 ------------------------------------------------
