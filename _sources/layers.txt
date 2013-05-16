@@ -20,7 +20,29 @@ View Auto Generated Ogr Help
     
     import osgeo.ogr
     print help(osgeo.ogr)
-    
+
+Get List of Ogr Drivers Alphabetically (A- Z)
+-------------------------------------
+
+    It's always driven me a little nuts that the command line ogr2ogr --formats returns a 'random' list of drivers.  This code returns the list of OGR drivers alphabetically from A - Z.  .  
+   
+.. code-block:: python
+
+    import ogr
+    cnt = ogr.GetDriverCount()
+    formatsList = []  # Empty List
+
+    for i in range(cnt):
+        driver = ogr.GetDriver(i)
+        driverName = driver.GetName()
+        if not driverName in formatsList:
+            formatsList.append(driverName)
+
+    formatsList.sort() # Sorting the messy list of ogr drivers 
+
+    for i in formatsList:
+        print i
+     
 Is Ogr Driver Available by Driver Name
 ------------------------------      
     This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the "Code" column  ([`web site <http://www.gdal.org/ogr/ogr_formats.html>`_]).  This is the same names returned when you enter ``ogrinfo --formats`` on the command line.  
@@ -106,8 +128,66 @@ Iterate over Features
     for i in range(0,layer.GetFeatureCount()):
         feature = layer.GetFeature(i)
         print feature.GetField("STATE_NAME")
-       
-        
+
+Get Geometry from each Feature in a Layer
+-----------------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+    import os
+
+    shapefile = "states.shp"
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource = driver.Open(shapefile, 0)
+    layer = dataSource.GetLayer()
+
+    for i in range(0,layer.GetFeatureCount()):
+        feature = layer.GetFeature(i)
+        geom = feature.GetGeometryRef()
+        print geom.Centroid().ExportToWkt()
+
+Filter by attribute
+-------------------
+ 
+.. code-block:: python  
+     
+    from osgeo import ogr
+    import os
+
+    shapefile = "states.shp"
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource = driver.Open(shapefile, 0)
+    layer = dataSource.GetLayer()
+
+    layer.SetAttributeFilter("SUB_REGION = 'Pacific'")
+
+    feature = layer.GetNextFeature()
+    while feature:
+        print feature.GetField("STATE_NAME")
+        feature = layer.GetNextFeature() 
+
+Spatial Filter
+--------------
+
+.. code-block:: python  
+
+    from osgeo import ogr
+    import os
+
+    shapefile = "states.shp"
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource = driver.Open(shapefile, 0)
+    layer = dataSource.GetLayer()
+
+    wkt = "POLYGON ((-103.81402655265633 50.253951270672125,-102.94583419409656 51.535568561879401,-100.34125711841725 51.328856095555651,-100.34125711841725 51.328856095555651,-93.437060743203844 50.460663736995883,-93.767800689321859 46.450441890315041,-94.635993047881612 41.613370178339181,-100.75468205106476 41.365315218750681,-106.12920617548238 42.564247523428456,-105.96383620242338 47.277291755610058,-103.81402655265633 50.253951270672125))"
+    layer.SetSpatialFilter(ogr.CreateGeometryFromWkt(wkt))
+
+    feature = layer.GetNextFeature()
+    while feature:
+        print feature.GetField("STATE_NAME")
+        feature = layer.GetNextFeature()
+
 Get Shapefile Fields - Get the user defined fields
 ---------------------------------------------------
  
@@ -124,6 +204,35 @@ Get Shapefile Fields - Get the user defined fields
 
     for i in range(layerDefinition.GetFieldCount()):
         print layerDefinition.GetFieldDefn(i).GetName() 
+
+        
+        
+Get Shapefile Fields and Types - Get the user defined fields
+------------------------------------------------------------
+
+     This code example returns the field names of the user defined (created) fields and the data types they are.
+     
+.. code-block:: python    
+
+    from osgeo import ogr
+
+    daShapefile = r"C:\Temp\iDay\CWI_Wetlands.shp"
+
+    dataSource = ogr.Open(daShapefile)
+    daLayer = dataSource.GetLayer(0)
+    layerDefinition = daLayer.GetLayerDefn()
+
+
+    print "Name  -  Type  Width  Precision"
+    for i in range(layerDefinition.GetFieldCount()):
+        fieldName =  layerDefinition.GetFieldDefn(i).GetName()
+        fieldTypeCode = layerDefinition.GetFieldDefn(i).GetType()
+        fieldType = ogr.GetFieldTypeName(fieldTypeCode)
+        fieldWidth = layerDefinition.GetFieldDefn(i).GetWidth()
+        GetPrecision = layerDefinition.GetFieldDefn(i).GetPrecision()
+
+        print fieldName + " - " + fieldType+ " " + str(fieldWidth) + " " + str(GetPrecision)  
+ 
 
 Create a new Layer from the extent of an existing Layer
 -------------------------------------------------------   

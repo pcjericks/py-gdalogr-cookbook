@@ -72,6 +72,27 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="get-list-of-ogr-drivers-alphabetically-a-z">
+<h2>Get List of Ogr Drivers Alphabetically (A- Z)<a class="headerlink" href="#get-list-of-ogr-drivers-alphabetically-a-z" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>It&#8217;s always driven me a little nuts that the command line ogr2ogr &#8211;formats returns a &#8216;random&#8217; list of drivers.  This code returns the list of OGR drivers alphabetically from A - Z.  .</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span>
+<span class="n">cnt</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverCount</span><span class="p">()</span>
+<span class="n">formatsList</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># Empty List</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cnt</span><span class="p">):</span>
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">driverName</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">driverName</span> <span class="ow">in</span> <span class="n">formatsList</span><span class="p">:</span>
+        <span class="n">formatsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">driverName</span><span class="p">)</span>
+
+<span class="n">formatsList</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span> <span class="c"># Sorting the messy list of ogr drivers</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">formatsList</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">i</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="is-ogr-driver-available-by-driver-name">
 <h2>Is Ogr Driver Available by Driver Name<a class="headerlink" href="#is-ogr-driver-available-by-driver-name" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -154,6 +175,62 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="get-geometry-from-each-feature-in-a-layer">
+<h2>Get Geometry from each Feature in a Layer<a class="headerlink" href="#get-geometry-from-each-feature-in-a-layer" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">shapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()):</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeature</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">geom</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="filter-by-attribute">
+<h2>Filter by attribute<a class="headerlink" href="#filter-by-attribute" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">shapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="n">layer</span><span class="o">.</span><span class="n">SetAttributeFilter</span><span class="p">(</span><span class="s">&quot;SUB_REGION = &#39;Pacific&#39;&quot;</span><span class="p">)</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+<span class="k">while</span> <span class="n">feature</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="spatial-filter">
+<h2>Spatial Filter<a class="headerlink" href="#spatial-filter" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">shapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;POLYGON ((-103.81402655265633 50.253951270672125,-102.94583419409656 51.535568561879401,-100.34125711841725 51.328856095555651,-100.34125711841725 51.328856095555651,-93.437060743203844 50.460663736995883,-93.767800689321859 46.450441890315041,-94.635993047881612 41.613370178339181,-100.75468205106476 41.365315218750681,-106.12920617548238 42.564247523428456,-105.96383620242338 47.277291755610058,-103.81402655265633 50.253951270672125))&quot;</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">SetSpatialFilter</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">))</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+<span class="k">while</span> <span class="n">feature</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="get-shapefile-fields-get-the-user-defined-fields">
 <h2>Get Shapefile Fields - Get the user defined fields<a class="headerlink" href="#get-shapefile-fields-get-the-user-defined-fields" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -167,6 +244,31 @@
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
     <span class="k">print</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-shapefile-fields-and-types-get-the-user-defined-fields">
+<h2>Get Shapefile Fields and Types - Get the user defined fields<a class="headerlink" href="#get-shapefile-fields-and-types-get-the-user-defined-fields" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example returns the field names of the user defined (created) fields and the data types they are.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">daShapefile</span> <span class="o">=</span> <span class="s">r&quot;C:\Temp\iDay\CWI_Wetlands.shp&quot;</span>
+
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">daShapefile</span><span class="p">)</span>
+<span class="n">daLayer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">layerDefinition</span> <span class="o">=</span> <span class="n">daLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+
+<span class="k">print</span> <span class="s">&quot;Name  -  Type  Width  Precision&quot;</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+    <span class="n">fieldName</span> <span class="o">=</span>  <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+    <span class="n">fieldTypeCode</span> <span class="o">=</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetType</span><span class="p">()</span>
+    <span class="n">fieldType</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetFieldTypeName</span><span class="p">(</span><span class="n">fieldTypeCode</span><span class="p">)</span>
+    <span class="n">fieldWidth</span> <span class="o">=</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetWidth</span><span class="p">()</span>
+    <span class="n">GetPrecision</span> <span class="o">=</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetPrecision</span><span class="p">()</span>
+
+    <span class="k">print</span> <span class="n">fieldName</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="n">fieldType</span><span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fieldWidth</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">GetPrecision</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -291,10 +393,15 @@
 <li><a class="reference internal" href="#">Layers</a><ul>
 <li><a class="reference internal" href="#is-ogr-installed">Is Ogr Installed</a></li>
 <li><a class="reference internal" href="#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
+<li><a class="reference internal" href="#get-list-of-ogr-drivers-alphabetically-a-z">Get List of Ogr Drivers Alphabetically (A- Z)</a></li>
 <li><a class="reference internal" href="#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
 <li><a class="reference internal" href="#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
 <li><a class="reference internal" href="#iterate-over-features">Iterate over Features</a></li>
+<li><a class="reference internal" href="#get-geometry-from-each-feature-in-a-layer">Get Geometry from each Feature in a Layer</a></li>
+<li><a class="reference internal" href="#filter-by-attribute">Filter by attribute</a></li>
+<li><a class="reference internal" href="#spatial-filter">Spatial Filter</a></li>
 <li><a class="reference internal" href="#get-shapefile-fields-get-the-user-defined-fields">Get Shapefile Fields - Get the user defined fields</a></li>
+<li><a class="reference internal" href="#get-shapefile-fields-and-types-get-the-user-defined-fields">Get Shapefile Fields and Types - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
 <li><a class="reference internal" href="#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
 </ul>

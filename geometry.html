@@ -348,6 +348,22 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="calculate-intersection-between-two-geometry">
+<h2>Calculate intersection between two Geometry<a class="headerlink" href="#calculate-intersection-between-two-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt1</span> <span class="o">=</span> <span class="s">&quot;POLYGON ((1208064.271243039 624154.6783778917, 1208064.271243039 601260.9785661874, 1231345.9998651114 601260.9785661874, 1231345.9998651114 624154.6783778917, 1208064.271243039 624154.6783778917))&quot;</span>
+<span class="n">wkt2</span> <span class="o">=</span> <span class="s">&quot;POLYGON ((1199915.6662253144 633079.3410163528, 1199915.6662253144 614453.958118695, 1219317.1067437078 614453.958118695, 1219317.1067437078 633079.3410163528, 1199915.6662253144 633079.3410163528)))&quot;</span>
+
+<span class="n">poly1</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt1</span><span class="p">)</span>
+<span class="n">poly2</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt2</span><span class="p">)</span>
+
+<span class="n">intersection</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">Intersection</span><span class="p">(</span><span class="n">poly2</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">intersection</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -379,6 +395,7 @@
 <li><a class="reference internal" href="#calculate-the-area-of-a-geometry">Calculate the Area of a Geometry</a></li>
 <li><a class="reference internal" href="#calculate-the-length-of-a-geometry">Calculate the Length of a Geometry</a></li>
 <li><a class="reference internal" href="#get-the-geometry-type-as-a-string-from-a-geometry">Get the geometry type (as a string) from a Geometry</a></li>
+<li><a class="reference internal" href="#calculate-intersection-between-two-geometry">Calculate intersection between two Geometry</a></li>
 </ul>
 </li>
 </ul>

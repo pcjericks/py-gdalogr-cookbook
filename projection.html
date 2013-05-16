@@ -61,10 +61,10 @@
 <h2>Get Projection<a class="headerlink" href="#get-projection" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span>
 <span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;ESRI Shapefile&#39;</span><span class="p">)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">r&#39;c:\data\yourshpfile.shp&#39;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">r&#39;c:\data\yourshpfile.shp&#39;</span><span class="p">)</span>
 
 <span class="c"># from Layer</span>
-<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
 <span class="n">spatialRef</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
 <span class="c"># from Geometry</span>
 <span class="n">feature</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
@@ -73,12 +73,60 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="project-a-geometry">
+<h2>Project a Geometry<a class="headerlink" href="#project-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span>
+
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;ESRI Shapefile&#39;</span><span class="p">)</span>
+
+<span class="c"># input SpatialReference</span>
+<span class="n">inSpatialRef</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+<span class="n">inSpatialRef</span><span class="o">.</span><span class="n">ImportFromEPSG</span><span class="p">(</span><span class="mi">4269</span><span class="p">)</span>
+
+<span class="c"># output SpatialReference</span>
+<span class="n">outSpatialRef</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+<span class="n">outSpatialRef</span><span class="o">.</span><span class="n">ImportFromEPSG</span><span class="p">(</span><span class="mi">26912</span><span class="p">)</span>
+
+<span class="c"># create the CoordinateTransformation</span>
+<span class="n">coordTrans</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">inSpatialRef</span><span class="p">,</span> <span class="n">outSpatialRef</span><span class="p">)</span>
+
+<span class="n">inDataSet</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">r&#39;c:\data\in_yourshpfile.shp&#39;</span><span class="p">)</span>
+<span class="n">inLayer</span> <span class="o">=</span> <span class="n">inDataSet</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="n">outDataSet</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">r&#39;c:\data\out_yourshpfile.shp&#39;</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSet</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="c"># loop through the input features</span>
+<span class="n">inFeature</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+<span class="k">while</span> <span class="n">inFeature</span><span class="p">:</span>
+<span class="c"># get the input geometry</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+<span class="c"># reproject the geometry</span>
+<span class="n">geom</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">coordTrans</span><span class="p">)</span>
+<span class="c"># create a new feature</span>
+<span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+<span class="c"># set the geometry and attribute</span>
+<span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span>
+<span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">))</span>
+<span class="c"># add the feature to the shapefile</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+<span class="c"># destroy the features and get the next input feature</span>
+<span class="n">outFeature</span><span class="o">.</span><span class="n">Destroy</span>
+<span class="n">inFeature</span><span class="o">.</span><span class="n">Destroy</span>
+<span class="n">inFeature</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+
+<span class="c"># close the shapefiles</span>
+<span class="n">inDataSet</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="n">outDataSet</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="export-projection">
 <h2>Export Projection<a class="headerlink" href="#export-projection" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span>
 <span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;ESRI Shapefile&#39;</span><span class="p">)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">r&#39;c:\data\yourshpfile.shp&#39;</span><span class="p">)</span>
-<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">r&#39;c:\data\yourshpfile.shp&#39;</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
 <span class="n">spatialRef</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
 
 <span class="n">spatialRef</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
@@ -102,6 +150,7 @@
 <li><a class="reference internal" href="#">Projection</a><ul>
 <li><a class="reference internal" href="#create-projection">Create Projection</a></li>
 <li><a class="reference internal" href="#get-projection">Get Projection</a></li>
+<li><a class="reference internal" href="#project-a-geometry">Project a Geometry</a></li>
 <li><a class="reference internal" href="#export-projection">Export Projection</a></li>
 </ul>
 </li>
