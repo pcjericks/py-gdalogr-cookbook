@@ -106,8 +106,27 @@ Iterate over Features
     for i in range(0,layer.GetFeatureCount()):
         feature = layer.GetFeature(i)
         print feature.GetField("STATE_NAME")
-       
-        
+
+Filter by attribute
+-------------------
+ 
+.. code-block:: python  
+     
+    from osgeo import ogr
+    import os
+
+    shapefile = "states.shp"
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource = driver.Open(shapefile, 0)
+    layer = dataSource.GetLayer()
+
+    layer.SetAttributeFilter("SUB_REGION = 'Pacific'")
+
+    feature = layer.GetNextFeature()
+    while feature:
+        print feature.GetField("STATE_NAME")
+        feature = layer.GetNextFeature() 
+
 Get Shapefile Fields - Get the user defined fields
 ---------------------------------------------------
  
