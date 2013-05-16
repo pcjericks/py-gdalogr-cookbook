@@ -289,3 +289,14 @@ Calculate the Area of a Geometry
     wkt = "POLYGON ((1162440.5712740074 672081.4332727483, 1162440.5712740074 647105.5431482664, 1195279.2416228633 647105.5431482664, 1195279.2416228633 672081.4332727483, 1162440.5712740074 672081.4332727483))"
     poly = ogr.CreateGeometryFromWkt(wkt)
     print "Area = %d" % poly.GetArea()
+
+Calculate the Length of a Geometry
+----------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
+    geom = ogr.CreateGeometryFromWkt(wkt)
+    print "Length = %d" % geom.Length()
