@@ -332,6 +332,22 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="get-the-geometry-type-as-a-string-from-a-geometry">
+<h2>Get the geometry type (as a string) from a Geometry<a class="headerlink" href="#get-the-geometry-type-as-a-string-from-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&quot;POINT (1198054.34 648493.09)&quot;</span><span class="p">,</span>
+    <span class="s">&quot;LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)&quot;</span><span class="p">,</span>
+    <span class="s">&quot;POLYGON ((1162440.5712740074 672081.4332727483, 1162440.5712740074 647105.5431482664, 1195279.2416228633 647105.5431482664, 1195279.2416228633 672081.4332727483, 1162440.5712740074 672081.4332727483))&quot;</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">wkt</span> <span class="ow">in</span> <span class="n">wkts</span><span class="p">:</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryName</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -362,6 +378,7 @@
 <li><a class="reference internal" href="#calculate-envelope-of-a-geometry">Calculate Envelope of a Geometry</a></li>
 <li><a class="reference internal" href="#calculate-the-area-of-a-geometry">Calculate the Area of a Geometry</a></li>
 <li><a class="reference internal" href="#calculate-the-length-of-a-geometry">Calculate the Length of a Geometry</a></li>
+<li><a class="reference internal" href="#get-the-geometry-type-as-a-string-from-a-geometry">Get the geometry type (as a string) from a Geometry</a></li>
 </ul>
 </li>
 </ul>

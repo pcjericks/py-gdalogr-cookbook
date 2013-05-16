@@ -138,6 +138,22 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="iterate-over-features">
+<h2>Iterate over Features<a class="headerlink" href="#iterate-over-features" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">shapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()):</span>
+    <span class="n">feature</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeature</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="get-shapefile-fields-get-the-user-defined-fields">
 <h2>Get Shapefile Fields - Get the user defined fields<a class="headerlink" href="#get-shapefile-fields-get-the-user-defined-fields" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -206,6 +222,62 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="save-centroids-of-input-layer-to-an-output-layer">
+<h2>Save centroids of input Layer to an output Layer<a class="headerlink" href="#save-centroids-of-input-layer-to-an-output-layer" title="Permalink to this headline">¶</a></h2>
+<p>Inspired by: <a class="reference external" href="http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-with-python-and-ogr/">http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-with-python-and-ogr/</a></p>
+<img alt="_images/layer_centroids.png" src="_images/layer_centroids.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c"># Get the input Layer</span>
+<span class="n">inShapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">inDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="n">inDriver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">inShapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">inLayer</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="c"># Create the output Layer</span>
+<span class="n">outShapefile</span> <span class="o">=</span> <span class="s">&quot;states_centroids.shp&quot;</span>
+<span class="n">outDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+
+<span class="c"># Remove output shapefile if it already exists</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">):</span>
+    <span class="n">outDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+
+<span class="c"># Create the output shapefile</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">outDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&quot;states_centroids&quot;</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+
+<span class="c"># Add input Layer Fields to the output Layer</span>
+<span class="n">inLayerDefn</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inLayerDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+    <span class="n">fieldDefn</span> <span class="o">=</span> <span class="n">inLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldDefn</span><span class="p">)</span>
+
+<span class="c"># Get the output Layer&#39;s Feature Definition</span>
+<span class="n">outLayerDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+<span class="c"># Add features to the ouput Layer</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()):</span>
+    <span class="c"># Get the input Feature</span>
+    <span class="n">inFeature</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetFeature</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="c"># Create output Feature</span>
+    <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">outLayerDefn</span><span class="p">)</span>
+    <span class="c"># Add field values from input Layer</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+        <span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetNameRef</span><span class="p">(),</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="c"># Set geometry as centroid</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span>
+    <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">centroid</span><span class="p">)</span>
+    <span class="c"># Add new feature to output Layer</span>
+    <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+
+<span class="c"># Close DataSources</span>
+<span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -221,8 +293,10 @@
 <li><a class="reference internal" href="#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
 <li><a class="reference internal" href="#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
 <li><a class="reference internal" href="#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
+<li><a class="reference internal" href="#iterate-over-features">Iterate over Features</a></li>
 <li><a class="reference internal" href="#get-shapefile-fields-get-the-user-defined-fields">Get Shapefile Fields - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
+<li><a class="reference internal" href="#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
 </ul>
 </li>
 </ul>
