@@ -277,3 +277,15 @@ Calculate Envelope of a Geometry
     # Get Evenlope return a tuple (minX, maxX, minY, maxY)
     env = geom.GetEnvelope()
     print "minX: %d, minY: %d, maxX: %d, maxY: %d" %(env[0],env[2],env[1],env[3])
+
+
+Calculate the Area of a Geometry
+--------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "POLYGON ((1162440.5712740074 672081.4332727483, 1162440.5712740074 647105.5431482664, 1195279.2416228633 647105.5431482664, 1195279.2416228633 672081.4332727483, 1162440.5712740074 672081.4332727483))"
+    poly = ogr.CreateGeometryFromWkt(wkt)
+    print "Area = %d" % poly.GetArea()
