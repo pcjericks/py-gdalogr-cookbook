@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to Python GDAL/OGR Cookbook’s documentation! &mdash; Python GDAL/OGR Cookbook 1.0 documentation</title>
+    <title>Welcome to the Python GDAL/OGR Cookbook! &mdash; Python GDAL/OGR Cookbook 1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="#" />
-    <link rel="next" title="Layers" href="layers.html" /> 
+    <link rel="next" title="Geometry" href="geometry.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,7 +36,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="layers.html" title="Layers"
+          <a href="geometry.html" title="Geometry"
              accesskey="N">next</a> |</li>
         <li><a href="#">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -47,27 +47,15 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="welcome-to-python-gdal-ogr-cookbook-s-documentation">
-<h1>Welcome to Python GDAL/OGR Cookbook&#8217;s documentation!<a class="headerlink" href="#welcome-to-python-gdal-ogr-cookbook-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
+  <div class="section" id="welcome-to-the-python-gdal-ogr-cookbook">
+<h1>Welcome to the Python GDAL/OGR Cookbook!<a class="headerlink" href="#welcome-to-the-python-gdal-ogr-cookbook" title="Permalink to this headline">¶</a></h1>
+<p>This cookbook has simple code snippets on how to use the Python GDAL/OGR API.  The web site
+is a project at <a class="reference external" href="https://github.com/pcjericks/py-gdalogr-cookbook">GitHub</a> and served by Github Pages.  If you find missing recipes or mistakes
+in existing recipes please add an issue to the <a class="reference external" href="https://github.com/pcjericks/py-gdalogr-cookbook/issues?state=open">issue tracker</a>.</p>
+<p>We heavily relied on Chris Garrard&#8217;s excellent <a class="reference external" href="http://www.gis.usu.edu/~chrisg/python/2009/">Geoprocessing with Python using Open Source GIS</a>
+and the official <a class="reference external" href="http://gdal.org/python/">GDAL/OGR Python documentation</a>.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#is-ogr-installed">Is Ogr Installed</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-list-of-ogr-drivers-alphabetically-a-z">Get List of Ogr Drivers Alphabetically (A- Z)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#iterate-over-features">Iterate over Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-geometry-from-each-feature-in-a-layer">Get Geometry from each Feature in a Layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#filter-by-attribute">Filter by attribute</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#spatial-filter">Spatial Filter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-fields-get-the-user-defined-fields">Get Shapefile Fields - Get the user defined fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-fields-and-types-get-the-user-defined-fields">Get Shapefile Fields and Types - Get the user defined fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#create-a-point">Create a Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#create-a-linestring">Create a LineString</a></li>
@@ -92,11 +80,28 @@
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#calculate-intersection-between-two-geometry">Calculate intersection between two Geometry</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#is-ogr-installed">Is Ogr Installed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#get-list-of-ogr-drivers-alphabetically-a-z">Get List of Ogr Drivers Alphabetically (A- Z)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#iterate-over-features">Iterate over Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#get-geometry-from-each-feature-in-a-layer">Get Geometry from each Feature in a Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#filter-by-attribute">Filter by attribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#spatial-filter">Spatial Filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-fields-get-the-user-defined-fields">Get Shapefile Fields - Get the user defined fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-fields-and-types-get-the-user-defined-fields">Get Shapefile Fields and Types - Get the user defined fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers.html#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="projection.html">Projection</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="projection.html#create-projection">Create Projection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projection.html#get-projection">Get Projection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projection.html#project-a-geometry">Project a Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projection.html#export-projection">Export Projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projection.html#create-an-esri-prj-file">Create an ESRI.prj file</a></li>
 </ul>
 </li>
 </ul>
@@ -119,15 +124,15 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to Python GDAL/OGR Cookbook&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#">Welcome to the Python GDAL/OGR Cookbook!</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="layers.html"
-                        title="next chapter">Layers</a></p>
+  <p class="topless"><a href="geometry.html"
+                        title="next chapter">Geometry</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -157,7 +162,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="layers.html" title="Layers"
+          <a href="geometry.html" title="Geometry"
              >next</a> |</li>
         <li><a href="#">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>

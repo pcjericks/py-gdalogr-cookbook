@@ -99,10 +99,20 @@ Export Projection
 	spatialRef.ExportToXML()
 	
 	
+Create an ESRI.prj file
+-----------------------
 
+.. code-block:: python
 
+	from osgeo import ogr, osr
 
+	spatialRef = osr.SpatialReference()
+	spatialRef.ImportFromEPSG(26912)
 
+	spatialRef.MorphToESRI()
+	file = open('yourshpfile.prj', 'w')
+	file.write(outSpatialRef.ExportToWkt())
+	file.close()
 
 
 

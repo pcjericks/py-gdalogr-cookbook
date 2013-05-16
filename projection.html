@@ -137,6 +137,20 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="create-an-esri-prj-file">
+<h2>Create an ESRI.prj file<a class="headerlink" href="#create-an-esri-prj-file" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span>
+
+<span class="n">spatialRef</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+<span class="n">spatialRef</span><span class="o">.</span><span class="n">ImportFromEPSG</span><span class="p">(</span><span class="mi">26912</span><span class="p">)</span>
+
+<span class="n">spatialRef</span><span class="o">.</span><span class="n">MorphToESRI</span><span class="p">()</span>
+<span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;yourshpfile.prj&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+<span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outSpatialRef</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">())</span>
+<span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -152,6 +166,7 @@
 <li><a class="reference internal" href="#get-projection">Get Projection</a></li>
 <li><a class="reference internal" href="#project-a-geometry">Project a Geometry</a></li>
 <li><a class="reference internal" href="#export-projection">Export Projection</a></li>
+<li><a class="reference internal" href="#create-an-esri-prj-file">Create an ESRI.prj file</a></li>
 </ul>
 </li>
 </ul>
