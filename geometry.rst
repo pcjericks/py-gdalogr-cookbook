@@ -251,3 +251,16 @@ Iterate over Points in a Geometry
         # GetPoint returns a tuple not a Geometry
         pt = geom.GetPoint(i)
         print "%i). POINT (%d %d)" %(i, pt[0], pt[1])
+
+Buffer a Geometry
+-----------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt = "POINT (1198054.34 648493.09)"
+    pt = ogr.CreateGeometryFromWkt(wkt)
+    bufferDistance = 500
+    poly = pt.Buffer(bufferDistance)
+    print "%s buffered by %d is %s" % (pt.ExportToWkt(), bufferDistance, poly.ExportToWkt())
