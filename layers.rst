@@ -129,6 +129,24 @@ Iterate over Features
         feature = layer.GetFeature(i)
         print feature.GetField("STATE_NAME")
 
+Get Geometry from each Feature in a Layer
+-----------------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+    import os
+
+    shapefile = "states.shp"
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource = driver.Open(shapefile, 0)
+    layer = dataSource.GetLayer()
+
+    for i in range(0,layer.GetFeatureCount()):
+        feature = layer.GetFeature(i)
+        geom = feature.GetGeometryRef()
+        print geom.Centroid().ExportToWkt()
+
 Filter by attribute
 -------------------
  
