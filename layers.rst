@@ -219,9 +219,9 @@ Inspired by: http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-
     outLayerDefn = outLayer.GetLayerDefn()
 
     # Add features to the ouput Layer
-    inLayer.ResetReading()
-    inFeature = inLayer.GetNextFeature()
-    while inFeature is not None:
+    for i in range(0, inLayer.GetFeatureCount()):
+        # Get the input Feature
+        inFeature = inLayer.GetFeature(i)
         # Create output Feature
         outFeature = ogr.Feature(outLayerDefn)
         # Add field values from input Layer
@@ -233,10 +233,8 @@ Inspired by: http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-
         outFeature.SetGeometry(centroid)
         # Add new feature to output Layer
         outLayer.CreateFeature(outFeature)
-        inFeature = inLayer.GetNextFeature()
 
     # Close DataSources
     inDataSource.Destroy()
     outDataSource.Destroy()
-
-
+    
