@@ -147,6 +147,35 @@ Get Shapefile Fields - Get the user defined fields
     for i in range(layerDefinition.GetFieldCount()):
         print layerDefinition.GetFieldDefn(i).GetName() 
 
+        
+        
+Get Shapefile Fields and Types - Get the user defined fields
+------------------------------------------------------------
+
+     This code example returns the field names of the user defined (created) fields and the data types they are.
+     
+.. code-block:: python    
+
+    from osgeo import ogr
+
+    daShapefile = r"C:\Temp\iDay\CWI_Wetlands.shp"
+
+    dataSource = ogr.Open(daShapefile)
+    daLayer = dataSource.GetLayer(0)
+    layerDefinition = daLayer.GetLayerDefn()
+
+
+    print "Name  -  Type  Width  Precision"
+    for i in range(layerDefinition.GetFieldCount()):
+        fieldName =  layerDefinition.GetFieldDefn(i).GetName()
+        fieldTypeCode = layerDefinition.GetFieldDefn(i).GetType()
+        fieldType = ogr.GetFieldTypeName(fieldTypeCode)
+        fieldWidth = layerDefinition.GetFieldDefn(i).GetWidth()
+        GetPrecision = layerDefinition.GetFieldDefn(i).GetPrecision()
+
+        print fieldName + " - " + fieldType+ " " + str(fieldWidth) + " " + str(GetPrecision)  
+ 
+
 Create a new Layer from the extent of an existing Layer
 -------------------------------------------------------   
 
