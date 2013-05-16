@@ -89,7 +89,24 @@ Get Shapefile Feature Count
         layer = dataSource.GetLayer()
         featureCount = layer.GetFeatureCount()  
         print "Number of features in %s: %d" % (os.path.basename(daShapefile),featureCount)
-        
+
+Iterate over Features
+---------------------
+ 
+.. code-block:: python
+
+    from osgeo import ogr
+    import os
+
+    shapefile = "states.shp"
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource = driver.Open(shapefile, 0)
+    layer = dataSource.GetLayer()
+
+    for i in range(0,layer.GetFeatureCount()):
+        feature = layer.GetFeature(i)
+        print feature.GetField("STATE_NAME")
+       
         
 Get Shapefile Fields - Get the user defined fields
 ---------------------------------------------------
