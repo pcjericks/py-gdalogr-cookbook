@@ -89,3 +89,152 @@ Get Shapefile Feature Count
         layer = dataSource.GetLayer()
         featureCount = layer.GetFeatureCount()  
         print "Number of features in %s: %d" % (os.path.basename(daShapefile),featureCount)
+
+Iterate over Features
+---------------------
+ 
+.. code-block:: python
+
+    from osgeo import ogr
+    import os
+
+    shapefile = "states.shp"
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource = driver.Open(shapefile, 0)
+    layer = dataSource.GetLayer()
+
+    for i in range(0,layer.GetFeatureCount()):
+        feature = layer.GetFeature(i)
+        print feature.GetField("STATE_NAME")
+       
+        
+Get Shapefile Fields - Get the user defined fields
+---------------------------------------------------
+ 
+    This code example returns the field names of the user defined (created) fields.  
+
+.. code-block:: python
+
+    daShapefile = r"C:\Temp\Voting_Centers_and_Ballot_Sites.shp"
+
+    dataSource = ogr.Open(daShapefile)
+    daLayer = dataSource.GetLayer(0)
+    layerDefinition = daLayer.GetLayerDefn()
+
+
+    for i in range(layerDefinition.GetFieldCount()):
+        print layerDefinition.GetFieldDefn(i).GetName() 
+
+Create a new Layer from the extent of an existing Layer
+-------------------------------------------------------   
+
+.. image:: images/layer_extent.png
+
+.. code-block:: python
+
+    from osgeo import ogr
+    import os
+
+    # Get a Layer's Extent
+    inShapefile = "states.shp"
+    inDriver = ogr.GetDriverByName("ESRI Shapefile")
+    inDataSource = inDriver.Open(inShapefile, 0)
+    inLayer = inDataSource.GetLayer()
+    extent = inLayer.GetExtent()
+
+    # Create a Polygon from the extent tuple
+    ring = ogr.Geometry(ogr.wkbLinearRing)
+    ring.AddPoint(extent[0],extent[2]) 
+    ring.AddPoint(extent[1], extent[2])
+    ring.AddPoint(extent[1], extent[3])
+    ring.AddPoint(extent[0], extent[3]) 
+    ring.AddPoint(extent[0],extent[2]) 
+    poly = ogr.Geometry(ogr.wkbPolygon)
+    poly.AddGeometry(ring)
+
+    # Save extent to a new Shapefile
+    outShapefile = "states_extent.shp"
+    outDriver = ogr.GetDriverByName("ESRI Shapefile")
+
+    # Remove output shapefile if it already exists
+    if os.path.exists(outShapefile):
+        outDriver.DeleteDataSource(outShapefile)
+
+    # Create the output shapefile
+    outDataSource = outDriver.CreateDataSource(outShapefile)
+    outLayer = outDataSource.CreateLayer("states_extent", geom_type=ogr.wkbPolygon)
+
+    # Add an ID field
+    idField = ogr.FieldDefn("id", ogr.OFTInteger)
+    outLayer.CreateField(idField)
+
+    # Create the feature and set values
+    featureDefn = outLayer.GetLayerDefn()
+    feature = ogr.Feature(featureDefn)
+    feature.SetGeometry(poly)
+    feature.SetField("id", 1)
+    outLayer.CreateFeature(feature)
+
+    # Close DataSource
+    inDataSource.Destroy()
+    outDataSource.Destroy()
+
+Save centroids of input Layer to an output Layer
+------------------------------------------------
+
+Inspired by: http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-with-python-and-ogr/
+
+.. image:: images/layer_centroids.png
+
+.. code-block:: python
+
+    from osgeo import ogr
+    import os
+
+    # Get the input Layer
+    inShapefile = "states.shp"
+    inDriver = ogr.GetDriverByName("ESRI Shapefile")
+    inDataSource = inDriver.Open(inShapefile, 0)
+    inLayer = inDataSource.GetLayer()
+
+    # Create the output Layer
+    outShapefile = "states_centroids.shp"
+    outDriver = ogr.GetDriverByName("ESRI Shapefile")
+
+    # Remove output shapefile if it already exists
+    if os.path.exists(outShapefile):
+        outDriver.DeleteDataSource(outShapefile)
+
+    # Create the output shapefile
+    outDataSource = outDriver.CreateDataSource(outShapefile)
+    outLayer = outDataSource.CreateLayer("states_centroids", geom_type=ogr.wkbPoint)
+
+    # Add input Layer Fields to the output Layer
+    inLayerDefn = inLayer.GetLayerDefn()
+    for i in range(0, inLayerDefn.GetFieldCount()):
+        fieldDefn = inLayerDefn.GetFieldDefn(i)
+        outLayer.CreateField(fieldDefn)
+
+    # Get the output Layer's Feature Definition
+    outLayerDefn = outLayer.GetLayerDefn()
+
+    # Add features to the ouput Layer
+    for i in range(0, inLayer.GetFeatureCount()):
+        # Get the input Feature
+        inFeature = inLayer.GetFeature(i)
+        # Create output Feature
+        outFeature = ogr.Feature(outLayerDefn)
+        # Add field values from input Layer
+        for i in range(0, outLayerDefn.GetFieldCount()):
+            outFeature.SetField(outLayerDefn.GetFieldDefn(i).GetNameRef(), inFeature.GetField(i))
+        # Set geometry as centroid    
+        geom = inFeature.GetGeometryRef()
+        centroid = geom.Centroid()
+        outFeature.SetGeometry(centroid)
+        # Add new feature to output Layer
+        outLayer.CreateFeature(outFeature)
+
+    # Close DataSources
+    inDataSource.Destroy()
+    outDataSource.Destroy()
+    
