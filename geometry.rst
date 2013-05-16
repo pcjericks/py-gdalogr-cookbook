@@ -213,7 +213,7 @@ Count Points in a Geometry
     geom = ogr.CreateGeometryFromWkt(wkt)
     print "Geometry has %i points" % (geom.GetPointCount())
 
-County Geometries in a Geometry
+Count Geometries in a Geometry
 -------------------------------
 
 .. code-block:: python
