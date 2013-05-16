@@ -21,6 +21,7 @@ Get Projection
 	from osgeo import ogr, osr
 	driver = ogr.GetDriverByName('ESRI Shapefile')
 	ds = driver.Open(r'c:\data\yourshpfile.shp')
+	
 	# from Layer
 	layer = ds.GetLayer()
 	spatialRef = layer.GetSpatialRef() 
@@ -28,3 +29,21 @@ Get Projection
 	feature = layer.GetNextFeature()
 	geom = feature.GetGeometryRef()
 	spatialRef = geom.GetSpatialReference() 
+	
+
+Export Projection
+-----------------
+
+.. code-block:: python
+
+	from osgeo import ogr, osr
+	driver = ogr.GetDriverByName('ESRI Shapefile')
+	ds = driver.Open(r'c:\data\yourshpfile.shp')
+	layer = ds.GetLayer()
+	spatialRef = layer.GetSpatialRef() 
+	
+	spatialRef.ExportToWkt()
+	spatialRef.ExportToPrettyWkt()
+	spatialRef.ExportToPCI()
+	spatialRef.ExportToUSGS()
+	spatialRef.ExportToXML()
