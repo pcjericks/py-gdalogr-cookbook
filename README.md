@@ -6,6 +6,8 @@ Setup
 -----
 Create a project folder **py-gdalorg-cookbook** and then create **source** and **build\html** subfolders.
 
+#
+
 project
  |
  |-source 
@@ -13,6 +15,8 @@ project
  |-build
     |
     |-html
+
+##
 
 In the **source** folder run::
 
