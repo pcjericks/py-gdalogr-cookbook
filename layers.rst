@@ -387,3 +387,81 @@ Inspired by: http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-
     inDataSource.Destroy()
     outDataSource.Destroy()
     
+Create a New Shapefile and Add Data
+-----------------------------------
+
+This recipe parses a delimited text file of volcano location data and creates a shapefile.
+The CSV file ``volcano_data.txt`` contains the following fields, separated by a tab character (\\t):
+
+*  Name
+*  Region
+*  Latitude
+*  Longitude
+*  Elevation
+
+`Taken from The Geospatial Desktop book.`
+
+.. code-block:: python
+
+  # Parse a delimited text file of volcano data and create a shapefile 
+
+  import osgeo.ogr as ogr 
+  import osgeo.osr as osr
+
+  # use a dictionary reader so we can access by field name
+  reader = csv.DictReader(open("volcano_data.txt","rb"), 
+      delimiter='\t',     
+      quoting=csv.QUOTE_NONE)
+
+  # set up the shapefile driver
+  driver = ogr.GetDriverByName("ESRI Shapefile") 
+
+  # create the data source
+  data_source = driver.CreateDataSource("volcanoes.shp") 
+
+  # create the spatial reference, WGS84
+  srs = osr.SpatialReference() 
+  srs.ImportFromEPSG(4326)
+
+  # create the layer
+  layer = data_source.CreateLayer("volcanoes", srs, ogr.wkbPoint) 
+
+  # Add the fields we're interested in
+  field_name = ogr.FieldDefn("Name", ogr.OFTString) 
+  field_name.SetWidth(24) 
+  layer.CreateField(field_name) 
+  field_region = ogr.FieldDefn("Region", ogr.OFTString)
+  field_region.SetWidth(24)
+  layer.CreateField(field_region)
+  layer.CreateField(ogr.FieldDefn("Latitude", ogr.OFTReal)) 
+  layer.CreateField(ogr.FieldDefn("Longitude", ogr.OFTReal))
+  layer.CreateField(ogr.FieldDefn("Elevation", ogr.OFTInteger)) 
+
+  # Process the text file and add the attributes and features to the shapefile
+  for row in reader: 
+    # create the feature
+    feature = ogr.Feature(layer.GetLayerDefn()) 
+    # Set the attributes using the values from the delimited text file
+    feature.SetField("Name", row['Name']) 
+    feature.SetField("Region", row['Region'])
+    feature.SetField("Latitude", row['Latitude'])
+    feature.SetField("Longitude", row['Longitude'])
+    feature.SetField("Elevation", row['Elev']) 
+
+    # create the WKT for the feature using Python string formatting
+    wkt = "POINT(%f %f)" %  (float(row['Longitude']) , float(row['Latitude'])) 
+
+    # Create the point from the Well Known Txt
+    point = ogr.CreateGeometryFromWkt(wkt)  
+
+    # Set the feature geometry using the point
+    feature.SetGeometry(point) 
+    # Create the feature in the layer (shapefile)
+    layer.CreateFeature(feature) 
+    # Destroy the feature to free resources
+    feature.Destroy() 
+
+  # Destroy the data source to free resources
+  data_source.Destroy() 
+   
+
