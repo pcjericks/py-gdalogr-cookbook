@@ -303,7 +303,7 @@ Get Shapefile Fields and Types - Get the user defined fields
     for i in range(layerDefinition.GetFieldCount()):
         fieldName =  layerDefinition.GetFieldDefn(i).GetName()
         fieldTypeCode = layerDefinition.GetFieldDefn(i).GetType()
-        fieldType = ogr.GetFieldTypeName(fieldTypeCode)
+        fieldType = layerDefinition.GetFieldDefn(i).GetFieldTypeName(fieldTypeCode)
         fieldWidth = layerDefinition.GetFieldDefn(i).GetWidth()
         GetPrecision = layerDefinition.GetFieldDefn(i).GetPrecision()
 
