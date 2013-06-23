@@ -353,6 +353,54 @@ Get PostGIS Layer Fields - Get the user defined fields
         lyr_name = sys.argv[1]
         GetPGLayerFields( lyr_name )
 
+Get PostGIS Layer Fields and Types - Get the user defined fields
+---------------------------------------------------------------------
+
+     This code example returns the field names of the user defined (created) fields and the data types they are.
+     
+.. code-block:: python    
+
+    from osgeo import ogr
+    import sys
+
+
+    databaseServer = "<IP of database server OR Name of database server"
+    databaseName = "<Name of database>"
+    databaseUser = "<User name>"
+    databasePW = "<User password>"
+    connString = "PG: host=%s dbname=%s user=%s password=%s" %(databaseServer,databaseName,databaseUser,databasePW)
+
+
+    def GetPGLayerFieldTypes( lyr_name ):
+        conn = ogr.Open(connString)
+
+        lyr = conn.GetLayer( lyr_name )
+        if lyr is None:
+            print >> sys.stderr, '[ ERROR ]: layer name = "%s" could not be found in database "%s"' % ( lyr_name, databaseName )
+            sys.exit( 1 )
+
+        lyrDefn = lyr.GetLayerDefn()
+        for i in range( lyrDefn.GetFieldCount() ):
+            fieldName =  lyrDefn.GetFieldDefn(i).GetName()
+            fieldTypeCode = lyrDefn.GetFieldDefn(i).GetType()
+            fieldType = lyrDefn.GetFieldDefn(i).GetFieldTypeName(fieldTypeCode)
+            fieldWidth = lyrDefn.GetFieldDefn(i).GetWidth()
+            GetPrecision = lyrDefn.GetFieldDefn(i).GetPrecision()
+
+            print fieldName + " - " + fieldType+ " " + str(fieldWidth) + " " + str(GetPrecision)
+
+        conn.Destroy()
+
+
+    if __name__ == '__main__':
+        
+        if len( sys.argv ) < 2:
+            print >> sys.stderr, '[ ERROR ]: you must pass at least one argument -- the layer name argument'
+            sys.exit( 1 )
+        
+        lyr_name = sys.argv[1]
+        GetPGLayerFieldTypes( lyr_name )
+     
         
 
 Create a new Layer from the extent of an existing Layer
