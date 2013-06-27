@@ -199,8 +199,7 @@ Iterate over Features
     dataSource = driver.Open(shapefile, 0)
     layer = dataSource.GetLayer()
 
-    for i in range(0,layer.GetFeatureCount()):
-        feature = layer.GetFeature(i)
+    for feature in layer:
         print feature.GetField("STATE_NAME")
 
 Get Geometry from each Feature in a Layer
@@ -216,8 +215,7 @@ Get Geometry from each Feature in a Layer
     dataSource = driver.Open(shapefile, 0)
     layer = dataSource.GetLayer()
 
-    for i in range(0,layer.GetFeatureCount()):
-        feature = layer.GetFeature(i)
+    for feature in layer:
         geom = feature.GetGeometryRef()
         print geom.Centroid().ExportToWkt()
 
@@ -236,10 +234,8 @@ Filter by attribute
 
     layer.SetAttributeFilter("SUB_REGION = 'Pacific'")
 
-    feature = layer.GetNextFeature()
-    while feature:
+    for feature in layer:
         print feature.GetField("STATE_NAME")
-        feature = layer.GetNextFeature() 
 
 Spatial Filter
 --------------
@@ -257,10 +253,8 @@ Spatial Filter
     wkt = "POLYGON ((-103.81402655265633 50.253951270672125,-102.94583419409656 51.535568561879401,-100.34125711841725 51.328856095555651,-100.34125711841725 51.328856095555651,-93.437060743203844 50.460663736995883,-93.767800689321859 46.450441890315041,-94.635993047881612 41.613370178339181,-100.75468205106476 41.365315218750681,-106.12920617548238 42.564247523428456,-105.96383620242338 47.277291755610058,-103.81402655265633 50.253951270672125))"
     layer.SetSpatialFilter(ogr.CreateGeometryFromWkt(wkt))
 
-    feature = layer.GetNextFeature()
-    while feature:
+    for feature in layer:
         print feature.GetField("STATE_NAME")
-        feature = layer.GetNextFeature()
 
 Get Shapefile Fields - Get the user defined fields
 ---------------------------------------------------
