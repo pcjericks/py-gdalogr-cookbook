@@ -11,7 +11,26 @@ Create Projection
 	spatialRef = osr.SpatialReference()
 	spatialRef.ImportFromEPSG(2927) 	# from EPSG
 
-	
+Reproject a Geometry
+--------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+    from osgeo import osr
+
+    source = osr.SpatialReference()
+    source.ImportFromEPSG(2927)
+
+    target = osr.SpatialReference()
+    target.ImportFromEPSG(4326)
+
+    transform = osr.CoordinateTransformation(source, target)
+
+    point = ogr.CreateGeometryFromWkt("POINT (1120351.57 741921.42)")
+    point.Transform(transform)
+
+    print point.ExportToWkt()
 
 Get Projection
 --------------
