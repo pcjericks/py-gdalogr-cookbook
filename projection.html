@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
-    <link rel="prev" title="Geometry" href="geometry.html" /> 
+    <link rel="prev" title="Layers" href="layers.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,7 +36,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="geometry.html" title="Geometry"
+          <a href="layers.html" title="Layers"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -54,6 +54,26 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">osr</span>
 <span class="n">spatialRef</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
 <span class="n">spatialRef</span><span class="o">.</span><span class="n">ImportFromEPSG</span><span class="p">(</span><span class="mi">2927</span><span class="p">)</span>         <span class="c"># from EPSG</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="reproject-a-geometry">
+<h2>Reproject a Geometry<a class="headerlink" href="#reproject-a-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">osr</span>
+
+<span class="n">source</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+<span class="n">source</span><span class="o">.</span><span class="n">ImportFromEPSG</span><span class="p">(</span><span class="mi">2927</span><span class="p">)</span>
+
+<span class="n">target</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+<span class="n">target</span><span class="o">.</span><span class="n">ImportFromEPSG</span><span class="p">(</span><span class="mi">4326</span><span class="p">)</span>
+
+<span class="n">transform</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="s">&quot;POINT (1120351.57 741921.42)&quot;</span><span class="p">)</span>
+<span class="n">point</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">point</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -163,6 +183,7 @@
   <ul>
 <li><a class="reference internal" href="#">Projection</a><ul>
 <li><a class="reference internal" href="#create-projection">Create Projection</a></li>
+<li><a class="reference internal" href="#reproject-a-geometry">Reproject a Geometry</a></li>
 <li><a class="reference internal" href="#get-projection">Get Projection</a></li>
 <li><a class="reference internal" href="#project-a-geometry">Project a Geometry</a></li>
 <li><a class="reference internal" href="#export-projection">Export Projection</a></li>
@@ -172,8 +193,8 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="geometry.html"
-                        title="previous chapter">Geometry</a></p>
+  <p class="topless"><a href="layers.html"
+                        title="previous chapter">Layers</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/projection.txt"
@@ -203,7 +224,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="geometry.html" title="Geometry"
+          <a href="layers.html" title="Layers"
              >previous</a> |</li>
         <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
