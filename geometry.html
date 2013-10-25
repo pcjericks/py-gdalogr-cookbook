@@ -26,8 +26,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
-    <link rel="next" title="Projection" href="projection.html" />
-    <link rel="prev" title="Layers" href="layers.html" /> 
+    <link rel="next" title="Layers" href="layers.html" />
+    <link rel="prev" title="Welcome to the Python GDAL/OGR Cookbook!" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,10 +37,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="projection.html" title="Projection"
+          <a href="layers.html" title="Layers"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="layers.html" title="Layers"
+          <a href="index.html" title="Welcome to the Python GDAL/OGR Cookbook!"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -348,8 +348,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="calculate-intersection-between-two-geometry">
-<h2>Calculate intersection between two Geometry<a class="headerlink" href="#calculate-intersection-between-two-geometry" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="calculate-intersection-between-two-geometries">
+<h2>Calculate intersection between two Geometries<a class="headerlink" href="#calculate-intersection-between-two-geometries" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
 
 <span class="n">wkt1</span> <span class="o">=</span> <span class="s">&quot;POLYGON ((1208064.271243039 624154.6783778917, 1208064.271243039 601260.9785661874, 1231345.9998651114 601260.9785661874, 1231345.9998651114 624154.6783778917, 1208064.271243039 624154.6783778917))&quot;</span>
@@ -361,6 +361,24 @@
 <span class="n">intersection</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">Intersection</span><span class="p">(</span><span class="n">poly2</span><span class="p">)</span>
 
 <span class="k">print</span> <span class="n">intersection</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calculate-union-between-two-geometries">
+<h2>Calculate union between two Geometries<a class="headerlink" href="#calculate-union-between-two-geometries" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">wkt1</span> <span class="o">=</span> <span class="s">&quot;POLYGON ((1208064.271243039 624154.6783778917, 1208064.271243039 601260.9785661874, 1231345.9998651114 601260.9785661874, 1231345.9998651114 624154.6783778917, 1208064.271243039 624154.6783778917))&quot;</span>
+<span class="n">wkt2</span> <span class="o">=</span> <span class="s">&quot;POLYGON ((1199915.6662253144 633079.3410163528, 1199915.6662253144 614453.958118695, 1219317.1067437078 614453.958118695, 1219317.1067437078 633079.3410163528, 1199915.6662253144 633079.3410163528)))&quot;</span>
+
+<span class="n">poly1</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt1</span><span class="p">)</span>
+<span class="n">poly2</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt2</span><span class="p">)</span>
+
+<span class="n">union</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">Union</span><span class="p">(</span><span class="n">poly2</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">poly1</span>
+<span class="k">print</span> <span class="n">poly2</span>
+<span class="k">print</span> <span class="n">union</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -395,17 +413,18 @@
 <li><a class="reference internal" href="#calculate-the-area-of-a-geometry">Calculate the Area of a Geometry</a></li>
 <li><a class="reference internal" href="#calculate-the-length-of-a-geometry">Calculate the Length of a Geometry</a></li>
 <li><a class="reference internal" href="#get-the-geometry-type-as-a-string-from-a-geometry">Get the geometry type (as a string) from a Geometry</a></li>
-<li><a class="reference internal" href="#calculate-intersection-between-two-geometry">Calculate intersection between two Geometry</a></li>
+<li><a class="reference internal" href="#calculate-intersection-between-two-geometries">Calculate intersection between two Geometries</a></li>
+<li><a class="reference internal" href="#calculate-union-between-two-geometries">Calculate union between two Geometries</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="layers.html"
-                        title="previous chapter">Layers</a></p>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to the Python GDAL/OGR Cookbook!</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="projection.html"
-                        title="next chapter">Projection</a></p>
+  <p class="topless"><a href="layers.html"
+                        title="next chapter">Layers</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/geometry.txt"
@@ -435,10 +454,10 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="projection.html" title="Projection"
+          <a href="layers.html" title="Layers"
              >next</a> |</li>
         <li class="right" >
-          <a href="layers.html" title="Layers"
+          <a href="index.html" title="Welcome to the Python GDAL/OGR Cookbook!"
              >previous</a> |</li>
         <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
