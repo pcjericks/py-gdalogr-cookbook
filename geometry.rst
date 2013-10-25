@@ -318,8 +318,8 @@ Get the geometry type (as a string) from a Geometry
         geom = ogr.CreateGeometryFromWkt(wkt)
         print geom.GetGeometryName()
 
-Calculate intersection between two Geometry
--------------------------------------------
+Calculate intersection between two Geometries
+------------------------------------------------
 
 .. code-block:: python
 
@@ -334,3 +334,23 @@ Calculate intersection between two Geometry
     intersection = poly1.Intersection(poly2)
 
     print intersection.ExportToWkt()
+
+Calculate union between two Geometries
+-------------------------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    wkt1 = "POLYGON ((1208064.271243039 624154.6783778917, 1208064.271243039 601260.9785661874, 1231345.9998651114 601260.9785661874, 1231345.9998651114 624154.6783778917, 1208064.271243039 624154.6783778917))"
+    wkt2 = "POLYGON ((1199915.6662253144 633079.3410163528, 1199915.6662253144 614453.958118695, 1219317.1067437078 614453.958118695, 1219317.1067437078 633079.3410163528, 1199915.6662253144 633079.3410163528)))"
+
+    poly1 = ogr.CreateGeometryFromWkt(wkt1)
+    poly2 = ogr.CreateGeometryFromWkt(wkt2)
+
+    union = poly1.Union(poly2)
+
+    print poly1
+    print poly2
+    print union.ExportToWkt()
+
