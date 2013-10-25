@@ -395,7 +395,49 @@ Get PostGIS Layer Fields and Types - Get the user defined fields
         lyr_name = sys.argv[1]
         GetPGLayerFieldTypes( lyr_name )
      
-        
+Read a CSV of Coordinates as an OGRVRTLayer
+------------------------------------------------
+
+GDAL/OGR has a `Virtual Format spec <http://www.gdal.org/ogr/drv_vrt.html>`_ that allows you to derive layers from flat tables such as a CSV -- it does a lot more than that too so go read about it. In the example below we are reading in a CSV with X,Y columns and values. That CSV file is wrapped by an XML file that describes it as an OGR layer. Below are all the necessary pieces and a script that reads the XML file and prints out point geometries.
+
+Our CSV file named `example.csv` looks like this:
+
+.. code-block:: bash
+
+    ID,X,Y
+    1,-127.234343,47.234325
+    2,-127.003243,46.234343
+    3,-127.345646,45.234324
+    4,-126.234324,44.324234
+
+
+Our OGRVRTLayer XML file called `example_wrapper.vrt` looks like this:
+
+.. code-block:: bash
+
+    <OGRVRTDataSource>
+        <OGRVRTLayer name="example">
+            <SrcDataSource>example.csv</SrcDataSource> 
+            <SrcLayer>example</SrcLayer> 
+            <GeometryType>wkbPoint</GeometryType> 
+                <LayerSRS>WGS84</LayerSRS>
+            <GeometryField encoding="PointFromColumns" x="X" y="Y"/> 
+        </OGRVRTLayer>
+    </OGRVRTDataSource>
+
+Now let's print out the point geometries:
+
+.. code-block:: python
+
+    from osgeo import ogr
+    ogr.UseExceptions()
+
+    inDataSource = ogr.Open("example_wrapper.vrt")
+    lyr = inDataSource.GetLayer('example')
+    for feat in lyr:
+        geom = feat.GetGeometryRef()
+        print geom.ExportToWkt()
+
 
 Create a new Layer from the extent of an existing Layer
 -------------------------------------------------------   
