@@ -2,7 +2,7 @@ Layers
 =============
 
 Is Ogr Installed
-----------------
+-------------------
 
 .. code-block:: python
 
@@ -22,7 +22,7 @@ View Auto Generated Ogr Help
     print help(osgeo.ogr)
 
 Get List of Ogr Drivers Alphabetically (A- Z)
--------------------------------------
+-----------------------------------------------
 
     It's always driven me a little nuts that the command line ogr2ogr --formats returns a 'random' list of drivers.  This code returns the list of OGR drivers alphabetically from A - Z.  .  
    
@@ -44,10 +44,10 @@ Get List of Ogr Drivers Alphabetically (A- Z)
         print i
      
 Is Ogr Driver Available by Driver Name
-------------------------------      
-    This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the "Code" column  ([`web site <http://www.gdal.org/ogr/ogr_formats.html>`_]).  This is the same names returned when you enter ``ogrinfo --formats`` on the command line.  
+--------------------------------------------      
+    This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the "Code" column  ([`formats website <http://www.gdal.org/ogr/ogr_formats.html>`_]).  This is the same names returned when you enter ``ogrinfo --formats`` on the command line.  
     
-    Code Example Source: [`web site <http://www.gdal.org/ogr/ogr_apitut.html>`_]
+    Code Example Source: [`website <http://www.gdal.org/ogr/ogr_apitut.html>`_]
     
 .. code-block:: python
     
@@ -87,7 +87,7 @@ Is Ogr Driver Available by Driver Name
         
         
 Get Shapefile Feature Count
----------------------------
+-------------------------------
     This code example opens a shapefile and returns the number of features in it.  Solution mined from: [`web site <http://www.gis.usu.edu/~chrisg/python/2009/lectures/ospy_slides1.pdf>`_] 
 
 
@@ -115,7 +115,7 @@ Get Shapefile Feature Count
         
     
 Get All PostGIS layers in a PostgreSQL Database
----------------------------------------------
+--------------------------------------------------
 
     This returns all the layers in a database of your choosing sorted in alphabetical order (of course).  Just fill in the missing information and it should work.  
     
@@ -187,7 +187,7 @@ Get PostGIS Layer Feature Count By Layer Name
 
         
 Iterate over Features
----------------------
+------------------------
  
 .. code-block:: python
 
@@ -203,7 +203,7 @@ Iterate over Features
         print feature.GetField("STATE_NAME")
 
 Get Geometry from each Feature in a Layer
------------------------------------------
+--------------------------------------------
 
 .. code-block:: python
 
@@ -220,7 +220,7 @@ Get Geometry from each Feature in a Layer
         print geom.Centroid().ExportToWkt()
 
 Filter by attribute
--------------------
+----------------------
  
 .. code-block:: python  
      
@@ -238,7 +238,7 @@ Filter by attribute
         print feature.GetField("STATE_NAME")
 
 Spatial Filter
---------------
+-----------------
 
 .. code-block:: python  
 
@@ -257,7 +257,7 @@ Spatial Filter
         print feature.GetField("STATE_NAME")
 
 Get Shapefile Fields - Get the user defined fields
----------------------------------------------------
+------------------------------------------------------
  
     This code example returns the field names of the user defined (created) fields.  
 
@@ -278,7 +278,7 @@ Get Shapefile Fields - Get the user defined fields
         
         
 Get Shapefile Fields and Types - Get the user defined fields
-------------------------------------------------------------
+----------------------------------------------------------------
 
      This code example returns the field names of the user defined (created) fields and the data types they are.
      
@@ -395,10 +395,52 @@ Get PostGIS Layer Fields and Types - Get the user defined fields
         lyr_name = sys.argv[1]
         GetPGLayerFieldTypes( lyr_name )
      
-        
+Read a CSV of Coordinates as an OGRVRTLayer
+------------------------------------------------
+
+GDAL/OGR has a `Virtual Format spec <http://www.gdal.org/ogr/drv_vrt.html>`_ that allows you to derive layers from flat tables such as a CSV -- it does a lot more than that too so go read about it. In the example below we are reading in a CSV with X,Y columns and values. That CSV file is wrapped by an XML file that describes it as an OGR layer. Below are all the necessary pieces and a script that reads the XML file and prints out point geometries.
+
+Our CSV file named `example.csv` looks like this:
+
+.. code-block:: bash
+
+    ID,X,Y
+    1,-127.234343,47.234325
+    2,-127.003243,46.234343
+    3,-127.345646,45.234324
+    4,-126.234324,44.324234
+
+
+Our OGRVRTLayer XML file called `example_wrapper.vrt` looks like this:
+
+.. code-block:: bash
+
+    <OGRVRTDataSource>
+        <OGRVRTLayer name="example">
+            <SrcDataSource>example.csv</SrcDataSource> 
+            <SrcLayer>example</SrcLayer> 
+            <GeometryType>wkbPoint</GeometryType> 
+                <LayerSRS>WGS84</LayerSRS>
+            <GeometryField encoding="PointFromColumns" x="X" y="Y"/> 
+        </OGRVRTLayer>
+    </OGRVRTDataSource>
+
+Now let's print out the point geometries:
+
+.. code-block:: python
+
+    from osgeo import ogr
+    ogr.UseExceptions()
+
+    inDataSource = ogr.Open("example_wrapper.vrt")
+    lyr = inDataSource.GetLayer('example')
+    for feat in lyr:
+        geom = feat.GetGeometryRef()
+        print geom.ExportToWkt()
+
 
 Create a new Layer from the extent of an existing Layer
--------------------------------------------------------   
+----------------------------------------------------------   
 
 .. image:: images/layer_extent.png
 
@@ -454,7 +496,7 @@ Create a new Layer from the extent of an existing Layer
 
 
 Save centroids of input Layer to an output Layer
-------------------------------------------------
+-----------------------------------------------------
 
 Inspired by: http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-with-python-and-ogr/
 
@@ -513,7 +555,7 @@ Inspired by: http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-
     outDataSource.Destroy()
     
 Create a New Shapefile and Add Data
------------------------------------
+---------------------------------------
 
 This recipe parses a delimited text file of volcano location data and creates a shapefile.
 The CSV file ``volcano_data.txt`` contains the following fields, separated by a tab character (\\t):

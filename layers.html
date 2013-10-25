@@ -96,8 +96,8 @@
 <div class="section" id="is-ogr-driver-available-by-driver-name">
 <h2>Is Ogr Driver Available by Driver Name<a class="headerlink" href="#is-ogr-driver-available-by-driver-name" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the &#8220;Code&#8221; column  ([<a class="reference external" href="http://www.gdal.org/ogr/ogr_formats.html">web site</a>]).  This is the same names returned when you enter <tt class="docutils literal"><span class="pre">ogrinfo</span> <span class="pre">--formats</span></tt> on the command line.</p>
-<p>Code Example Source: [<a class="reference external" href="http://www.gdal.org/ogr/ogr_apitut.html">web site</a>]</p>
+<div><p>This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the &#8220;Code&#8221; column  ([<a class="reference external" href="http://www.gdal.org/ogr/ogr_formats.html">formats website</a>]).  This is the same names returned when you enter <tt class="docutils literal"><span class="pre">ogrinfo</span> <span class="pre">--formats</span></tt> on the command line.</p>
+<p>Code Example Source: [<a class="reference external" href="http://www.gdal.org/ogr/ogr_apitut.html">website</a>]</p>
 </div></blockquote>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
 
@@ -426,6 +426,41 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="read-a-csv-of-coordinates-as-an-ogrvrtlayer">
+<h2>Read a CSV of Coordinates as an OGRVRTLayer<a class="headerlink" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer" title="Permalink to this headline">¶</a></h2>
+<p>GDAL/OGR has a <a class="reference external" href="http://www.gdal.org/ogr/drv_vrt.html">Virtual Format spec</a> that allows you to derive layers from flat tables such as a CSV &#8211; it does a lot more than that too so go read about it. In the example below we are reading in a CSV with X,Y columns and values. That CSV file is wrapped by an XML file that describes it as an OGR layer. Below are all the necessary pieces and a script that reads the XML file and prints out point geometries.</p>
+<p>Our CSV file named <cite>example.csv</cite> looks like this:</p>
+<div class="highlight-bash"><div class="highlight"><pre>ID,X,Y
+1,-127.234343,47.234325
+2,-127.003243,46.234343
+3,-127.345646,45.234324
+4,-126.234324,44.324234
+</pre></div>
+</div>
+<p>Our OGRVRTLayer XML file called <cite>example_wrapper.vrt</cite> looks like this:</p>
+<div class="highlight-bash"><div class="highlight"><pre>&lt;OGRVRTDataSource&gt;
+    &lt;OGRVRTLayer <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span>&gt;
+        &lt;SrcDataSource&gt;example.csv&lt;/SrcDataSource&gt;
+        &lt;SrcLayer&gt;example&lt;/SrcLayer&gt;
+        &lt;GeometryType&gt;wkbPoint&lt;/GeometryType&gt;
+            &lt;LayerSRS&gt;WGS84&lt;/LayerSRS&gt;
+        &lt;GeometryField <span class="nv">encoding</span><span class="o">=</span><span class="s2">&quot;PointFromColumns&quot;</span> <span class="nv">x</span><span class="o">=</span><span class="s2">&quot;X&quot;</span> <span class="nv">y</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span>/&gt;
+    &lt;/OGRVRTLayer&gt;
+&lt;/OGRVRTDataSource&gt;
+</pre></div>
+</div>
+<p>Now let&#8217;s print out the point geometries:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="n">ogr</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&quot;example_wrapper.vrt&quot;</span><span class="p">)</span>
+<span class="n">lyr</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">lyr</span><span class="p">:</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">geom</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="create-a-new-layer-from-the-extent-of-an-existing-layer">
 <h2>Create a new Layer from the extent of an existing Layer<a class="headerlink" href="#create-a-new-layer-from-the-extent-of-an-existing-layer" title="Permalink to this headline">¶</a></h2>
 <img alt="_images/layer_extent.png" src="_images/layer_extent.png" />
@@ -716,6 +751,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#get-shapefile-fields-and-types-get-the-user-defined-fields">Get Shapefile Fields and Types - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-fields-get-the-user-defined-fields">Get PostGIS Layer Fields - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-fields-and-types-get-the-user-defined-fields">Get PostGIS Layer Fields and Types - Get the user defined fields</a></li>
+<li><a class="reference internal" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer">Read a CSV of Coordinates as an OGRVRTLayer</a></li>
 <li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
 <li><a class="reference internal" href="#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
 <li><a class="reference internal" href="#create-a-new-shapefile-and-add-data">Create a New Shapefile and Add Data</a></li>
