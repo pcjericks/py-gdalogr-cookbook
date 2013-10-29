@@ -17,7 +17,8 @@ and the official `GDAL/OGR Python documentation <http://gdal.org/python/>`_.
    :maxdepth: 2
    
    geometry.rst
-   layers.rst
+   vector_layers.rst
+   raster_layers.rst
    projection.rst
    
 Indices and tables
