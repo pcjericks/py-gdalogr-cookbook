@@ -50,55 +50,70 @@ Get Projection
 	spatialRef = geom.GetSpatialReference() 
 
 
-Project a Geometry
-------------------
+Reproject a Layer
+-----------------
 
 .. code-block:: python
 
-	from osgeo import ogr, osr
+    from osgeo import ogr, osr
+    import os
 
-	driver = ogr.GetDriverByName('ESRI Shapefile')
+    driver = ogr.GetDriverByName('ESRI Shapefile')
 
-	# input SpatialReference
-	inSpatialRef = osr.SpatialReference()
-	inSpatialRef.ImportFromEPSG(4269)
+    # input SpatialReference
+    inSpatialRef = osr.SpatialReference()
+    inSpatialRef.ImportFromEPSG(2927)
 
-	# output SpatialReference
-	outSpatialRef = osr.SpatialReference()
-	outSpatialRef.ImportFromEPSG(26912)
+    # output SpatialReference
+    outSpatialRef = osr.SpatialReference()
+    outSpatialRef.ImportFromEPSG(4326)
 
-	# create the CoordinateTransformation
-	coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
+    # create the CoordinateTransformation
+    coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
 
-	inDataSet = driver.Open(r'c:\data\in_yourshpfile.shp')
-	inLayer = inDataSet.GetLayer()
+    # get the input layer
+    inDataSet = driver.Open(r'c:\data\spatial\basemap.shp')
+    inLayer = inDataSet.GetLayer()
 
-	outDataSet = driver.Open(r'c:\data\out_yourshpfile.shp')
-	outLayer = outDataSet.GetLayer()
+    # create the output layer
+    outputShapefile = r'c:\data\spatial\basemap_4326.shp'
+    if os.path.exists(outputShapefile):
+        driver.DeleteDataSource(outputShapefile)
+    outDataSet = driver.CreateDataSource(outputShapefile)
+    outLayer = outDataSet.CreateLayer("basemap_4326", geom_type=ogr.wkbMultiPolygon)
 
-	# loop through the input features
-	inFeature = inLayer.GetNextFeature()
-	while inFeature:
-	# get the input geometry
-	geom = inFeature.GetGeometryRef()
-	# reproject the geometry
-	geom.Transform(coordTrans)
-	# create a new feature
-	outFeature = ogr.Feature(featureDefn)
-	# set the geometry and attribute
-	outFeature.SetGeometry(geom)
-	outFeature.SetField('name', inFeature.GetField('name'))
-	# add the feature to the shapefile
-	outLayer.CreateFeature(outFeature)
-	# destroy the features and get the next input feature
-	outFeature.Destroy
-	inFeature.Destroy
-	inFeature = inLayer.GetNextFeature()
+    # add fields
+    inLayerDefn = inLayer.GetLayerDefn()
+    for i in range(0, inLayerDefn.GetFieldCount()):
+        fieldDefn = inLayerDefn.GetFieldDefn(i)
+        outLayer.CreateField(fieldDefn)
 
-	# close the shapefiles
-	inDataSet.Destroy()
-	outDataSet.Destroy()
-	
+    # get the output layer's feature definition
+    outLayerDefn = outLayer.GetLayerDefn()
+
+    # loop through the input features
+    inFeature = inLayer.GetNextFeature()
+    while inFeature:
+        # get the input geometry
+        geom = inFeature.GetGeometryRef()
+        # reproject the geometry
+        geom.Transform(coordTrans)
+        # create a new feature
+        outFeature = ogr.Feature(outLayerDefn)
+        # set the geometry and attribute
+        outFeature.SetGeometry(geom)
+        for i in range(0, outLayerDefn.GetFieldCount()):
+            outFeature.SetField(outLayerDefn.GetFieldDefn(i).GetNameRef(), inFeature.GetField(i))
+        # add the feature to the shapefile
+        outLayer.CreateFeature(outFeature)
+        # destroy the features and get the next input feature
+        outFeature.Destroy()
+        inFeature.Destroy()
+        inFeature = inLayer.GetNextFeature()
+
+    # close the shapefiles
+    inDataSet.Destroy()
+    outDataSet.Destroy()
 
 Export Projection
 -----------------
