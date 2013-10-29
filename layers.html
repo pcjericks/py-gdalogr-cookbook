@@ -920,6 +920,40 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
 <p>After image of the clipped geotiff with the timezone border overlayed in orange on top of input geotiff:</p>
 <img alt="_images/clip_raster_after.png" src="_images/clip_raster_after.png" />
 </div>
+<div class="section" id="convert-an-ogr-file-to-a-raster">
+<h2>Convert an OGR File to a Raster<a class="headerlink" href="#convert-an-ogr-file-to-a-raster" title="Permalink to this headline">¶</a></h2>
+<p>This recipe takes in a OGR file (e.g. shapefile) and creates a new raster Tiff file based on the shapefile.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span><span class="p">,</span> <span class="n">ogr</span>
+
+<span class="c"># Define pixel_size and NoData value of new raster</span>
+<span class="n">pixel_size</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">NoData_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+
+<span class="c"># Filename of input OGR file</span>
+<span class="n">vector_fn</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
+
+<span class="c"># Filename of the raster Tiff that will be created</span>
+<span class="n">raster_fn</span> <span class="o">=</span> <span class="s">&#39;test.tif&#39;</span>
+
+<span class="c"># Open the data source and read in the extent</span>
+<span class="n">source_ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">vector_fn</span><span class="p">)</span>
+<span class="n">source_layer</span> <span class="o">=</span> <span class="n">source_ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">source_srs</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
+<span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetExtent</span><span class="p">()</span>
+
+<span class="c"># Create the destination data source</span>
+<span class="n">x_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
+<span class="n">y_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
+<span class="n">target_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;GTiff&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">raster_fn</span><span class="p">,</span> <span class="n">x_res</span><span class="p">,</span> <span class="n">y_res</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">)</span>
+<span class="n">target_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">((</span><span class="n">x_min</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">pixel_size</span><span class="p">))</span>
+<span class="n">band</span> <span class="o">=</span> <span class="n">target_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">band</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="n">NoData_value</span><span class="p">)</span>
+
+<span class="c"># Rasterize</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">RasterizeLayer</span><span class="p">(</span><span class="n">target_ds</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source_layer</span><span class="p">,</span> <span class="n">burn_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -952,6 +986,7 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
 <li><a class="reference internal" href="#create-a-new-shapefile-and-add-data">Create a New Shapefile and Add Data</a></li>
 <li><a class="reference internal" href="#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI</a></li>
 <li><a class="reference internal" href="#clip-a-geotiff-with-shapefile">Clip a GeoTiff with Shapefile</a></li>
+<li><a class="reference internal" href="#convert-an-ogr-file-to-a-raster">Convert an OGR File to a Raster</a></li>
 </ul>
 </li>
 </ul>
