@@ -20,6 +20,7 @@ and the official `GDAL/OGR Python documentation <http://gdal.org/python/>`_.
    vector_layers.rst
    raster_layers.rst
    projection.rst
+   gotchas.rst
    
 Indices and tables
 ==================
