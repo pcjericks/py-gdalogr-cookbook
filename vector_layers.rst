@@ -14,7 +14,8 @@ Is Ogr Installed
 
 View Auto Generated Ogr Help
 ------------------------------      
-    This code simply prints out the auto-generated help on the imported module.  In this case it's OGR.
+    This code simply prints out the auto-generated help on the imported module.  In this case it's OGR. This might not
+    be the best way to scan the API's class methods. For a detailed description of the whole Python GDAL/OGR API, see the useful `API docs <http://gdal.org/python/>`_.
 
 .. code-block:: python
     
