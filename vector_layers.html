@@ -1,0 +1,812 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Vector Layers &mdash; Python GDAL/OGR Cookbook 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
+    <link rel="next" title="Raster Layers" href="raster_layers.html" />
+    <link rel="prev" title="Geometry" href="geometry.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="raster_layers.html" title="Raster Layers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="geometry.html" title="Geometry"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="vector-layers">
+<h1>Vector Layers<a class="headerlink" href="#vector-layers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="is-ogr-installed">
+<h2>Is Ogr Installed<a class="headerlink" href="#is-ogr-installed" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
+  <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+  <span class="k">print</span> <span class="s">&#39;Import of ogr from osgeo worked.  Hurray!</span><span class="se">\n</span><span class="s">&#39;</span>
+<span class="k">except</span><span class="p">:</span>
+  <span class="k">print</span> <span class="s">&#39;Import of ogr from osgeo failed</span><span class="se">\n\n</span><span class="s">&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="view-auto-generated-ogr-help">
+<h2>View Auto Generated Ogr Help<a class="headerlink" href="#view-auto-generated-ogr-help" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code simply prints out the auto-generated help on the imported module.  In this case it&#8217;s OGR. This might not
+be the best way to scan the API&#8217;s class methods. For a detailed description of the whole Python GDAL/OGR API, see the useful <a class="reference external" href="http://gdal.org/python/">API docs</a>.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">osgeo.ogr</span>
+<span class="k">print</span> <span class="n">help</span><span class="p">(</span><span class="n">osgeo</span><span class="o">.</span><span class="n">ogr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-list-of-ogr-drivers-alphabetically-a-z">
+<h2>Get List of Ogr Drivers Alphabetically (A- Z)<a class="headerlink" href="#get-list-of-ogr-drivers-alphabetically-a-z" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>It&#8217;s always driven me a little nuts that the command line ogr2ogr &#8211;formats returns a &#8216;random&#8217; list of drivers.  This code returns the list of OGR drivers alphabetically from A - Z.  .</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span>
+<span class="n">cnt</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverCount</span><span class="p">()</span>
+<span class="n">formatsList</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># Empty List</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cnt</span><span class="p">):</span>
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">driverName</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">driverName</span> <span class="ow">in</span> <span class="n">formatsList</span><span class="p">:</span>
+        <span class="n">formatsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">driverName</span><span class="p">)</span>
+
+<span class="n">formatsList</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span> <span class="c"># Sorting the messy list of ogr drivers</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">formatsList</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">i</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="is-ogr-driver-available-by-driver-name">
+<h2>Is Ogr Driver Available by Driver Name<a class="headerlink" href="#is-ogr-driver-available-by-driver-name" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the &#8220;Code&#8221; column  ([<a class="reference external" href="http://www.gdal.org/ogr/ogr_formats.html">formats website</a>]).  This is the same names returned when you enter <tt class="docutils literal"><span class="pre">ogrinfo</span> <span class="pre">--formats</span></tt> on the command line.</p>
+<p>Code Example Source: [<a class="reference external" href="http://www.gdal.org/ogr/ogr_apitut.html">website</a>]</p>
+</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c">## Shapefile available?</span>
+<span class="n">driverName</span> <span class="o">=</span> <span class="s">&quot;ESRI Shapefile&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span> <span class="n">driverName</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">drv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver not available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+
+<span class="c">## PostgreSQL available?</span>
+<span class="n">driverName</span> <span class="o">=</span> <span class="s">&quot;PostgreSQL&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span> <span class="n">driverName</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">drv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver not available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+
+<span class="c">## Is File GeoDatabase available?</span>
+<span class="n">driverName</span> <span class="o">=</span> <span class="s">&quot;FileGDB&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span> <span class="n">driverName</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">drv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver not available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+
+<span class="c">## SDE available?</span>
+<span class="n">driverName</span> <span class="o">=</span> <span class="s">&quot;SDE&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span> <span class="n">driverName</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">drv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver not available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-shapefile-feature-count">
+<h2>Get Shapefile Feature Count<a class="headerlink" href="#get-shapefile-feature-count" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example opens a shapefile and returns the number of features in it.  Solution mined from: [<a class="reference external" href="http://www.gis.usu.edu/~chrisg/python/2009/lectures/ospy_slides1.pdf">web site</a>]</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">daShapefile</span> <span class="o">=</span> <span class="s">r&quot;C:\Temp\Voting_Centers_and_Ballot_Sites.shp&quot;</span>
+
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;ESRI Shapefile&#39;</span><span class="p">)</span>
+
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">daShapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># 0 means read-only. 1 means writeable.</span>
+
+<span class="c"># Check to see if shapefile is found.</span>
+<span class="k">if</span> <span class="n">dataSource</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Could not open </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">daShapefile</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Opened </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">daShapefile</span><span class="p">)</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+    <span class="n">featureCount</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;Number of features in </span><span class="si">%s</span><span class="s">: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">daShapefile</span><span class="p">),</span><span class="n">featureCount</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-all-postgis-layers-in-a-postgresql-database">
+<h2>Get All PostGIS layers in a PostgreSQL Database<a class="headerlink" href="#get-all-postgis-layers-in-a-postgresql-database" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This returns all the layers in a database of your choosing sorted in alphabetical order (of course).  Just fill in the missing information and it should work.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">databaseServer</span> <span class="o">=</span> <span class="s">&quot;&lt;IP of database server OR Name of database server&quot;</span>
+<span class="n">databaseName</span> <span class="o">=</span> <span class="s">&quot;&lt;Name of database&gt;&quot;</span>
+<span class="n">databaseUser</span> <span class="o">=</span> <span class="s">&quot;&lt;User name&gt;&quot;</span>
+<span class="n">databasePW</span> <span class="o">=</span> <span class="s">&quot;&lt;User password&gt;&quot;</span>
+
+
+<span class="n">connString</span> <span class="o">=</span> <span class="s">&quot;PG: host=</span><span class="si">%s</span><span class="s"> dbname=</span><span class="si">%s</span><span class="s"> user=</span><span class="si">%s</span><span class="s"> password=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">databaseServer</span><span class="p">,</span><span class="n">databaseName</span><span class="p">,</span><span class="n">databaseUser</span><span class="p">,</span><span class="n">databasePW</span><span class="p">)</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">connString</span><span class="p">)</span>
+
+<span class="n">layerList</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">daLayer</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">daLayer</span> <span class="ow">in</span> <span class="n">layerList</span><span class="p">:</span>
+        <span class="n">layerList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">daLayer</span><span class="p">)</span>
+
+<span class="n">layerList</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">layerList</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">j</span>
+
+<span class="n">conn</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-postgis-layer-feature-count-by-layer-name">
+<h2>Get PostGIS Layer Feature Count By Layer Name<a class="headerlink" href="#get-postgis-layer-feature-count-by-layer-name" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example opens a postgis connection and gets the specified layer name if it exists in the database. Otherwise it throws a nice error message</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">databaseServer</span> <span class="o">=</span> <span class="s">&quot;&lt;IP of database server OR Name of database server&quot;</span>
+<span class="n">databaseName</span> <span class="o">=</span> <span class="s">&quot;&lt;Name of database&gt;&quot;</span>
+<span class="n">databaseUser</span> <span class="o">=</span> <span class="s">&quot;&lt;User name&gt;&quot;</span>
+<span class="n">databasePW</span> <span class="o">=</span> <span class="s">&quot;&lt;User password&gt;&quot;</span>
+<span class="n">connString</span> <span class="o">=</span> <span class="s">&quot;PG: host=</span><span class="si">%s</span><span class="s"> dbname=</span><span class="si">%s</span><span class="s"> user=</span><span class="si">%s</span><span class="s"> password=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">databaseServer</span><span class="p">,</span><span class="n">databaseName</span><span class="p">,</span><span class="n">databaseUser</span><span class="p">,</span><span class="n">databasePW</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">GetPGLayer</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">):</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">connString</span><span class="p">)</span>
+
+    <span class="n">lyr</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">lyr</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#39;[ ERROR ]: layer name = &quot;</span><span class="si">%s</span><span class="s">&quot; could not be found in database &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">lyr_name</span><span class="p">,</span> <span class="n">databaseName</span> <span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
+
+    <span class="n">featureCount</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;Number of features in </span><span class="si">%s</span><span class="s">: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">lyr_name</span> <span class="p">,</span> <span class="n">featureCount</span> <span class="p">)</span>
+
+    <span class="n">conn</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#39;[ ERROR ]: you must pass at least one argument -- the layer name argument&#39;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
+
+    <span class="n">lyr_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">GetPGLayer</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="iterate-over-features">
+<h2>Iterate over Features<a class="headerlink" href="#iterate-over-features" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">shapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-geometry-from-each-feature-in-a-layer">
+<h2>Get Geometry from each Feature in a Layer<a class="headerlink" href="#get-geometry-from-each-feature-in-a-layer" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">shapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">geom</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="filter-by-attribute">
+<h2>Filter by attribute<a class="headerlink" href="#filter-by-attribute" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">shapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="n">layer</span><span class="o">.</span><span class="n">SetAttributeFilter</span><span class="p">(</span><span class="s">&quot;SUB_REGION = &#39;Pacific&#39;&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="spatial-filter">
+<h2>Spatial Filter<a class="headerlink" href="#spatial-filter" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">shapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;POLYGON ((-103.81402655265633 50.253951270672125,-102.94583419409656 51.535568561879401,-100.34125711841725 51.328856095555651,-100.34125711841725 51.328856095555651,-93.437060743203844 50.460663736995883,-93.767800689321859 46.450441890315041,-94.635993047881612 41.613370178339181,-100.75468205106476 41.365315218750681,-106.12920617548238 42.564247523428456,-105.96383620242338 47.277291755610058,-103.81402655265633 50.253951270672125))&quot;</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">SetSpatialFilter</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-shapefile-fields-get-the-user-defined-fields">
+<h2>Get Shapefile Fields - Get the user defined fields<a class="headerlink" href="#get-shapefile-fields-get-the-user-defined-fields" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example returns the field names of the user defined (created) fields.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">daShapefile</span> <span class="o">=</span> <span class="s">r&quot;C:\Temp\Voting_Centers_and_Ballot_Sites.shp&quot;</span>
+
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">daShapefile</span><span class="p">)</span>
+<span class="n">daLayer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">layerDefinition</span> <span class="o">=</span> <span class="n">daLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+    <span class="k">print</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-shapefile-fields-and-types-get-the-user-defined-fields">
+<h2>Get Shapefile Fields and Types - Get the user defined fields<a class="headerlink" href="#get-shapefile-fields-and-types-get-the-user-defined-fields" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example returns the field names of the user defined (created) fields and the data types they are.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">daShapefile</span> <span class="o">=</span> <span class="s">r&quot;C:\Temp\iDay\CWI_Wetlands.shp&quot;</span>
+
+<span class="n">dataSource</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">daShapefile</span><span class="p">)</span>
+<span class="n">daLayer</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">layerDefinition</span> <span class="o">=</span> <span class="n">daLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+
+<span class="k">print</span> <span class="s">&quot;Name  -  Type  Width  Precision&quot;</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+    <span class="n">fieldName</span> <span class="o">=</span>  <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+    <span class="n">fieldTypeCode</span> <span class="o">=</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetType</span><span class="p">()</span>
+    <span class="n">fieldType</span> <span class="o">=</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetFieldTypeName</span><span class="p">(</span><span class="n">fieldTypeCode</span><span class="p">)</span>
+    <span class="n">fieldWidth</span> <span class="o">=</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetWidth</span><span class="p">()</span>
+    <span class="n">GetPrecision</span> <span class="o">=</span> <span class="n">layerDefinition</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetPrecision</span><span class="p">()</span>
+
+    <span class="k">print</span> <span class="n">fieldName</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="n">fieldType</span><span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fieldWidth</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">GetPrecision</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-postgis-layer-fields-get-the-user-defined-fields">
+<h2>Get PostGIS Layer Fields - Get the user defined fields<a class="headerlink" href="#get-postgis-layer-fields-get-the-user-defined-fields" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example returns the field names of the user defined (created) fields.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">databaseServer</span> <span class="o">=</span> <span class="s">&quot;&lt;IP of database server OR Name of database server&quot;</span>
+<span class="n">databaseName</span> <span class="o">=</span> <span class="s">&quot;&lt;Name of database&gt;&quot;</span>
+<span class="n">databaseUser</span> <span class="o">=</span> <span class="s">&quot;&lt;User name&gt;&quot;</span>
+<span class="n">databasePW</span> <span class="o">=</span> <span class="s">&quot;&lt;User password&gt;&quot;</span>
+<span class="n">connString</span> <span class="o">=</span> <span class="s">&quot;PG: host=</span><span class="si">%s</span><span class="s"> dbname=</span><span class="si">%s</span><span class="s"> user=</span><span class="si">%s</span><span class="s"> password=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">databaseServer</span><span class="p">,</span><span class="n">databaseName</span><span class="p">,</span><span class="n">databaseUser</span><span class="p">,</span><span class="n">databasePW</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">GetPGLayerFields</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">):</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">connString</span><span class="p">)</span>
+
+    <span class="n">lyr</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">lyr</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#39;[ ERROR ]: layer name = &quot;</span><span class="si">%s</span><span class="s">&quot; could not be found in database &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">lyr_name</span><span class="p">,</span> <span class="n">databaseName</span> <span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
+
+    <span class="n">lyrDefn</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()</span> <span class="p">):</span>
+        <span class="k">print</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span> <span class="n">i</span> <span class="p">)</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+
+    <span class="n">conn</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#39;[ ERROR ]: you must pass at least one argument -- the layer name argument&#39;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
+
+    <span class="n">lyr_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">GetPGLayerFields</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-postgis-layer-fields-and-types-get-the-user-defined-fields">
+<h2>Get PostGIS Layer Fields and Types - Get the user defined fields<a class="headerlink" href="#get-postgis-layer-fields-and-types-get-the-user-defined-fields" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This code example returns the field names of the user defined (created) fields and the data types they are.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+
+<span class="n">databaseServer</span> <span class="o">=</span> <span class="s">&quot;&lt;IP of database server OR Name of database server&quot;</span>
+<span class="n">databaseName</span> <span class="o">=</span> <span class="s">&quot;&lt;Name of database&gt;&quot;</span>
+<span class="n">databaseUser</span> <span class="o">=</span> <span class="s">&quot;&lt;User name&gt;&quot;</span>
+<span class="n">databasePW</span> <span class="o">=</span> <span class="s">&quot;&lt;User password&gt;&quot;</span>
+<span class="n">connString</span> <span class="o">=</span> <span class="s">&quot;PG: host=</span><span class="si">%s</span><span class="s"> dbname=</span><span class="si">%s</span><span class="s"> user=</span><span class="si">%s</span><span class="s"> password=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">databaseServer</span><span class="p">,</span><span class="n">databaseName</span><span class="p">,</span><span class="n">databaseUser</span><span class="p">,</span><span class="n">databasePW</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">GetPGLayerFieldTypes</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">):</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">connString</span><span class="p">)</span>
+
+    <span class="n">lyr</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">lyr</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#39;[ ERROR ]: layer name = &quot;</span><span class="si">%s</span><span class="s">&quot; could not be found in database &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">lyr_name</span><span class="p">,</span> <span class="n">databaseName</span> <span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
+
+    <span class="n">lyrDefn</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()</span> <span class="p">):</span>
+        <span class="n">fieldName</span> <span class="o">=</span>  <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+        <span class="n">fieldTypeCode</span> <span class="o">=</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetType</span><span class="p">()</span>
+        <span class="n">fieldType</span> <span class="o">=</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetFieldTypeName</span><span class="p">(</span><span class="n">fieldTypeCode</span><span class="p">)</span>
+        <span class="n">fieldWidth</span> <span class="o">=</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetWidth</span><span class="p">()</span>
+        <span class="n">GetPrecision</span> <span class="o">=</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetPrecision</span><span class="p">()</span>
+
+        <span class="k">print</span> <span class="n">fieldName</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="n">fieldType</span><span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fieldWidth</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">GetPrecision</span><span class="p">)</span>
+
+    <span class="n">conn</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#39;[ ERROR ]: you must pass at least one argument -- the layer name argument&#39;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
+
+    <span class="n">lyr_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">GetPGLayerFieldTypes</span><span class="p">(</span> <span class="n">lyr_name</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="read-a-csv-of-coordinates-as-an-ogrvrtlayer">
+<h2>Read a CSV of Coordinates as an OGRVRTLayer<a class="headerlink" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer" title="Permalink to this headline">¶</a></h2>
+<p>GDAL/OGR has a <a class="reference external" href="http://www.gdal.org/ogr/drv_vrt.html">Virtual Format spec</a> that allows you to derive layers from flat tables such as a CSV &#8211; it does a lot more than that too so go read about it. In the example below we are reading in a CSV with X,Y columns and values. That CSV file is wrapped by an XML file that describes it as an OGR layer. Below are all the necessary pieces and a script that reads the XML file and prints out point geometries.</p>
+<p>Our CSV file named <cite>example.csv</cite> looks like this:</p>
+<div class="highlight-bash"><div class="highlight"><pre>ID,X,Y
+1,-127.234343,47.234325
+2,-127.003243,46.234343
+3,-127.345646,45.234324
+4,-126.234324,44.324234
+</pre></div>
+</div>
+<p>Our OGRVRTLayer XML file called <cite>example_wrapper.vrt</cite> looks like this:</p>
+<div class="highlight-bash"><div class="highlight"><pre>&lt;OGRVRTDataSource&gt;
+    &lt;OGRVRTLayer <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;example&quot;</span>&gt;
+        &lt;SrcDataSource&gt;example.csv&lt;/SrcDataSource&gt;
+        &lt;SrcLayer&gt;example&lt;/SrcLayer&gt;
+        &lt;GeometryType&gt;wkbPoint&lt;/GeometryType&gt;
+            &lt;LayerSRS&gt;WGS84&lt;/LayerSRS&gt;
+        &lt;GeometryField <span class="nv">encoding</span><span class="o">=</span><span class="s2">&quot;PointFromColumns&quot;</span> <span class="nv">x</span><span class="o">=</span><span class="s2">&quot;X&quot;</span> <span class="nv">y</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span>/&gt;
+    &lt;/OGRVRTLayer&gt;
+&lt;/OGRVRTDataSource&gt;
+</pre></div>
+</div>
+<p>Now let&#8217;s print out the point geometries:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="n">ogr</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&quot;example_wrapper.vrt&quot;</span><span class="p">)</span>
+<span class="n">lyr</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">lyr</span><span class="p">:</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">geom</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-new-layer-from-the-extent-of-an-existing-layer">
+<h2>Create a new Layer from the extent of an existing Layer<a class="headerlink" href="#create-a-new-layer-from-the-extent-of-an-existing-layer" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/layer_extent.png" src="_images/layer_extent.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c"># Get a Layer&#39;s Extent</span>
+<span class="n">inShapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">inDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="n">inDriver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">inShapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">inLayer</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">extent</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetExtent</span><span class="p">()</span>
+
+<span class="c"># Create a Polygon from the extent tuple</span>
+<span class="n">ring</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+<span class="c"># Save extent to a new Shapefile</span>
+<span class="n">outShapefile</span> <span class="o">=</span> <span class="s">&quot;states_extent.shp&quot;</span>
+<span class="n">outDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+
+<span class="c"># Remove output shapefile if it already exists</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">):</span>
+    <span class="n">outDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+
+<span class="c"># Create the output shapefile</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">outDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&quot;states_extent&quot;</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+
+<span class="c"># Add an ID field</span>
+<span class="n">idField</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTInteger</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">idField</span><span class="p">)</span>
+
+<span class="c"># Create the feature and set values</span>
+<span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+<span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+<span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+
+<span class="c"># Close DataSource</span>
+<span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="save-centroids-of-input-layer-to-an-output-layer">
+<h2>Save centroids of input Layer to an output Layer<a class="headerlink" href="#save-centroids-of-input-layer-to-an-output-layer" title="Permalink to this headline">¶</a></h2>
+<p>Inspired by: <a class="reference external" href="http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-with-python-and-ogr/">http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-with-python-and-ogr/</a></p>
+<img alt="_images/layer_centroids.png" src="_images/layer_centroids.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c"># Get the input Layer</span>
+<span class="n">inShapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">inDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="n">inDriver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">inShapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">inLayer</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="c"># Create the output Layer</span>
+<span class="n">outShapefile</span> <span class="o">=</span> <span class="s">&quot;states_centroids.shp&quot;</span>
+<span class="n">outDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+
+<span class="c"># Remove output shapefile if it already exists</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">):</span>
+    <span class="n">outDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+
+<span class="c"># Create the output shapefile</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">outDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&quot;states_centroids&quot;</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+
+<span class="c"># Add input Layer Fields to the output Layer</span>
+<span class="n">inLayerDefn</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inLayerDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+    <span class="n">fieldDefn</span> <span class="o">=</span> <span class="n">inLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldDefn</span><span class="p">)</span>
+
+<span class="c"># Get the output Layer&#39;s Feature Definition</span>
+<span class="n">outLayerDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+<span class="c"># Add features to the ouput Layer</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()):</span>
+    <span class="c"># Get the input Feature</span>
+    <span class="n">inFeature</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetFeature</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="c"># Create output Feature</span>
+    <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">outLayerDefn</span><span class="p">)</span>
+    <span class="c"># Add field values from input Layer</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+        <span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetNameRef</span><span class="p">(),</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="c"># Set geometry as centroid</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span>
+    <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">centroid</span><span class="p">)</span>
+    <span class="c"># Add new feature to output Layer</span>
+    <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+
+<span class="c"># Close DataSources</span>
+<span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-new-shapefile-and-add-data">
+<h2>Create a New Shapefile and Add Data<a class="headerlink" href="#create-a-new-shapefile-and-add-data" title="Permalink to this headline">¶</a></h2>
+<p>This recipe parses a delimited text file of volcano location data and creates a shapefile.
+The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</span></tt> contains the following fields, separated by a tab character (\t):</p>
+<ul class="simple">
+<li>Name</li>
+<li>Region</li>
+<li>Latitude</li>
+<li>Longitude</li>
+<li>Elevation</li>
+</ul>
+<p><cite>Taken from The Geospatial Desktop book.</cite></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Parse a delimited text file of volcano data and create a shapefile</span>
+
+<span class="kn">import</span> <span class="nn">osgeo.ogr</span> <span class="kn">as</span> <span class="nn">ogr</span>
+<span class="kn">import</span> <span class="nn">osgeo.osr</span> <span class="kn">as</span> <span class="nn">osr</span>
+
+<span class="c"># use a dictionary reader so we can access by field name</span>
+<span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&quot;volcano_data.txt&quot;</span><span class="p">,</span><span class="s">&quot;rb&quot;</span><span class="p">),</span>
+    <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span>
+    <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONE</span><span class="p">)</span>
+
+<span class="c"># set up the shapefile driver</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+
+<span class="c"># create the data source</span>
+<span class="n">data_source</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="s">&quot;volcanoes.shp&quot;</span><span class="p">)</span>
+
+<span class="c"># create the spatial reference, WGS84</span>
+<span class="n">srs</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+<span class="n">srs</span><span class="o">.</span><span class="n">ImportFromEPSG</span><span class="p">(</span><span class="mi">4326</span><span class="p">)</span>
+
+<span class="c"># create the layer</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&quot;volcanoes&quot;</span><span class="p">,</span> <span class="n">srs</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+
+<span class="c"># Add the fields we&#39;re interested in</span>
+<span class="n">field_name</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="s">&quot;Name&quot;</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTString</span><span class="p">)</span>
+<span class="n">field_name</span><span class="o">.</span><span class="n">SetWidth</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">field_name</span><span class="p">)</span>
+<span class="n">field_region</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="s">&quot;Region&quot;</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTString</span><span class="p">)</span>
+<span class="n">field_region</span><span class="o">.</span><span class="n">SetWidth</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">field_region</span><span class="p">)</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="s">&quot;Latitude&quot;</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTReal</span><span class="p">))</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="s">&quot;Longitude&quot;</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTReal</span><span class="p">))</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="s">&quot;Elevation&quot;</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTInteger</span><span class="p">))</span>
+
+<span class="c"># Process the text file and add the attributes and features to the shapefile</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+  <span class="c"># create the feature</span>
+  <span class="n">feature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">())</span>
+  <span class="c"># Set the attributes using the values from the delimited text file</span>
+  <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;Name&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Name&#39;</span><span class="p">])</span>
+  <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;Region&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Region&#39;</span><span class="p">])</span>
+  <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;Latitude&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Latitude&#39;</span><span class="p">])</span>
+  <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;Longitude&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Longitude&#39;</span><span class="p">])</span>
+  <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;Elevation&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;Elev&#39;</span><span class="p">])</span>
+
+  <span class="c"># create the WKT for the feature using Python string formatting</span>
+  <span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;POINT(</span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s">)&quot;</span> <span class="o">%</span>  <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;Longitude&#39;</span><span class="p">])</span> <span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;Latitude&#39;</span><span class="p">]))</span>
+
+  <span class="c"># Create the point from the Well Known Txt</span>
+  <span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+
+  <span class="c"># Set the feature geometry using the point</span>
+  <span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+  <span class="c"># Create the feature in the layer (shapefile)</span>
+  <span class="n">layer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+  <span class="c"># Destroy the feature to free resources</span>
+  <span class="n">feature</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+<span class="c"># Destroy the data source to free resources</span>
+<span class="n">data_source</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">
+<h2>Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI<a class="headerlink" href="#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="http://www.gdal.org/ogr2ogr.html">ogr2ogr command line tool</a> is an easy way to filter, reproject and trim columns in a shapefile. The workflow below shows how we can approximate the following ogr2ogr command with the OGR api using a decently large <a class="reference external" href="http://www5.kingcounty.gov/sdc/Metadata.aspx?Layer=parcel_address">parcel shapefile from King County GIS</a> .</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">#</span>
+<span class="c"># this command says read in &quot;parcel_address.shp&quot; and write out to &quot;junkmob.shp&quot;</span>
+<span class="c"># where &quot;MINOR&quot; column = &#39;HYDR&#39; value and only output the &quot;PIN&quot; column</span>
+<span class="c">#</span>
+<span class="nv">$ </span>ogr2ogr -f <span class="s2">&quot;ESRI Shapefile&quot;</span> junkmob.shp -select pin -where <span class="s2">&quot;minor = &#39;HYDR&#39;&quot;</span> parcel_address.shp
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span> <span class="n">field_name_target</span> <span class="p">):</span>
+    <span class="c"># Get the input Layer</span>
+    <span class="n">inShapefile</span> <span class="o">=</span> <span class="s">&quot;~/DATA/SHAPES/KC_ADMIN/parcel_address/parcel_address.shp&quot;</span>
+    <span class="n">inDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+    <span class="n">inDataSource</span> <span class="o">=</span> <span class="n">inDriver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">inShapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">inLayer</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+    <span class="n">inLayer</span><span class="o">.</span><span class="n">SetAttributeFilter</span><span class="p">(</span><span class="s">&quot;minor = &#39;HYDR&#39;&quot;</span><span class="p">)</span>
+
+    <span class="c"># Create the output LayerS</span>
+    <span class="n">outShapefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span> <span class="n">inShapefile</span> <span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;ogr_api_filter.shp&quot;</span> <span class="p">)</span>
+    <span class="n">outDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+
+    <span class="c"># Remove output shapefile if it already exists</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">):</span>
+        <span class="n">outDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+
+    <span class="c"># Create the output shapefile</span>
+    <span class="n">outDataSource</span> <span class="o">=</span> <span class="n">outDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+    <span class="n">out_lyr_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span> <span class="n">outShapefile</span> <span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span> <span class="n">out_lyr_name</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPolygon</span> <span class="p">)</span>
+
+    <span class="c"># Add input Layer Fields to the output Layer if it is the one we want</span>
+    <span class="n">inLayerDefn</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inLayerDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+        <span class="n">fieldDefn</span> <span class="o">=</span> <span class="n">inLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">fieldName</span> <span class="o">=</span> <span class="n">fieldDefn</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">fieldName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field_name_target</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">fieldDefn</span><span class="p">)</span>
+
+    <span class="c"># Get the output Layer&#39;s Feature Definition</span>
+    <span class="n">outLayerDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+    <span class="c"># Add features to the ouput Layer</span>
+    <span class="k">for</span> <span class="n">inFeature</span> <span class="ow">in</span> <span class="n">inLayer</span><span class="p">:</span>
+        <span class="c"># Create output Feature</span>
+        <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">outLayerDefn</span><span class="p">)</span>
+
+        <span class="c"># Add field values from input Layer</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()):</span>
+            <span class="n">fieldDefn</span> <span class="o">=</span> <span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">fieldName</span> <span class="o">=</span> <span class="n">fieldDefn</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">fieldName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field_name_target</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetNameRef</span><span class="p">(),</span>
+                <span class="n">inFeature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="c"># Set geometry as centroid</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+        <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">Clone</span><span class="p">())</span>
+        <span class="c"># Add new feature to output Layer</span>
+        <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+
+    <span class="c"># Close DataSources</span>
+    <span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+    <span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;[ ERROR ]: you need to pass at least one arg -- the field_names to include in output&quot;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">main</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Vector Layers</a><ul>
+<li><a class="reference internal" href="#is-ogr-installed">Is Ogr Installed</a></li>
+<li><a class="reference internal" href="#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
+<li><a class="reference internal" href="#get-list-of-ogr-drivers-alphabetically-a-z">Get List of Ogr Drivers Alphabetically (A- Z)</a></li>
+<li><a class="reference internal" href="#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
+<li><a class="reference internal" href="#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
+<li><a class="reference internal" href="#get-all-postgis-layers-in-a-postgresql-database">Get All PostGIS layers in a PostgreSQL Database</a></li>
+<li><a class="reference internal" href="#get-postgis-layer-feature-count-by-layer-name">Get PostGIS Layer Feature Count By Layer Name</a></li>
+<li><a class="reference internal" href="#iterate-over-features">Iterate over Features</a></li>
+<li><a class="reference internal" href="#get-geometry-from-each-feature-in-a-layer">Get Geometry from each Feature in a Layer</a></li>
+<li><a class="reference internal" href="#filter-by-attribute">Filter by attribute</a></li>
+<li><a class="reference internal" href="#spatial-filter">Spatial Filter</a></li>
+<li><a class="reference internal" href="#get-shapefile-fields-get-the-user-defined-fields">Get Shapefile Fields - Get the user defined fields</a></li>
+<li><a class="reference internal" href="#get-shapefile-fields-and-types-get-the-user-defined-fields">Get Shapefile Fields and Types - Get the user defined fields</a></li>
+<li><a class="reference internal" href="#get-postgis-layer-fields-get-the-user-defined-fields">Get PostGIS Layer Fields - Get the user defined fields</a></li>
+<li><a class="reference internal" href="#get-postgis-layer-fields-and-types-get-the-user-defined-fields">Get PostGIS Layer Fields and Types - Get the user defined fields</a></li>
+<li><a class="reference internal" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer">Read a CSV of Coordinates as an OGRVRTLayer</a></li>
+<li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
+<li><a class="reference internal" href="#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
+<li><a class="reference internal" href="#create-a-new-shapefile-and-add-data">Create a New Shapefile and Add Data</a></li>
+<li><a class="reference internal" href="#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="geometry.html"
+                        title="previous chapter">Geometry</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="raster_layers.html"
+                        title="next chapter">Raster Layers</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vector_layers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="raster_layers.html" title="Raster Layers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="geometry.html" title="Geometry"
+             >previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Jared Erickson, Cort Daniel, Michael Payne.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,166 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Tricks and Trapdoors &mdash; Python GDAL/OGR Cookbook 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
+    <link rel="prev" title="Projection" href="projection.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="projection.html" title="Projection"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-tricks-and-trapdoors">
+<h1>API Tricks and Trapdoors<a class="headerlink" href="#api-tricks-and-trapdoors" title="Permalink to this headline">¶</a></h1>
+<p>The official <a class="reference external" href="http://trac.osgeo.org/gdal">GDAL/OGR Trac wiki</a>  has a must-read section on
+<a class="reference external" href="http://trac.osgeo.org/gdal/wiki/PythonGotchas">Python gotchas</a>. The section lists some
+common Python API tricks that will bite a developer more than once. Many of
+the gotchas can manifest themselves in very, very subtle ways. The purpose
+of the list below is twofold. First, it will catalog gotchas that are too subtle
+for the official wiki. Secondly, it will highlight API areas that are
+confusing or require unintuitive Python.</p>
+<div class="section" id="filtered-features-are-only-respected-using-getnextfeature">
+<h2>Filtered Features Are Only Respected Using <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetNextFeature">GetNextFeature()</a><a class="headerlink" href="#filtered-features-are-only-respected-using-getnextfeature" title="Permalink to this headline">¶</a></h2>
+<p>There are two ways to access a layer&#8217;s features.
+You can use <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetFeature">GetFeature()</a> and pass in a feature ID or use
+<a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetNextFeature">GetNextFeature()</a> to pass back the next feature. If you are
+using an attribute filter ( <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#SetAttributeFilter">SetAttributeFilter()</a> )
+or spatial filter ( <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#SetSpatialFilter">SetSpatialFilter()</a> or <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#SetSpatialFilterRect">SetSpatialFilterRect()</a> ) then you have to use <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetNextFeature">GetNextFeature()</a>.</p>
+<p>If you read the documentation for any of the filter setters you will see the caveat about OGR_L_GetNextFeature(). This means that if you use <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetFeature">GetFeature()</a>, instead of <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetNextFeature">GetNextFeature()</a>, then you can still access and work with features from the layer that are not covered by the filter. <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetFeatureCounty">GetFeatureCount()</a> will respect the filter and show the correct number of features filtered. However, working with <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetFeatureCounty">GetFeatureCount()</a> in a loop can lead to some interesting results. Using the Layer object as a <a class="reference external" href="https://github.com/pcjericks/py-gdalogr-cookbook/pull/54">feature iterator</a> or using <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#GetNextFeature">GetNextFeature()</a> explicitly should be the default method for accessing features:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span> <span class="s">&quot;parcels.shp&quot;</span> <span class="p">)</span>
+<span class="n">lyr</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">lyr</span><span class="o">.</span><span class="n">SetAttributeFilter</span><span class="p">(</span><span class="s">&quot;PIN = &#39;0000200001&#39;&quot;</span><span class="p">)</span>      <span class="c"># this is a unique attribute filter targeting only one record</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()</span> <span class="p">):</span>
+    <span class="n">feat</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetFeature</span><span class="p">(</span> <span class="n">i</span> <span class="p">)</span>
+    <span class="k">print</span> <span class="n">feat</span>                                    <span class="c"># this will print one feat, but it&#39;s the first feat in the Layer and NOT our target filtered feat</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="features-and-geometries-have-a-relationship-you-don-t-want-to-break">
+<h2>Features and Geometries Have a Relationship You Don&#8217;t Want to Break<a class="headerlink" href="#features-and-geometries-have-a-relationship-you-don-t-want-to-break" title="Permalink to this headline">¶</a></h2>
+<p>The official gotchas have a good section on why <a class="reference external" href="http://trac.osgeo.org/gdal/wiki/PythonGotchas#Pythoncrashesifyouuseanobjectafterdeletinganobjectithasarelationshipwith">Python crashes when deleting features</a> that still have geometry references in use. They even talk about how this translates to the underlying C++ references. More subtle cases happen when you loose reference to the feature without deleting it as the example below shows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="n">dSource</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span> <span class="s">&quot;parcel_address.shp&quot;</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">dSource</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;[ ERROR ]: datasource cannot be opened&quot;</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">dSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">geom_collection</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c">#</span>
+<span class="c">#  collect just the geometries</span>
+<span class="c">#  notice that we are losing reference</span>
+<span class="c">#  each geometry&#39;s parent feat though</span>
+<span class="c">#</span>
+<span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="n">geom_collection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">geom</span> <span class="p">)</span>
+
+<span class="c">#</span>
+<span class="c">#  try to print the</span>
+<span class="c">#  geometries collected</span>
+<span class="c">#</span>
+<span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">geom_collection</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+
+    <span class="o">&lt;..</span><span class="n">PYTHON</span> <span class="n">CRASHES</span><span class="o">..&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API Tricks and Trapdoors</a><ul>
+<li><a class="reference internal" href="#filtered-features-are-only-respected-using-getnextfeature">Filtered Features Are Only Respected Using GetNextFeature()</a></li>
+<li><a class="reference internal" href="#features-and-geometries-have-a-relationship-you-don-t-want-to-break">Features and Geometries Have a Relationship You Don&#8217;t Want to Break</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="projection.html"
+                        title="previous chapter">Projection</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/gotchas.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="projection.html" title="Projection"
+             >previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Jared Erickson, Cort Daniel, Michael Payne.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

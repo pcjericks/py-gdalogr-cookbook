@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
-    <link rel="next" title="Layers" href="layers.html" />
+    <link rel="next" title="Vector Layers" href="vector_layers.html" />
     <link rel="prev" title="Welcome to the Python GDAL/OGR Cookbook!" href="index.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="layers.html" title="Layers"
+          <a href="vector_layers.html" title="Vector Layers"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to the Python GDAL/OGR Cookbook!"
@@ -382,6 +382,48 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="write-geometry-to-geojson">
+<h2>Write Geometry to GeoJSON<a class="headerlink" href="#write-geometry-to-geojson" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Create test polygon</span>
+<span class="n">ring</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1161053.0218226474</span><span class="p">,</span> <span class="mf">667456.2684348812</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1214704.933941905</span><span class="p">,</span> <span class="mf">641092.8288590391</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1228580.428455506</span><span class="p">,</span> <span class="mf">682719.3123998424</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1218405.0658121984</span><span class="p">,</span> <span class="mf">721108.1805541387</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+<span class="c"># Create the output Driver</span>
+<span class="n">outDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;GeoJSON&#39;</span><span class="p">)</span>
+
+<span class="c"># Create the output GeoJSON</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">outDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="s">&#39;test.geojson&#39;</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#39;test.geojson&#39;</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span> <span class="p">)</span>
+
+<span class="c"># Get the output Layer&#39;s Feature Definition</span>
+<span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+<span class="c"># create a new feature</span>
+<span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+
+<span class="c"># Set new geometry</span>
+<span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+
+<span class="c"># Add new feature to output Layer</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+
+<span class="c"># destroy the feature</span>
+<span class="n">outFeature</span><span class="o">.</span><span class="n">Destroy</span>
+
+<span class="c"># Close DataSources</span>
+<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -415,6 +457,7 @@
 <li><a class="reference internal" href="#get-the-geometry-type-as-a-string-from-a-geometry">Get the geometry type (as a string) from a Geometry</a></li>
 <li><a class="reference internal" href="#calculate-intersection-between-two-geometries">Calculate intersection between two Geometries</a></li>
 <li><a class="reference internal" href="#calculate-union-between-two-geometries">Calculate union between two Geometries</a></li>
+<li><a class="reference internal" href="#write-geometry-to-geojson">Write Geometry to GeoJSON</a></li>
 </ul>
 </li>
 </ul>
@@ -423,8 +466,8 @@
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to the Python GDAL/OGR Cookbook!</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="layers.html"
-                        title="next chapter">Layers</a></p>
+  <p class="topless"><a href="vector_layers.html"
+                        title="next chapter">Vector Layers</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/geometry.txt"
@@ -454,7 +497,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="layers.html" title="Layers"
+          <a href="vector_layers.html" title="Vector Layers"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to the Python GDAL/OGR Cookbook!"

@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Raster Layers &mdash; Python GDAL/OGR Cookbook 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
+    <link rel="next" title="Projection" href="projection.html" />
+    <link rel="prev" title="Vector Layers" href="vector_layers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="projection.html" title="Projection"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="vector_layers.html" title="Vector Layers"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="raster-layers">
+<h1>Raster Layers<a class="headerlink" href="#raster-layers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="clip-a-geotiff-with-shapefile">
+<h2>Clip a GeoTiff with Shapefile<a class="headerlink" href="#clip-a-geotiff-with-shapefile" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s use some <a class="reference external" href="http://www.naturalearthdata.com/downloads">Natural Earth data</a> and clip a <a class="reference external" href="http://www.naturalearthdata.com/downloads/10m-cross-blend-hypso/cross-blended-hypso-with-relief-water-drains-and-ocean-bottom/">10m relief geotiff</a> with the <a class="reference external" href="http://www.naturalearthdata.com/downloads/10m-cultural-vectors/timezones/">Europe/Paris timezone polygon</a>. Most of the following workflow came from this <a class="reference external" href="http://geospatialpython.com/2011/02/clip-raster-using-shapefile.html">geospatialpython post</a> . However, the source code on that site assumes your clipping polygon <strong>is</strong> the same extent as the input geotiff. If it is not, then your clipped geotiff will take the input geotiff&#8217;s extent, which will be incorrect. The modified script below takes this into account and sets the correct x,y offsets for the clipped geotiff. Note, in the following example we are assuming you have the <a class="reference external" href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> installed.</p>
+<p>Before image input Natural Earth 10m geotiff with the timezone we want to clip out:</p>
+<img alt="_images/clip_raster_before.png" src="_images/clip_raster_before.png" />
+<div class="highlight-bash"><div class="highlight"><pre>from osgeo import gdal, gdalnumeric, ogr, osr
+import Image, ImageDraw
+import os, sys
+gdal.UseExceptions<span class="o">()</span>
+
+
+<span class="c"># This function will convert the rasterized clipper shapefile</span>
+<span class="c"># to a mask for use within GDAL.</span>
+def imageToArray<span class="o">(</span>i<span class="o">)</span>:
+    <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Converts a Python Imaging Library array to a</span>
+<span class="s2">    gdalnumeric image.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="nv">a</span><span class="o">=</span>gdalnumeric.fromstring<span class="o">(</span>i.tostring<span class="o">()</span>,<span class="s1">&#39;b&#39;</span><span class="o">)</span>
+    a.shape<span class="o">=</span>i.im.size<span class="o">[</span>1<span class="o">]</span>, i.im.size<span class="o">[</span>0<span class="o">]</span>
+    <span class="k">return </span>a
+
+def arrayToImage<span class="o">(</span>a<span class="o">)</span>:
+    <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Converts a gdalnumeric array to a</span>
+<span class="s2">    Python Imaging Library Image.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="nv">i</span><span class="o">=</span>Image.fromstring<span class="o">(</span><span class="s1">&#39;L&#39;</span>,<span class="o">(</span>a.shape<span class="o">[</span>1<span class="o">]</span>,a.shape<span class="o">[</span>0<span class="o">])</span>,
+            <span class="o">(</span>a.astype<span class="o">(</span><span class="s1">&#39;b&#39;</span><span class="o">))</span>.tostring<span class="o">())</span>
+    <span class="k">return </span>i
+
+def world2Pixel<span class="o">(</span>geoMatrix, x, y<span class="o">)</span>:
+  <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">  Uses a gdal geomatrix (gdal.GetGeoTransform()) to calculate</span>
+<span class="s2">  the pixel location of a geospatial coordinate</span>
+<span class="s2">  &quot;&quot;&quot;</span>
+  <span class="nv">ulX</span> <span class="o">=</span> geoMatrix<span class="o">[</span>0<span class="o">]</span>
+  <span class="nv">ulY</span> <span class="o">=</span> geoMatrix<span class="o">[</span>3<span class="o">]</span>
+  <span class="nv">xDist</span> <span class="o">=</span> geoMatrix<span class="o">[</span>1<span class="o">]</span>
+  <span class="nv">yDist</span> <span class="o">=</span> geoMatrix<span class="o">[</span>5<span class="o">]</span>
+  <span class="nv">rtnX</span> <span class="o">=</span> geoMatrix<span class="o">[</span>2<span class="o">]</span>
+  <span class="nv">rtnY</span> <span class="o">=</span> geoMatrix<span class="o">[</span>4<span class="o">]</span>
+  <span class="nv">pixel</span> <span class="o">=</span> int<span class="o">((</span>x - ulX<span class="o">)</span> / xDist<span class="o">)</span>
+  <span class="nv">line</span> <span class="o">=</span> int<span class="o">((</span>ulY - y<span class="o">)</span> / xDist<span class="o">)</span>
+  <span class="k">return</span> <span class="o">(</span>pixel, line<span class="o">)</span>
+
+<span class="c">#</span>
+<span class="c">#  EDIT: this is basically an overloaded</span>
+<span class="c">#  version of the gdal_array.OpenArray passing in xoff, yoff explicitly</span>
+<span class="c">#  so we can pass these params off to CopyDatasetInfo</span>
+<span class="c">#</span>
+def OpenArray<span class="o">(</span> array, <span class="nv">prototype_ds</span> <span class="o">=</span> None, <span class="nv">xoff</span><span class="o">=</span>0, <span class="nv">yoff</span><span class="o">=</span>0 <span class="o">)</span>:
+    <span class="nv">ds</span> <span class="o">=</span> gdal.Open<span class="o">(</span> gdalnumeric.GetArrayFilename<span class="o">(</span>array<span class="o">)</span> <span class="o">)</span>
+
+    <span class="k">if </span>ds is not None and prototype_ds is not None:
+        <span class="k">if </span><span class="nb">type</span><span class="o">(</span>prototype_ds<span class="o">)</span>.__name__ <span class="o">==</span> <span class="s1">&#39;str&#39;</span>:
+            <span class="nv">prototype_ds</span> <span class="o">=</span> gdal.Open<span class="o">(</span> prototype_ds <span class="o">)</span>
+        <span class="k">if </span>prototype_ds is not None:
+            gdalnumeric.CopyDatasetInfo<span class="o">(</span> prototype_ds, ds, <span class="nv">xoff</span><span class="o">=</span>xoff, <span class="nv">yoff</span><span class="o">=</span>yoff <span class="o">)</span>
+    <span class="k">return </span>ds
+
+def histogram<span class="o">(</span>a, <span class="nv">bins</span><span class="o">=</span>range<span class="o">(</span>0,256<span class="o">))</span>:
+  <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">  Histogram function for multi-dimensional array.</span>
+<span class="s2">  a = array</span>
+<span class="s2">  bins = range of numbers to match</span>
+<span class="s2">  &quot;&quot;&quot;</span>
+  <span class="nv">fa</span> <span class="o">=</span> a.flat
+  <span class="nv">n</span> <span class="o">=</span> gdalnumeric.searchsorted<span class="o">(</span>gdalnumeric.sort<span class="o">(</span>fa<span class="o">)</span>, bins<span class="o">)</span>
+  <span class="nv">n</span> <span class="o">=</span> gdalnumeric.concatenate<span class="o">([</span>n, <span class="o">[</span>len<span class="o">(</span>fa<span class="o">)]])</span>
+  <span class="nv">hist</span> <span class="o">=</span> n<span class="o">[</span>1:<span class="o">]</span>-n<span class="o">[</span>:-1<span class="o">]</span>
+  <span class="k">return </span>hist
+
+def stretch<span class="o">(</span>a<span class="o">)</span>:
+  <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">  Performs a histogram stretch on a gdalnumeric array image.</span>
+<span class="s2">  &quot;&quot;&quot;</span>
+  <span class="nv">hist</span> <span class="o">=</span> histogram<span class="o">(</span>a<span class="o">)</span>
+  <span class="nv">im</span> <span class="o">=</span> arrayToImage<span class="o">(</span>a<span class="o">)</span>
+  <span class="nv">lut</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="k">for </span>b in range<span class="o">(</span>0, len<span class="o">(</span>hist<span class="o">)</span>, 256<span class="o">)</span>:
+    <span class="c"># step size</span>
+    <span class="nv">step</span> <span class="o">=</span> reduce<span class="o">(</span>operator.add, hist<span class="o">[</span>b:b+256<span class="o">])</span> / 255
+    <span class="c"># create equalization lookup table</span>
+    <span class="nv">n</span> <span class="o">=</span> 0
+    <span class="k">for </span>i in range<span class="o">(</span>256<span class="o">)</span>:
+      lut.append<span class="o">(</span>n / step<span class="o">)</span>
+      <span class="nv">n</span> <span class="o">=</span> n + hist<span class="o">[</span>i+b<span class="o">]</span>
+  <span class="nv">im</span> <span class="o">=</span> im.point<span class="o">(</span>lut<span class="o">)</span>
+  <span class="k">return </span>imageToArray<span class="o">(</span>im<span class="o">)</span>
+
+def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</span>:
+    <span class="c"># Load the source data as a gdalnumeric array</span>
+    <span class="nv">srcArray</span> <span class="o">=</span> gdalnumeric.LoadFile<span class="o">(</span>raster_path<span class="o">)</span>
+
+    <span class="c"># Also load as a gdal image to get geotransform</span>
+    <span class="c"># (world file) info</span>
+    <span class="nv">srcImage</span> <span class="o">=</span> gdal.Open<span class="o">(</span>raster_path<span class="o">)</span>
+    <span class="nv">geoTrans</span> <span class="o">=</span> srcImage.GetGeoTransform<span class="o">()</span>
+
+    <span class="c"># Create an OGR layer from a boundary shapefile</span>
+    <span class="nv">shapef</span> <span class="o">=</span> ogr.Open<span class="o">(</span>shapefile_path<span class="o">)</span>
+    <span class="nv">lyr</span> <span class="o">=</span> shapef.GetLayer<span class="o">(</span> os.path.split<span class="o">(</span> os.path.splitext<span class="o">(</span> shapefile_path <span class="o">)[</span>0<span class="o">]</span> <span class="o">)[</span>1<span class="o">]</span> <span class="o">)</span>
+    <span class="nv">poly</span> <span class="o">=</span> lyr.GetNextFeature<span class="o">()</span>
+
+    <span class="c"># Convert the layer extent to image pixel coordinates</span>
+    minX, maxX, minY, <span class="nv">maxY</span> <span class="o">=</span> lyr.GetExtent<span class="o">()</span>
+    ulX, <span class="nv">ulY</span> <span class="o">=</span> world2Pixel<span class="o">(</span>geoTrans, minX, maxY<span class="o">)</span>
+    lrX, <span class="nv">lrY</span> <span class="o">=</span> world2Pixel<span class="o">(</span>geoTrans, maxX, minY<span class="o">)</span>
+
+    <span class="c"># Calculate the pixel size of the new image</span>
+    <span class="nv">pxWidth</span> <span class="o">=</span> int<span class="o">(</span>lrX - ulX<span class="o">)</span>
+    <span class="nv">pxHeight</span> <span class="o">=</span> int<span class="o">(</span>lrY - ulY<span class="o">)</span>
+
+    <span class="nv">clip</span> <span class="o">=</span> srcArray<span class="o">[</span>:, ulY:lrY, ulX:lrX<span class="o">]</span>
+
+    <span class="c">#</span>
+    <span class="c"># EDIT: create pixel offset to pass to new image Projection info</span>
+    <span class="c">#</span>
+    <span class="nv">xoffset</span> <span class="o">=</span>  ulX
+    <span class="nv">yoffset</span> <span class="o">=</span>  ulY
+    print <span class="s2">&quot;Xoffset, Yoffset = ( %f, %f )&quot;</span> % <span class="o">(</span> xoffset, yoffset <span class="o">)</span>
+
+    <span class="c"># Create a new geomatrix for the image</span>
+    <span class="nv">geoTrans</span> <span class="o">=</span> list<span class="o">(</span>geoTrans<span class="o">)</span>
+    geoTrans<span class="o">[</span>0<span class="o">]</span> <span class="o">=</span> minX
+    geoTrans<span class="o">[</span>3<span class="o">]</span> <span class="o">=</span> maxY
+
+    <span class="c"># Map points to pixels for drawing the</span>
+    <span class="c"># boundary on a blank 8-bit,</span>
+    <span class="c"># black and white, mask image.</span>
+    <span class="nv">points</span> <span class="o">=</span> <span class="o">[]</span>
+    <span class="nv">pixels</span> <span class="o">=</span> <span class="o">[]</span>
+    <span class="nv">geom</span> <span class="o">=</span> poly.GetGeometryRef<span class="o">()</span>
+    <span class="nv">pts</span> <span class="o">=</span> geom.GetGeometryRef<span class="o">(</span>0<span class="o">)</span>
+    <span class="k">for </span>p in range<span class="o">(</span>pts.GetPointCount<span class="o">())</span>:
+      points.append<span class="o">((</span>pts.GetX<span class="o">(</span>p<span class="o">)</span>, pts.GetY<span class="o">(</span>p<span class="o">)))</span>
+    <span class="k">for </span>p in points:
+      pixels.append<span class="o">(</span>world2Pixel<span class="o">(</span>geoTrans, p<span class="o">[</span>0<span class="o">]</span>, p<span class="o">[</span>1<span class="o">]))</span>
+    <span class="nv">rasterPoly</span> <span class="o">=</span> Image.new<span class="o">(</span><span class="s2">&quot;L&quot;</span>, <span class="o">(</span>pxWidth, pxHeight<span class="o">)</span>, 1<span class="o">)</span>
+    <span class="nv">rasterize</span> <span class="o">=</span> ImageDraw.Draw<span class="o">(</span>rasterPoly<span class="o">)</span>
+    rasterize.polygon<span class="o">(</span>pixels, 0<span class="o">)</span>
+    <span class="nv">mask</span> <span class="o">=</span> imageToArray<span class="o">(</span>rasterPoly<span class="o">)</span>
+
+    <span class="c"># Clip the image using the mask</span>
+    <span class="nv">clip</span> <span class="o">=</span> gdalnumeric.choose<span class="o">(</span>mask, <span class="se">\</span>
+        <span class="o">(</span>clip, 0<span class="o">))</span>.astype<span class="o">(</span>gdalnumeric.uint8<span class="o">)</span>
+
+    <span class="c"># This image has 3 bands so we stretch each one to make them</span>
+    <span class="c"># visually brighter</span>
+    <span class="k">for </span>i in range<span class="o">(</span>3<span class="o">)</span>:
+      clip<span class="o">[</span>i,:,:<span class="o">]</span> <span class="o">=</span> stretch<span class="o">(</span>clip<span class="o">[</span>i,:,:<span class="o">])</span>
+
+    <span class="c"># Save new tiff</span>
+    <span class="c">#</span>
+    <span class="c">#  EDIT: instead of SaveArray, let&#39;s break all the</span>
+    <span class="c">#  SaveArray steps out more explicity so</span>
+    <span class="c">#  we can overwrite the offset of the destination</span>
+    <span class="c">#  raster</span>
+    <span class="c">#</span>
+    <span class="c">### the old way using SaveArray</span>
+    <span class="c">#</span>
+    <span class="c"># gdalnumeric.SaveArray(clip, &quot;OUTPUT.tif&quot;, format=&quot;GTiff&quot;, prototype=raster_path)</span>
+    <span class="c">#</span>
+    <span class="c">###</span>
+    <span class="c">#</span>
+    <span class="nv">gtiffDriver</span> <span class="o">=</span> gdal.GetDriverByName<span class="o">(</span> <span class="s1">&#39;GTiff&#39;</span> <span class="o">)</span>
+    <span class="k">if </span>gtiffDriver is None:
+        raise ValueError<span class="o">(</span><span class="s2">&quot;Can&#39;t find GeoTiff Driver&quot;</span><span class="o">)</span>
+    gtiffDriver.CreateCopy<span class="o">(</span> <span class="s2">&quot;OUTPUT.tif&quot;</span>,
+        OpenArray<span class="o">(</span> clip, <span class="nv">prototype_ds</span><span class="o">=</span>raster_path, <span class="nv">xoff</span><span class="o">=</span>xoffset, <span class="nv">yoff</span><span class="o">=</span>yoffset <span class="o">)</span>
+    <span class="o">)</span>
+
+    <span class="c"># Save as an 8-bit jpeg for an easy, quick preview</span>
+    <span class="nv">clip</span> <span class="o">=</span> clip.astype<span class="o">(</span>gdalnumeric.uint8<span class="o">)</span>
+    gdalnumeric.SaveArray<span class="o">(</span>clip, <span class="s2">&quot;OUTPUT.jpg&quot;</span>, <span class="nv">format</span><span class="o">=</span><span class="s2">&quot;JPEG&quot;</span><span class="o">)</span>
+
+    gdal.ErrorReset<span class="o">()</span>
+
+
+<span class="k">if </span><span class="nv">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span>:
+
+    <span class="c">#</span>
+    <span class="c"># example run : $ python clip.py /&lt;full-path&gt;/&lt;shapefile-name&gt;.shp /&lt;full-path&gt;/&lt;raster-name&gt;.tif</span>
+    <span class="c">#</span>
+    <span class="k">if </span>len<span class="o">(</span> sys.argv <span class="o">)</span> &lt; 2:
+        print <span class="s2">&quot;[ ERROR ] you must two args. 1) the full shapefile path and 2) the full raster path&quot;</span>
+        sys.exit<span class="o">(</span> 1 <span class="o">)</span>
+
+    main<span class="o">(</span> sys.argv<span class="o">[</span>1<span class="o">]</span>, sys.argv<span class="o">[</span>2<span class="o">]</span> <span class="o">)</span>
+</pre></div>
+</div>
+<p>After image of the clipped geotiff with the timezone border overlayed in orange on top of input geotiff:</p>
+<img alt="_images/clip_raster_after.png" src="_images/clip_raster_after.png" />
+</div>
+<div class="section" id="convert-an-ogr-file-to-a-raster">
+<h2>Convert an OGR File to a Raster<a class="headerlink" href="#convert-an-ogr-file-to-a-raster" title="Permalink to this headline">¶</a></h2>
+<p>This recipe takes in a OGR file (e.g. shapefile) and creates a new raster Tiff file based on the shapefile.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span><span class="p">,</span> <span class="n">ogr</span>
+
+<span class="c"># Define pixel_size and NoData value of new raster</span>
+<span class="n">pixel_size</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">NoData_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+
+<span class="c"># Filename of input OGR file</span>
+<span class="n">vector_fn</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
+
+<span class="c"># Filename of the raster Tiff that will be created</span>
+<span class="n">raster_fn</span> <span class="o">=</span> <span class="s">&#39;test.tif&#39;</span>
+
+<span class="c"># Open the data source and read in the extent</span>
+<span class="n">source_ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">vector_fn</span><span class="p">)</span>
+<span class="n">source_layer</span> <span class="o">=</span> <span class="n">source_ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">source_srs</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
+<span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetExtent</span><span class="p">()</span>
+
+<span class="c"># Create the destination data source</span>
+<span class="n">x_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
+<span class="n">y_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
+<span class="n">target_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;GTiff&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">raster_fn</span><span class="p">,</span> <span class="n">x_res</span><span class="p">,</span> <span class="n">y_res</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">)</span>
+<span class="n">target_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">((</span><span class="n">x_min</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">pixel_size</span><span class="p">))</span>
+<span class="n">band</span> <span class="o">=</span> <span class="n">target_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">band</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="n">NoData_value</span><span class="p">)</span>
+
+<span class="c"># Rasterize</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">RasterizeLayer</span><span class="p">(</span><span class="n">target_ds</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source_layer</span><span class="p">,</span> <span class="n">burn_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Raster Layers</a><ul>
+<li><a class="reference internal" href="#clip-a-geotiff-with-shapefile">Clip a GeoTiff with Shapefile</a></li>
+<li><a class="reference internal" href="#convert-an-ogr-file-to-a-raster">Convert an OGR File to a Raster</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="vector_layers.html"
+                        title="previous chapter">Vector Layers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="projection.html"
+                        title="next chapter">Projection</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/raster_layers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="projection.html" title="Projection"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="vector_layers.html" title="Vector Layers"
+             >previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Jared Erickson, Cort Daniel, Michael Payne.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

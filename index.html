@@ -52,6 +52,7 @@
 <p>This cookbook has simple code snippets on how to use the Python GDAL/OGR API.  The web site
 is a project at <a class="reference external" href="https://github.com/pcjericks/py-gdalogr-cookbook">GitHub</a> and served by Github Pages.  If you find missing recipes or mistakes
 in existing recipes please add an issue to the <a class="reference external" href="https://github.com/pcjericks/py-gdalogr-cookbook/issues?state=open">issue tracker</a>.</p>
+<p>For a detailed description of the whole Python GDAL/OGR API, see the useful <a class="reference external" href="http://gdal.org/python/">API docs</a>.</p>
 <p>We heavily relied on Chris Garrard&#8217;s excellent <a class="reference external" href="http://www.gis.usu.edu/~chrisg/python/2009/">Geoprocessing with Python using Open Source GIS</a>
 and the official <a class="reference external" href="http://gdal.org/python/">GDAL/OGR Python documentation</a>.</p>
 <div class="toctree-wrapper compound">
@@ -79,31 +80,35 @@ and the official <a class="reference external" href="http://gdal.org/python/">GD
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#get-the-geometry-type-as-a-string-from-a-geometry">Get the geometry type (as a string) from a Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#calculate-intersection-between-two-geometries">Calculate intersection between two Geometries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#calculate-union-between-two-geometries">Calculate union between two Geometries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#write-geometry-to-geojson">Write Geometry to GeoJSON</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#is-ogr-installed">Is Ogr Installed</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-list-of-ogr-drivers-alphabetically-a-z">Get List of Ogr Drivers Alphabetically (A- Z)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-all-postgis-layers-in-a-postgresql-database">Get All PostGIS layers in a PostgreSQL Database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-postgis-layer-feature-count-by-layer-name">Get PostGIS Layer Feature Count By Layer Name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#iterate-over-features">Iterate over Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-geometry-from-each-feature-in-a-layer">Get Geometry from each Feature in a Layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#filter-by-attribute">Filter by attribute</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#spatial-filter">Spatial Filter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-fields-get-the-user-defined-fields">Get Shapefile Fields - Get the user defined fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-shapefile-fields-and-types-get-the-user-defined-fields">Get Shapefile Fields and Types - Get the user defined fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-postgis-layer-fields-get-the-user-defined-fields">Get PostGIS Layer Fields - Get the user defined fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#get-postgis-layer-fields-and-types-get-the-user-defined-fields">Get PostGIS Layer Fields and Types - Get the user defined fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#read-a-csv-of-coordinates-as-an-ogrvrtlayer">Read a CSV of Coordinates as an OGRVRTLayer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#create-a-new-shapefile-and-add-data">Create a New Shapefile and Add Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#clip-a-geotiff-with-shapefile">Clip a GeoTiff with Shapefile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers.html#convert-an-ogr-file-to-a-raster">Convert an OGR File to a Raster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vector_layers.html">Vector Layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#is-ogr-installed">Is Ogr Installed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-list-of-ogr-drivers-alphabetically-a-z">Get List of Ogr Drivers Alphabetically (A- Z)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-all-postgis-layers-in-a-postgresql-database">Get All PostGIS layers in a PostgreSQL Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-postgis-layer-feature-count-by-layer-name">Get PostGIS Layer Feature Count By Layer Name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#iterate-over-features">Iterate over Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-geometry-from-each-feature-in-a-layer">Get Geometry from each Feature in a Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#filter-by-attribute">Filter by attribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#spatial-filter">Spatial Filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-shapefile-fields-get-the-user-defined-fields">Get Shapefile Fields - Get the user defined fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-shapefile-fields-and-types-get-the-user-defined-fields">Get Shapefile Fields and Types - Get the user defined fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-postgis-layer-fields-get-the-user-defined-fields">Get PostGIS Layer Fields - Get the user defined fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#get-postgis-layer-fields-and-types-get-the-user-defined-fields">Get PostGIS Layer Fields and Types - Get the user defined fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#read-a-csv-of-coordinates-as-an-ogrvrtlayer">Read a CSV of Coordinates as an OGRVRTLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#create-a-new-shapefile-and-add-data">Create a New Shapefile and Add Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_layers.html#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="raster_layers.html">Raster Layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="raster_layers.html#clip-a-geotiff-with-shapefile">Clip a GeoTiff with Shapefile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_layers.html#convert-an-ogr-file-to-a-raster">Convert an OGR File to a Raster</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="projection.html">Projection</a><ul>
@@ -113,6 +118,11 @@ and the official <a class="reference external" href="http://gdal.org/python/">GD
 <li class="toctree-l2"><a class="reference internal" href="projection.html#reproject-a-layer">Reproject a Layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projection.html#export-projection">Export Projection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projection.html#create-an-esri-prj-file">Create an ESRI.prj file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gotchas.html">API Tricks and Trapdoors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gotchas.html#filtered-features-are-only-respected-using-getnextfeature">Filtered Features Are Only Respected Using GetNextFeature()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gotchas.html#features-and-geometries-have-a-relationship-you-don-t-want-to-break">Features and Geometries Have a Relationship You Don&#8217;t Want to Break</a></li>
 </ul>
 </li>
 </ul>
