@@ -25,9 +25,11 @@ Get a raster band. Notice how we are handling runtime errors this function might
     # this allows GDAL to throw Python Exceptions
     gdal.UseExceptions() 
 
-    src_ds = gdal.Open( "INTPUT.tif" )
-    if src_ds is None:
-        print 'Unable to open %s' % src_filename
+    try:
+        src_ds = gdal.Open( "INPUT.tif" )
+    except RuntimeError, e:
+        print 'Unable to open INPUT.tif'
+        print e
         sys.exit(1)
 
     try:
@@ -37,6 +39,38 @@ Get a raster band. Notice how we are handling runtime errors this function might
         print 'Band ( %i ) not found' % band_num
         print e
         sys.exit(1)
+
+Loop Through All Raster Bands
+-----------------------------------
+
+Loop through all raster bands and do something useful like listing band statistics.
+
+.. code-block:: python
+
+    from osgeo import gdal
+    import sys
+
+    src_ds = gdal.Open( "INPUT.tif" )
+    if src_ds is None:
+        print 'Unable to open INPUT.tif'
+        sys.exit(1)
+
+    print "[ RASTER BAND COUNT ]: ", src_ds.RasterCount
+    for band in range( src_ds.RasterCount ):
+        band += 1
+        print "[ GETTING BAND ]: ", band
+        srcband = src_ds.GetRasterBand(band)
+        if srcband is None:
+            continue
+
+        stats = srcband.GetStatistics( True, True )
+        if stats is None:
+            continue
+
+        print "[ STATS ] =  Minimum=%.3f, Maximum=%.3f, Mean=%.3f, StdDev=%.3f" % ( \
+                    stats[0], stats[1], stats[2], stats[3] )
+
+
 
 Get Raster Band Information
 -------------------------------
