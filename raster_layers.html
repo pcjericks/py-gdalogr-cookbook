@@ -53,10 +53,210 @@
             
   <div class="section" id="raster-layers">
 <h1>Raster Layers<a class="headerlink" href="#raster-layers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="get-raster-metadata">
+<h2>Get Raster Metadata<a class="headerlink" href="#get-raster-metadata" title="Permalink to this headline">¶</a></h2>
+<p>Get raster metadata for quick-and-dirty resolution checks</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="n">gtif</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span> <span class="s">&quot;INPUT.tif&quot;</span> <span class="p">)</span>
+<span class="k">print</span> <span class="n">gtif</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-raster-band">
+<h2>Get Raster Band<a class="headerlink" href="#get-raster-band" title="Permalink to this headline">¶</a></h2>
+<p>Get a raster band. Notice how we are handling runtime errors this function might throw.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="c"># this allows GDAL to throw Python Exceptions</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">src_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span> <span class="s">&quot;INPUT.tif&quot;</span> <span class="p">)</span>
+<span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Unable to open INPUT.tif&#39;</span>
+    <span class="k">print</span> <span class="n">e</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">srcband</span> <span class="o">=</span> <span class="n">src_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c"># for example, try GetRasterBand(10)</span>
+    <span class="k">print</span> <span class="s">&#39;Band ( </span><span class="si">%i</span><span class="s"> ) not found&#39;</span> <span class="o">%</span> <span class="n">band_num</span>
+    <span class="k">print</span> <span class="n">e</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="loop-through-all-raster-bands">
+<h2>Loop Through All Raster Bands<a class="headerlink" href="#loop-through-all-raster-bands" title="Permalink to this headline">¶</a></h2>
+<p>Loop through all raster bands and do something useful like listing band statistics.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">src_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span> <span class="s">&quot;INPUT.tif&quot;</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">src_ds</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Unable to open INPUT.tif&#39;</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;[ RASTER BAND COUNT ]: &quot;</span><span class="p">,</span> <span class="n">src_ds</span><span class="o">.</span><span class="n">RasterCount</span>
+<span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">src_ds</span><span class="o">.</span><span class="n">RasterCount</span> <span class="p">):</span>
+    <span class="n">band</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">print</span> <span class="s">&quot;[ GETTING BAND ]: &quot;</span><span class="p">,</span> <span class="n">band</span>
+    <span class="n">srcband</span> <span class="o">=</span> <span class="n">src_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">srcband</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">continue</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">srcband</span><span class="o">.</span><span class="n">GetStatistics</span><span class="p">(</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">stats</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">continue</span>
+
+    <span class="k">print</span> <span class="s">&quot;[ STATS ] =  Minimum=</span><span class="si">%.3f</span><span class="s">, Maximum=</span><span class="si">%.3f</span><span class="s">, Mean=</span><span class="si">%.3f</span><span class="s">, StdDev=</span><span class="si">%.3f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> \
+                <span class="n">stats</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stats</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">stats</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">stats</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-raster-band-information">
+<h2>Get Raster Band Information<a class="headerlink" href="#get-raster-band-information" title="Permalink to this headline">¶</a></h2>
+<p>Using the documentation on the <a class="reference external" href="http://gdal.org/python/osgeo.gdal.Band-class.html">Band API</a> we can
+write a script that dumps out single band information</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">Usage</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    $ getrasterband.py [ band number ] input-raster</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span> <span class="n">band_num</span><span class="p">,</span> <span class="n">input_file</span> <span class="p">):</span>
+    <span class="n">src_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span> <span class="n">input_file</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">src_ds</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Unable to open </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">src_filename</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">srcband</span> <span class="o">=</span> <span class="n">src_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">band_num</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;No band </span><span class="si">%i</span><span class="s"> found&#39;</span> <span class="o">%</span> <span class="n">band_num</span>
+        <span class="k">print</span> <span class="n">e</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="k">print</span> <span class="s">&quot;[ NO DATA VALUE ] = &quot;</span><span class="p">,</span> <span class="n">srcband</span><span class="o">.</span><span class="n">GetNoDataValue</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;[ MIN ] = &quot;</span><span class="p">,</span> <span class="n">srcband</span><span class="o">.</span><span class="n">GetMinimum</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;[ MAX ] = &quot;</span><span class="p">,</span> <span class="n">srcband</span><span class="o">.</span><span class="n">GetMaximum</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;[ SCALE ] = &quot;</span><span class="p">,</span> <span class="n">srcband</span><span class="o">.</span><span class="n">GetScale</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;[ UNIT TYPE ] = &quot;</span><span class="p">,</span> <span class="n">srcband</span><span class="o">.</span><span class="n">GetUnitType</span><span class="p">()</span>
+    <span class="n">ctable</span> <span class="o">=</span> <span class="n">srcband</span><span class="o">.</span><span class="n">GetColorTable</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">ctable</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;No ColorTable found&#39;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&quot;[ COLOR TABLE COUNT ] = &quot;</span><span class="p">,</span> <span class="n">ctable</span><span class="o">.</span><span class="n">GetCount</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ctable</span><span class="o">.</span><span class="n">GetCount</span><span class="p">()</span> <span class="p">):</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="n">ctable</span><span class="o">.</span><span class="n">GetColorEntry</span><span class="p">(</span> <span class="n">i</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">entry</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">print</span> <span class="s">&quot;[ COLOR ENTRY RGB ] = &quot;</span><span class="p">,</span> <span class="n">ctable</span><span class="o">.</span><span class="n">GetColorEntryAsRGB</span><span class="p">(</span> <span class="n">i</span><span class="p">,</span> <span class="n">entry</span> <span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">        [ ERROR ] you must supply at least two arguments:</span>
+<span class="s">        1) the band number to retrieve and 2) input raster</span>
+<span class="s">        &quot;&quot;&quot;</span>
+        <span class="n">Usage</span><span class="p">()</span>
+
+    <span class="n">main</span><span class="p">(</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="polygonize-a-raster-band">
+<h2>Polygonize a Raster Band<a class="headerlink" href="#polygonize-a-raster-band" title="Permalink to this headline">¶</a></h2>
+<p>Turn a single raster band into a vector polygon!</p>
+<p>If you haven&#8217;t before, notice that some of the <a class="reference external" href="http://www.gdal.org/gdal_utilities.html">gdal utilties</a>
+are actually Python scripts. Go find them on your computer, read the source code and mine them for API tricks.
+It turns out the <a class="reference external" href="http://www.gdal.org/gdal_polygonize.html">gdal_polygonize utility</a>
+just wraps a call to <a class="reference external" href="http://www.gdal.org/gdal__alg_8h.html#a3f522a9035d3512b5d414fb4752671b1">GDALFPolygonize</a>
+so writing your own hacky polygonize Python script is pretty easy.</p>
+<p>The raster we are going to polygonize:</p>
+<img alt="_images/input_tif.jpg" src="_images/input_tif.jpg" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span><span class="p">,</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="c"># this allows GDAL to throw Python Exceptions</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+
+<span class="c">#</span>
+<span class="c">#  get raster datasource</span>
+<span class="c">#</span>
+<span class="n">src_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span> <span class="s">&quot;INPUT.tif&quot;</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">src_ds</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Unable to open </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">src_filename</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">srcband</span> <span class="o">=</span> <span class="n">src_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c"># for example, try GetRasterBand(10)</span>
+    <span class="k">print</span> <span class="s">&#39;Band ( </span><span class="si">%i</span><span class="s"> ) not found&#39;</span> <span class="o">%</span> <span class="n">band_num</span>
+    <span class="k">print</span> <span class="n">e</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c">#</span>
+<span class="c">#  create output datasource</span>
+<span class="c">#</span>
+<span class="n">dst_layername</span> <span class="o">=</span> <span class="s">&quot;POLYGONIZED_STUFF&quot;</span>
+<span class="n">drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">dst_ds</span> <span class="o">=</span> <span class="n">drv</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span> <span class="n">dst_layername</span> <span class="o">+</span> <span class="s">&quot;.shp&quot;</span> <span class="p">)</span>
+<span class="n">dst_layer</span> <span class="o">=</span> <span class="n">dst_ds</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="n">dst_layername</span><span class="p">,</span> <span class="n">srs</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">)</span>
+
+<span class="n">gdal</span><span class="o">.</span><span class="n">Polygonize</span><span class="p">(</span> <span class="n">srcband</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">dst_layer</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">[],</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>A closeup of the vector output &#8211; this is northern Italy:</p>
+<img alt="_images/polygonize_band3.png" src="_images/polygonize_band3.png" />
+</div>
+<div class="section" id="convert-an-ogr-file-to-a-raster">
+<h2>Convert an OGR File to a Raster<a class="headerlink" href="#convert-an-ogr-file-to-a-raster" title="Permalink to this headline">¶</a></h2>
+<p>This recipe takes in a OGR file (e.g. shapefile) and creates a new raster Tiff file based on the shapefile.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span><span class="p">,</span> <span class="n">ogr</span>
+
+<span class="c"># Define pixel_size and NoData value of new raster</span>
+<span class="n">pixel_size</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">NoData_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+
+<span class="c"># Filename of input OGR file</span>
+<span class="n">vector_fn</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
+
+<span class="c"># Filename of the raster Tiff that will be created</span>
+<span class="n">raster_fn</span> <span class="o">=</span> <span class="s">&#39;test.tif&#39;</span>
+
+<span class="c"># Open the data source and read in the extent</span>
+<span class="n">source_ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">vector_fn</span><span class="p">)</span>
+<span class="n">source_layer</span> <span class="o">=</span> <span class="n">source_ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">source_srs</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
+<span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetExtent</span><span class="p">()</span>
+
+<span class="c"># Create the destination data source</span>
+<span class="n">x_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
+<span class="n">y_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
+<span class="n">target_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;GTiff&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">raster_fn</span><span class="p">,</span> <span class="n">x_res</span><span class="p">,</span> <span class="n">y_res</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">)</span>
+<span class="n">target_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">((</span><span class="n">x_min</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">pixel_size</span><span class="p">))</span>
+<span class="n">band</span> <span class="o">=</span> <span class="n">target_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">band</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="n">NoData_value</span><span class="p">)</span>
+
+<span class="c"># Rasterize</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">RasterizeLayer</span><span class="p">(</span><span class="n">target_ds</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source_layer</span><span class="p">,</span> <span class="n">burn_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="clip-a-geotiff-with-shapefile">
 <h2>Clip a GeoTiff with Shapefile<a class="headerlink" href="#clip-a-geotiff-with-shapefile" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s use some <a class="reference external" href="http://www.naturalearthdata.com/downloads">Natural Earth data</a> and clip a <a class="reference external" href="http://www.naturalearthdata.com/downloads/10m-cross-blend-hypso/cross-blended-hypso-with-relief-water-drains-and-ocean-bottom/">10m relief geotiff</a> with the <a class="reference external" href="http://www.naturalearthdata.com/downloads/10m-cultural-vectors/timezones/">Europe/Paris timezone polygon</a>. Most of the following workflow came from this <a class="reference external" href="http://geospatialpython.com/2011/02/clip-raster-using-shapefile.html">geospatialpython post</a> . However, the source code on that site assumes your clipping polygon <strong>is</strong> the same extent as the input geotiff. If it is not, then your clipped geotiff will take the input geotiff&#8217;s extent, which will be incorrect. The modified script below takes this into account and sets the correct x,y offsets for the clipped geotiff. Note, in the following example we are assuming you have the <a class="reference external" href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> installed.</p>
-<p>Before image input Natural Earth 10m geotiff with the timezone we want to clip out:</p>
+<p>Before Image: the input Natural Earth 10m geotiff with the timezone overlay we want to clip out:</p>
 <img alt="_images/clip_raster_before.png" src="_images/clip_raster_before.png" />
 <div class="highlight-bash"><div class="highlight"><pre>from osgeo import gdal, gdalnumeric, ogr, osr
 import Image, ImageDraw
@@ -245,42 +445,8 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
     main<span class="o">(</span> sys.argv<span class="o">[</span>1<span class="o">]</span>, sys.argv<span class="o">[</span>2<span class="o">]</span> <span class="o">)</span>
 </pre></div>
 </div>
-<p>After image of the clipped geotiff with the timezone border overlayed in orange on top of input geotiff:</p>
+<p>After Image: the clipped geotiff with the timezone border overlayed in orange on top of input geotiff:</p>
 <img alt="_images/clip_raster_after.png" src="_images/clip_raster_after.png" />
-</div>
-<div class="section" id="convert-an-ogr-file-to-a-raster">
-<h2>Convert an OGR File to a Raster<a class="headerlink" href="#convert-an-ogr-file-to-a-raster" title="Permalink to this headline">¶</a></h2>
-<p>This recipe takes in a OGR file (e.g. shapefile) and creates a new raster Tiff file based on the shapefile.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span><span class="p">,</span> <span class="n">ogr</span>
-
-<span class="c"># Define pixel_size and NoData value of new raster</span>
-<span class="n">pixel_size</span> <span class="o">=</span> <span class="mi">25</span>
-<span class="n">NoData_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
-
-<span class="c"># Filename of input OGR file</span>
-<span class="n">vector_fn</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
-
-<span class="c"># Filename of the raster Tiff that will be created</span>
-<span class="n">raster_fn</span> <span class="o">=</span> <span class="s">&#39;test.tif&#39;</span>
-
-<span class="c"># Open the data source and read in the extent</span>
-<span class="n">source_ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">vector_fn</span><span class="p">)</span>
-<span class="n">source_layer</span> <span class="o">=</span> <span class="n">source_ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
-<span class="n">source_srs</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
-<span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetExtent</span><span class="p">()</span>
-
-<span class="c"># Create the destination data source</span>
-<span class="n">x_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
-<span class="n">y_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
-<span class="n">target_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;GTiff&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">raster_fn</span><span class="p">,</span> <span class="n">x_res</span><span class="p">,</span> <span class="n">y_res</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">)</span>
-<span class="n">target_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">((</span><span class="n">x_min</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">pixel_size</span><span class="p">))</span>
-<span class="n">band</span> <span class="o">=</span> <span class="n">target_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">band</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="n">NoData_value</span><span class="p">)</span>
-
-<span class="c"># Rasterize</span>
-<span class="n">gdal</span><span class="o">.</span><span class="n">RasterizeLayer</span><span class="p">(</span><span class="n">target_ds</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source_layer</span><span class="p">,</span> <span class="n">burn_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</pre></div>
-</div>
 </div>
 <div class="section" id="calculate-zonal-statistics">
 <h2>Calculate zonal statistics<a class="headerlink" href="#calculate-zonal-statistics" title="Permalink to this headline">¶</a></h2>
@@ -377,8 +543,13 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Raster Layers</a><ul>
-<li><a class="reference internal" href="#clip-a-geotiff-with-shapefile">Clip a GeoTiff with Shapefile</a></li>
+<li><a class="reference internal" href="#get-raster-metadata">Get Raster Metadata</a></li>
+<li><a class="reference internal" href="#get-raster-band">Get Raster Band</a></li>
+<li><a class="reference internal" href="#loop-through-all-raster-bands">Loop Through All Raster Bands</a></li>
+<li><a class="reference internal" href="#get-raster-band-information">Get Raster Band Information</a></li>
+<li><a class="reference internal" href="#polygonize-a-raster-band">Polygonize a Raster Band</a></li>
 <li><a class="reference internal" href="#convert-an-ogr-file-to-a-raster">Convert an OGR File to a Raster</a></li>
+<li><a class="reference internal" href="#clip-a-geotiff-with-shapefile">Clip a GeoTiff with Shapefile</a></li>
 <li><a class="reference internal" href="#calculate-zonal-statistics">Calculate zonal statistics</a></li>
 </ul>
 </li>
