@@ -429,7 +429,7 @@ After Image: the clipped geotiff with the timezone border overlayed in orange on
 .. image:: images/clip_raster_after.png
 
 Calculate zonal statistics
----------------------------------
+--------------------------
 
 This recipe calculates statistics on values of a raster within the zones of a vector dataset.
 

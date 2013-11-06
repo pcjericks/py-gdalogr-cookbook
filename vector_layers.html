@@ -726,6 +726,84 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 </pre></div>
 </div>
 </div>
+<div class="section" id="merge-geojson-files">
+<h2>Merge GeoJSON files<a class="headerlink" href="#merge-geojson-files" title="Permalink to this headline">¶</a></h2>
+<p>This recipe merges all GeoJSON files within the current directory and saves it to a new file.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># import modules</span>
+<span class="kn">import</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
+
+<span class="c"># get the driver</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;GeoJSON&#39;</span><span class="p">)</span>
+
+<span class="c"># out file name</span>
+<span class="n">fn</span> <span class="o">=</span> <span class="s">&#39;merge.geojson&#39;</span>
+
+<span class="c"># delete existing file</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+  <span class="n">driver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+<span class="c"># get list of input files</span>
+<span class="n">file_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">&#39;*.geojson&#39;</span><span class="p">)</span>
+
+<span class="c"># create a new data source and layer</span>
+<span class="n">outDS</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDS</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#39;merge&#39;</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString</span><span class="p">)</span>
+<span class="c"># get the FeatureDefn for the output layer</span>
+<span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+<span class="c"># loop through files and merge</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+    <span class="n">inDS</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">inLayer</span> <span class="o">=</span> <span class="n">inDS</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+    <span class="c"># loop through the input features</span>
+    <span class="n">inFeature</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">inFeature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="c"># create a new feature</span>
+        <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+
+        <span class="c"># set the geometry</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+        <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span>
+
+        <span class="c"># add the feature to the output layer</span>
+        <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+        <span class="n">outLayer</span><span class="o">.</span><span class="n">SyncToDisk</span><span class="p">()</span>
+
+
+        <span class="c"># destroy the output feature</span>
+        <span class="n">outFeature</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+        <span class="c"># destroy the input feature and get a new one</span>
+        <span class="n">inFeature</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+        <span class="n">inFeature</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+
+    <span class="n">inDS</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+
+<span class="n">outDS</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-a-list-of-the-street-names-in-a-osm-file">
+<h2>Get a list of the street names in a OSM file<a class="headerlink" href="#get-a-list-of-the-street-names-in-a-osm-file" title="Permalink to this headline">¶</a></h2>
+<p>This recipe takes in an OSM file and prints a list of all the names of the streets in the file.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;map.osm&#39;</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c"># layer 1 for ways</span>
+
+<span class="n">nameList</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;highway&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>  <span class="c"># only streets</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nameList</span><span class="p">:</span> <span class="c"># only streets that have a name and are not yet in the list</span>
+            <span class="n">nameList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">nameList</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -757,6 +835,8 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
 <li><a class="reference internal" href="#create-a-new-shapefile-and-add-data">Create a New Shapefile and Add Data</a></li>
 <li><a class="reference internal" href="#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI</a></li>
+<li><a class="reference internal" href="#merge-geojson-files">Merge GeoJSON files</a></li>
+<li><a class="reference internal" href="#get-a-list-of-the-street-names-in-a-osm-file">Get a list of the street names in a OSM file</a></li>
 </ul>
 </li>
 </ul>
