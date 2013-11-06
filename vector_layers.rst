@@ -716,4 +716,25 @@ The `ogr2ogr command line tool <http://www.gdal.org/ogr2ogr.html>`_ is an easy w
             sys.exit(1)
         
         main( sys.argv[1:] )
+        
+        
+Get a list of the street names in a OSM file
+-----------------------------------------------------------------------------
+This recipe takes in an OSM file and prints a list of all the names of the streets in the file.
+
+import ogr
+
+ds = ogr.Open('map.osm')
+layer = ds.GetLayer(1) # layer 1 for ways
+
+nameList = []
+for feature in layer:
+    if feature.GetField("highway") != None:  # only streets
+        name = feature.GetField("name")
+        if name != None and name not in nameList: # only streets that have a name and are not yet in the list
+            nameList.append(name)
+
+print nameList
+.. code-block:: python
+
 
