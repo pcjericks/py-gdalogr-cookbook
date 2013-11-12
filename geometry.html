@@ -424,6 +424,68 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="write-geometry-to-wkt">
+<h2>Write Geometry to WKT<a class="headerlink" href="#write-geometry-to-wkt" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Create test polygon</span>
+<span class="n">ring</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1161053.0218226474</span><span class="p">,</span> <span class="mf">667456.2684348812</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1214704.933941905</span><span class="p">,</span> <span class="mf">641092.8288590391</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1228580.428455506</span><span class="p">,</span> <span class="mf">682719.3123998424</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1218405.0658121984</span><span class="p">,</span> <span class="mf">721108.1805541387</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">geom_poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">geom_poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+<span class="c"># Export geometry to WKT</span>
+<span class="n">wkt</span> <span class="o">=</span> <span class="n">geom_poly</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">wkt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="write-geometry-to-kml">
+<h2>Write Geometry to KML<a class="headerlink" href="#write-geometry-to-kml" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Create test polygon</span>
+<span class="n">ring</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1161053.0218226474</span><span class="p">,</span> <span class="mf">667456.2684348812</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1214704.933941905</span><span class="p">,</span> <span class="mf">641092.8288590391</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1228580.428455506</span><span class="p">,</span> <span class="mf">682719.3123998424</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1218405.0658121984</span><span class="p">,</span> <span class="mf">721108.1805541387</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">geom_poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">geom_poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+<span class="n">kml</span> <span class="o">=</span> <span class="n">geom_poly</span><span class="o">.</span><span class="n">ExportToKML</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">kml</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="write-geometry-to-wkb">
+<h2>Write Geometry to WKB<a class="headerlink" href="#write-geometry-to-wkb" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Create test polygon</span>
+<span class="n">ring</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1161053.0218226474</span><span class="p">,</span> <span class="mf">667456.2684348812</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1214704.933941905</span><span class="p">,</span> <span class="mf">641092.8288590391</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1228580.428455506</span><span class="p">,</span> <span class="mf">682719.3123998424</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1218405.0658121984</span><span class="p">,</span> <span class="mf">721108.1805541387</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">geom_poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">geom_poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+<span class="c"># Export geometry to WKT</span>
+<span class="n">wkb</span> <span class="o">=</span> <span class="n">geom_poly</span><span class="o">.</span><span class="n">ExportToWkb</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">wkb</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -458,6 +520,9 @@
 <li><a class="reference internal" href="#calculate-intersection-between-two-geometries">Calculate intersection between two Geometries</a></li>
 <li><a class="reference internal" href="#calculate-union-between-two-geometries">Calculate union between two Geometries</a></li>
 <li><a class="reference internal" href="#write-geometry-to-geojson">Write Geometry to GeoJSON</a></li>
+<li><a class="reference internal" href="#write-geometry-to-wkt">Write Geometry to WKT</a></li>
+<li><a class="reference internal" href="#write-geometry-to-kml">Write Geometry to KML</a></li>
+<li><a class="reference internal" href="#write-geometry-to-wkb">Write Geometry to WKB</a></li>
 </ul>
 </li>
 </ul>
