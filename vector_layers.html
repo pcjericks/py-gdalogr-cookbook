@@ -807,6 +807,9 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <div class="section" id="create-fishnet-grid">
 <h2>Create fishnet grid<a class="headerlink" href="#create-fishnet-grid" title="Permalink to this headline">¶</a></h2>
 <p>This recipe creates a fishnet grid.</p>
+<div class="highlight-shell"><pre>python grid.py grid.shp 992325.66 1484723.41 494849.32 781786.14 10000 10000</pre>
+</div>
+<img alt="_images/layer_fishnet.png" src="_images/layer_fishnet.png" />
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">ogr</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
@@ -882,7 +885,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
 
     <span class="c">#</span>
-    <span class="c"># example run : $ python grid.py &lt;full-path&gt;&lt;output-shapefile-name&gt;.shp xmin xmin xmax ymin ymax gridHeight gridWidth</span>
+    <span class="c"># example run : $ python grid.py &lt;full-path&gt;&lt;output-shapefile-name&gt;.shp xmin xmax ymin ymax gridHeight gridWidth</span>
     <span class="c">#</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="p">)</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">:</span>
