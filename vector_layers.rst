@@ -803,6 +803,12 @@ Create fishnet grid
 -------------------
 This recipe creates a fishnet grid. 
 
+.. code-block:: shell
+
+    python grid.py grid.shp 992325.66 1484723.41 494849.32 781786.14 10000 10000 
+
+.. image:: images/layer_fishnet.png
+
 .. code-block:: python    
 
     import os, sys
@@ -880,7 +886,7 @@ This recipe creates a fishnet grid.
     if __name__ == "__main__":
     
         #
-        # example run : $ python grid.py <full-path><output-shapefile-name>.shp xmin xmin xmax ymin ymax gridHeight gridWidth
+        # example run : $ python grid.py <full-path><output-shapefile-name>.shp xmin xmax ymin ymax gridHeight gridWidth
         #
     
         if len( sys.argv ) != 8:
