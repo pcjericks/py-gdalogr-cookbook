@@ -862,6 +862,7 @@ This recipe creates a fishnet grid.
                 ring.AddPoint(ringXrightOrigin, ringYtop)
                 ring.AddPoint(ringXrightOrigin, ringYbottom)
                 ring.AddPoint(ringXleftOrigin, ringYbottom)
+                ring.AddPoint(ringXleftOrigin, ringYbottom)
                 poly = ogr.Geometry(ogr.wkbPolygon)
                 poly.AddGeometry(ring)
 
