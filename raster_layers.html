@@ -450,85 +450,130 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
 </div>
 <div class="section" id="calculate-zonal-statistics">
 <h2>Calculate zonal statistics<a class="headerlink" href="#calculate-zonal-statistics" title="Permalink to this headline">¶</a></h2>
-<p>This recipe calculates statistics on values of a raster within the zones of a vector dataset.</p>
+<p>This recipe calculates statistics on values of a raster within the zones of a vector dataset. It returns for each feature a dictionary item (FID) with the statistical values in the following order: Average, Mean, Medain, Standard Deviation, Variance</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gdal</span><span class="o">,</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">osr</span><span class="o">,</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="c"># Raster dataset</span>
-<span class="n">input_value_raster</span> <span class="o">=</span> <span class="s">&#39;slope.tif&#39;</span>
-<span class="c"># Vector dataset(zones)</span>
-<span class="n">input_zone_polygon</span> <span class="o">=</span> <span class="s">&#39;test_stand.shp&#39;</span>
 
-<span class="c"># Open data</span>
-<span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">input_value_raster</span><span class="p">)</span>
-<span class="n">shp</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">input_zone_polygon</span><span class="p">)</span>
-<span class="n">lyr</span> <span class="o">=</span> <span class="n">shp</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">zonal_stats</span><span class="p">(</span><span class="n">feat</span><span class="p">,</span> <span class="n">input_zone_polygon</span><span class="p">,</span> <span class="n">input_value_raster</span><span class="p">):</span>
 
-<span class="c"># Get raster georeference info</span>
-<span class="n">transform</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
-<span class="n">xOrigin</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">yOrigin</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-<span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">pixelHeight</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="c"># Open data</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">input_value_raster</span><span class="p">)</span>
+    <span class="n">shp</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">input_zone_polygon</span><span class="p">)</span>
+    <span class="n">lyr</span> <span class="o">=</span> <span class="n">shp</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
 
-<span class="c"># Reproject vector geometry to same projection as raster</span>
-<span class="n">sourceSR</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
-<span class="n">targetSR</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
-<span class="n">targetSR</span><span class="o">.</span><span class="n">ImportFromWkt</span><span class="p">(</span><span class="n">raster</span><span class="o">.</span><span class="n">GetProjectionRef</span><span class="p">())</span>
-<span class="n">coordTrans</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">sourceSR</span><span class="p">,</span><span class="n">targetSR</span><span class="p">)</span>
-<span class="n">feat</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
-<span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
-<span class="n">geom</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">coordTrans</span><span class="p">)</span>
+    <span class="c"># Get raster georeference info</span>
+    <span class="n">transform</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">xOrigin</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">yOrigin</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pixelHeight</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
 
-<span class="c"># Get extent of geometry</span>
-<span class="n">ring</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">numpoints</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">()</span>
-<span class="n">pointsX</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">pointsY</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
-        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="n">pointsX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
-        <span class="n">pointsY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
-<span class="n">xmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pointsX</span><span class="p">)</span>
-<span class="n">xmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pointsX</span><span class="p">)</span>
-<span class="n">ymin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pointsY</span><span class="p">)</span>
-<span class="n">ymax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pointsY</span><span class="p">)</span>
+    <span class="c"># Reproject vector geometry to same projection as raster</span>
+    <span class="n">sourceSR</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
+    <span class="n">targetSR</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+    <span class="n">targetSR</span><span class="o">.</span><span class="n">ImportFromWkt</span><span class="p">(</span><span class="n">raster</span><span class="o">.</span><span class="n">GetProjectionRef</span><span class="p">())</span>
+    <span class="n">coordTrans</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">sourceSR</span><span class="p">,</span><span class="n">targetSR</span><span class="p">)</span>
+    <span class="n">feat</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="n">geom</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">coordTrans</span><span class="p">)</span>
 
-<span class="c"># Specify offset and rows and columns to read</span>
-<span class="n">xoff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">xmin</span> <span class="o">-</span> <span class="n">xOrigin</span><span class="p">)</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span>
-<span class="n">yoff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">yOrigin</span> <span class="o">-</span> <span class="n">ymax</span><span class="p">)</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span>
-<span class="n">xcount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
-<span class="n">ycount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    <span class="c"># Get extent of feat</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryName</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;MULTIPOLYGON&#39;</span><span class="p">):</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">pointsX</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">pointsY</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">geom</span><span class="p">:</span>
+            <span class="n">geomInner</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+            <span class="n">ring</span> <span class="o">=</span> <span class="n">geomInner</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">numpoints</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+                    <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                    <span class="n">pointsX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+                    <span class="n">pointsY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryName</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;POLYGON&#39;</span><span class="p">):</span>
+        <span class="n">ring</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">numpoints</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">()</span>
+        <span class="n">pointsX</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">pointsY</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+                <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="n">pointsX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+                <span class="n">pointsY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
 
-<span class="c"># Create memory target raster</span>
-<span class="n">target_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;MEM&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">xcount</span><span class="p">,</span> <span class="n">ycount</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">)</span>
-<span class="n">target_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">((</span>
-    <span class="n">xmin</span><span class="p">,</span> <span class="n">pixelWidth</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">ymax</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pixelHeight</span><span class="p">,</span>
-<span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&quot;ERROR: Geometry needs to be either Polygon or Multipolygon&quot;</span><span class="p">)</span>
 
-<span class="c"># Create for target raster the same projection as for the value raster</span>
-<span class="n">raster_srs</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
-<span class="n">raster_srs</span><span class="o">.</span><span class="n">ImportFromWkt</span><span class="p">(</span><span class="n">raster</span><span class="o">.</span><span class="n">GetProjectionRef</span><span class="p">())</span>
-<span class="n">target_ds</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span><span class="n">raster_srs</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">())</span>
+    <span class="n">xmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pointsX</span><span class="p">)</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pointsX</span><span class="p">)</span>
+    <span class="n">ymin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pointsY</span><span class="p">)</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pointsY</span><span class="p">)</span>
 
-<span class="c"># Rasterize zone polygon to raster</span>
-<span class="n">gdal</span><span class="o">.</span><span class="n">RasterizeLayer</span><span class="p">(</span><span class="n">target_ds</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lyr</span><span class="p">,</span> <span class="n">burn_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c"># Specify offset and rows and columns to read</span>
+    <span class="n">xoff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">xmin</span> <span class="o">-</span> <span class="n">xOrigin</span><span class="p">)</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span>
+    <span class="n">yoff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">yOrigin</span> <span class="o">-</span> <span class="n">ymax</span><span class="p">)</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span>
+    <span class="n">xcount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    <span class="n">ycount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
 
-<span class="c"># Read raster as arrays</span>
-<span class="n">banddataraster</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">dataraster</span> <span class="o">=</span> <span class="n">banddataraster</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="n">xoff</span><span class="p">,</span> <span class="n">yoff</span><span class="p">,</span> <span class="n">xcount</span><span class="p">,</span> <span class="n">ycount</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="c"># Create memory target raster</span>
+    <span class="n">target_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;MEM&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">xcount</span><span class="p">,</span> <span class="n">ycount</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">)</span>
+    <span class="n">target_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">((</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">pixelWidth</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">ymax</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pixelHeight</span><span class="p">,</span>
+    <span class="p">))</span>
 
-<span class="n">bandmask</span> <span class="o">=</span> <span class="n">target_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">datamask</span> <span class="o">=</span> <span class="n">bandmask</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xcount</span><span class="p">,</span> <span class="n">ycount</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="c"># Create for target raster the same projection as for the value raster</span>
+    <span class="n">raster_srs</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+    <span class="n">raster_srs</span><span class="o">.</span><span class="n">ImportFromWkt</span><span class="p">(</span><span class="n">raster</span><span class="o">.</span><span class="n">GetProjectionRef</span><span class="p">())</span>
+    <span class="n">target_ds</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span><span class="n">raster_srs</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">())</span>
 
-<span class="c"># Mask zone of raster</span>
-<span class="n">zoneraster</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">dataraster</span><span class="p">,</span>  <span class="n">numpy</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">datamask</span><span class="p">))</span>
+    <span class="c"># Rasterize zone polygon to raster</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">RasterizeLayer</span><span class="p">(</span><span class="n">target_ds</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lyr</span><span class="p">,</span> <span class="n">burn_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="c"># Calculate statistics of zonal raster</span>
-<span class="k">print</span> <span class="s">&#39;average:            &#39;</span><span class="p">,</span><span class="n">numpy</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">)</span>
-<span class="k">print</span> <span class="s">&#39;mean:               &#39;</span><span class="p">,</span><span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">)</span>
-<span class="k">print</span> <span class="s">&#39;median:             &#39;</span><span class="p">,</span><span class="n">numpy</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">)</span>
-<span class="k">print</span> <span class="s">&#39;standard deviation: &#39;</span><span class="p">,</span><span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">)</span>
-<span class="k">print</span> <span class="s">&#39;variance:           &#39;</span><span class="p">,</span><span class="n">numpy</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">)</span>
+    <span class="c"># Read raster as arrays</span>
+    <span class="n">banddataraster</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dataraster</span> <span class="o">=</span> <span class="n">banddataraster</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="n">xoff</span><span class="p">,</span> <span class="n">yoff</span><span class="p">,</span> <span class="n">xcount</span><span class="p">,</span> <span class="n">ycount</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+    <span class="n">bandmask</span> <span class="o">=</span> <span class="n">target_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">datamask</span> <span class="o">=</span> <span class="n">bandmask</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xcount</span><span class="p">,</span> <span class="n">ycount</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+    <span class="c"># Mask zone of raster</span>
+    <span class="n">zoneraster</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">dataraster</span><span class="p">,</span>  <span class="n">numpy</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">datamask</span><span class="p">))</span>
+
+    <span class="c"># Calculate statistics of zonal raster</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">),</span><span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">),</span><span class="n">numpy</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">),</span><span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">),</span><span class="n">numpy</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">zoneraster</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">loop_zonal_stats</span><span class="p">(</span><span class="n">input_zone_polygon</span><span class="p">,</span> <span class="n">input_value_raster</span><span class="p">):</span>
+
+    <span class="n">shp</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">input_zone_polygon</span><span class="p">)</span>
+    <span class="n">lyr</span> <span class="o">=</span> <span class="n">shp</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+    <span class="n">featList</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">lyr</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">())</span>
+    <span class="n">statDict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">FID</span> <span class="ow">in</span> <span class="n">featList</span><span class="p">:</span>
+        <span class="n">feat</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetFeature</span><span class="p">(</span><span class="n">FID</span><span class="p">)</span>
+        <span class="n">meanValue</span> <span class="o">=</span> <span class="n">zonal_stats</span><span class="p">(</span><span class="n">feat</span><span class="p">,</span> <span class="n">input_zone_polygon</span><span class="p">,</span> <span class="n">input_value_raster</span><span class="p">)</span>
+        <span class="n">statDict</span><span class="p">[</span><span class="n">FID</span><span class="p">]</span> <span class="o">=</span> <span class="n">meanValue</span>
+    <span class="k">return</span> <span class="n">statDict</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">input_zone_polygon</span><span class="p">,</span> <span class="n">input_value_raster</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">loop_zonal_stats</span><span class="p">(</span><span class="n">input_zone_polygon</span><span class="p">,</span> <span class="n">input_value_raster</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c">#</span>
+    <span class="c"># Returns for each feature a dictionary item (FID) with the statistical values in the following order: Average, Mean, Medain, Standard Deviation, Variance</span>
+    <span class="c">#</span>
+    <span class="c"># example run : $ python grid.py &lt;full-path&gt;&lt;output-shapefile-name&gt;.shp xmin xmax ymin ymax gridHeight gridWidth</span>
+    <span class="c">#</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;[ ERROR ] you must supply two arguments: input-zone-shapefile-name.shp input-value-raster-name.tif &quot;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Returns for each feature a dictionary item (FID) with the statistical values in the following order: Average, Mean, Medain, Standard Deviation, Variance&#39;</span>
+    <span class="k">print</span> <span class="n">main</span><span class="p">(</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
 </pre></div>
 </div>
 </div>
