@@ -568,7 +568,7 @@ Raster to vector line
 This recipe converts raster pixels with a specified value to vector lines. For example the blue pixels (value = 0) are converted to vector lines.
 
 
-.. image:: images/raster2vector1.png
+.. image:: images/raster2line1.png
 
 .. code-block:: python 
 
@@ -645,7 +645,8 @@ This recipe converts raster pixels with a specified value to vector lines. For e
 	    main(rasterfn,outSHPfn,pixelValue)
     
     
-The green lines show the lines.
-.. image:: images/raster2vector2.png
+The green lines show the converted lines.
+
+.. image:: images/raster2line2.png
 
 
