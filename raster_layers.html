@@ -577,6 +577,94 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
 </pre></div>
 </div>
 </div>
+<div class="section" id="raster-to-vector-line">
+<h2>Raster to vector line<a class="headerlink" href="#raster-to-vector-line" title="Permalink to this headline">¶</a></h2>
+<p>This recipe converts raster pixels with a specified value to vector lines. For example the blue pixels (value = 0) are converted to vector lines.</p>
+<img alt="_images/raster2line1.png" src="_images/raster2line1.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">gdal</span><span class="o">,</span> <span class="nn">osr</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span><span class="p">,</span><span class="n">ceil</span>
+
+<span class="k">def</span> <span class="nf">pixelOffset2coord</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">,</span><span class="n">xOffset</span><span class="p">,</span><span class="n">yOffset</span><span class="p">):</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">originX</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">originY</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pixelHeight</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">coordX</span> <span class="o">=</span> <span class="n">originX</span><span class="o">+</span><span class="n">pixelWidth</span><span class="o">*</span><span class="n">xOffset</span>
+    <span class="n">coordY</span> <span class="o">=</span> <span class="n">originY</span><span class="o">+</span><span class="n">pixelHeight</span><span class="o">*</span><span class="n">yOffset</span>
+    <span class="k">return</span> <span class="n">coordX</span><span class="p">,</span> <span class="n">coordY</span>
+
+<span class="k">def</span> <span class="nf">raster2array</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">):</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">array</span>
+
+<span class="k">def</span> <span class="nf">array2shp</span><span class="p">(</span><span class="n">array</span><span class="p">,</span><span class="n">outSHPfn</span><span class="p">,</span><span class="n">rasterfn</span><span class="p">,</span><span class="n">pixelValue</span><span class="p">):</span>
+
+    <span class="c"># max distance between points</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">maxDistance</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pixelWidth</span><span class="o">*</span><span class="n">pixelWidth</span><span class="p">))</span>
+    <span class="k">print</span> <span class="n">maxDistance</span>
+
+    <span class="c"># array2dict</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">roadList</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">array</span> <span class="o">==</span> <span class="n">pixelValue</span><span class="p">)</span>
+    <span class="n">multipoint</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiLineString</span><span class="p">)</span>
+    <span class="n">pointDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">indexY</span> <span class="ow">in</span> <span class="n">roadList</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">indexX</span> <span class="o">=</span> <span class="n">roadList</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">count</span><span class="p">]</span>
+        <span class="n">Xcoord</span><span class="p">,</span> <span class="n">Ycoord</span> <span class="o">=</span> <span class="n">pixelOffset2coord</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">,</span><span class="n">indexX</span><span class="p">,</span><span class="n">indexY</span><span class="p">)</span>
+        <span class="n">pointDict</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xcoord</span><span class="p">,</span> <span class="n">Ycoord</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c"># dict2wkbMultiLineString</span>
+    <span class="n">multiline</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiLineString</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">pointDict</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">point1</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+        <span class="n">point1</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">point2</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+        <span class="n">point2</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">distance</span> <span class="o">=</span> <span class="n">point1</span><span class="o">.</span><span class="n">Distance</span><span class="p">(</span><span class="n">point2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">distance</span> <span class="o">&lt;</span> <span class="n">maxDistance</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString</span><span class="p">)</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">multiline</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="c"># wkbMultiLineString2shp</span>
+    <span class="n">shpDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">):</span>
+        <span class="n">shpDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">)</span>
+    <span class="n">outDataSource</span> <span class="o">=</span> <span class="n">shpDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">)</span>
+    <span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiLineString</span> <span class="p">)</span>
+    <span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+    <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+    <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">multiline</span><span class="p">)</span>
+    <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">,</span><span class="n">outSHPfn</span><span class="p">,</span><span class="n">pixelValue</span><span class="p">):</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">raster2array</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+    <span class="n">array2shp</span><span class="p">(</span><span class="n">array</span><span class="p">,</span><span class="n">outSHPfn</span><span class="p">,</span><span class="n">rasterfn</span><span class="p">,</span><span class="n">pixelValue</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">rasterfn</span> <span class="o">=</span> <span class="s">&#39;test.tif&#39;</span>
+    <span class="n">outSHPfn</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
+    <span class="n">pixelValue</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">,</span><span class="n">outSHPfn</span><span class="p">,</span><span class="n">pixelValue</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The green lines show the converted lines.</p>
+<img alt="_images/raster2line2.png" src="_images/raster2line2.png" />
+</div>
 </div>
 
 
@@ -596,6 +684,7 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
 <li><a class="reference internal" href="#convert-an-ogr-file-to-a-raster">Convert an OGR File to a Raster</a></li>
 <li><a class="reference internal" href="#clip-a-geotiff-with-shapefile">Clip a GeoTiff with Shapefile</a></li>
 <li><a class="reference internal" href="#calculate-zonal-statistics">Calculate zonal statistics</a></li>
+<li><a class="reference internal" href="#raster-to-vector-line">Raster to vector line</a></li>
 </ul>
 </li>
 </ul>
