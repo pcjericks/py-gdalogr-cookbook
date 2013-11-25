@@ -656,5 +656,6 @@ This recipe converts raster pixels with a specified value to vector lines. For e
 
     
 The green lines show the lines.
+
 .. image:: images/raster2line2.png
 
