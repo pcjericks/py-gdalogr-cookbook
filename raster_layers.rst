@@ -713,4 +713,5 @@ This recipe creates a raster from a specified array
         main(newRasterfn,rasterOrigin,pixelWidth,pixelHeight,array)
 
 The create raster from the example array looks like this:
+
 .. image:: images/array2raster.png
