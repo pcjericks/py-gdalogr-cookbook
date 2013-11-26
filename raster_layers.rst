@@ -671,6 +671,7 @@ This recipe creates a raster from a specified array
     import gdal, ogr, os, osr
     import numpy as np
 
+
     def array2raster(newRasterfn,rasterOrigin,pixelWidth,pixelHeight,array):
     
         cols = array.shape[1]
@@ -691,8 +692,8 @@ This recipe creates a raster from a specified array
     
     def main(newRasterfn,rasterOrigin,pixelWidth,pixelHeight,array):   
         reversed_arr = array[::-1] # reverse array so the tif looks like the array
-    
         array2raster(newRasterfn,rasterOrigin,pixelWidth,pixelHeight,reversed_arr) # convert array to raster
+  
     
     if __name__ == "__main__":
         rasterOrigin = (-123.25745,45.43013)
@@ -709,6 +710,7 @@ This recipe creates a raster from a specified array
                           [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                           [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                           [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])
+    
     
         main(newRasterfn,rasterOrigin,pixelWidth,pixelHeight,array)
 
