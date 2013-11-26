@@ -663,7 +663,7 @@ The green lines show the converted lines.
 Create raster from array
 --------------------------
 
-This recipe creates a raster from a specified array
+This recipe creates a raster from an array
 
 
 .. code-block:: python 
