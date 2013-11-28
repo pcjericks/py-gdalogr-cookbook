@@ -395,7 +395,39 @@ Get PostGIS Layer Fields and Types - Get the user defined fields
         
         lyr_name = sys.argv[1]
         GetPGLayerFieldTypes( lyr_name )
-     
+
+Get a Layer's Capabilities
+--------------------------
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    ds = ogr.Open("states.shp",0)
+    layer = ds.GetLayer()
+    capabilities = [
+        ogr.OLCRandomRead,
+        ogr.OLCSequentialWrite,
+        ogr.OLCRandomWrite, 
+        ogr.OLCFastSpatialFilter,
+        ogr.OLCFastFeatureCount, 
+        ogr.OLCFastGetExtent, 
+        ogr.OLCCreateField, 
+        ogr.OLCDeleteField, 
+        ogr.OLCReorderFields, 
+        ogr.OLCAlterFieldDefn, 
+        ogr.OLCTransactions, 
+        ogr.OLCDeleteFeature, 
+        ogr.OLCFastSetNextByIndex, 
+        ogr.OLCStringsAsUTF8, 
+        ogr.OLCIgnoreFields 
+    ]
+
+    print("Layer Capabilities:")
+    for cap in capabilities:
+        print("  %s = %s" % (cap, layer.TestCapability(cap)))
+
+
 Read a CSV of Coordinates as an OGRVRTLayer
 ------------------------------------------------
 
