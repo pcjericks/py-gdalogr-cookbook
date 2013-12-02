@@ -202,6 +202,28 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="create-a-geometrycollection">
+<h2>Create a GeometryCollection<a class="headerlink" href="#create-a-geometrycollection" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Create a geometry collection</span>
+<span class="n">geomcol</span> <span class="o">=</span>  <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbGeometryCollection</span><span class="p">)</span>
+
+<span class="c"># Add a point</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+<span class="n">point</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="o">-</span><span class="mf">122.23</span><span class="p">,</span> <span class="mf">47.09</span><span class="p">)</span>
+<span class="n">geomcol</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+
+<span class="c"># Add a line</span>
+<span class="n">line</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="o">-</span><span class="mf">122.60</span><span class="p">,</span> <span class="mf">47.14</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="o">-</span><span class="mf">122.48</span><span class="p">,</span> <span class="mf">47.23</span><span class="p">)</span>
+<span class="n">geomcol</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">geomcol</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="create-geometry-from-wkt">
 <h2>Create Geometry from WKT<a class="headerlink" href="#create-geometry-from-wkt" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
@@ -504,6 +526,7 @@
 <li><a class="reference internal" href="#create-a-multipoint">Create a MultiPoint</a></li>
 <li><a class="reference internal" href="#create-a-multilinestring">Create a MultiLineString</a></li>
 <li><a class="reference internal" href="#create-a-multipolygon">Create a MultiPolygon</a></li>
+<li><a class="reference internal" href="#create-a-geometrycollection">Create a GeometryCollection</a></li>
 <li><a class="reference internal" href="#create-geometry-from-wkt">Create Geometry from WKT</a></li>
 <li><a class="reference internal" href="#create-geometry-from-geojson">Create Geometry from GeoJSON</a></li>
 <li><a class="reference internal" href="#create-geometry-from-gml">Create Geometry from GML</a></li>

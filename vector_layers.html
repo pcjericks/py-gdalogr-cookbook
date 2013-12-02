@@ -427,6 +427,36 @@ be the best way to scan the API&#8217;s class methods. For a detailed descriptio
 </pre></div>
 </div>
 </div>
+<div class="section" id="get-a-layer-s-capabilities">
+<h2>Get a Layer&#8217;s Capabilities<a class="headerlink" href="#get-a-layer-s-capabilities" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&quot;states.shp&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">capabilities</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCRandomRead</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCSequentialWrite</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCRandomWrite</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCFastSpatialFilter</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCFastFeatureCount</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCFastGetExtent</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCCreateField</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCDeleteField</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCReorderFields</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCAlterFieldDefn</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCTransactions</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCDeleteFeature</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCFastSetNextByIndex</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCStringsAsUTF8</span><span class="p">,</span>
+    <span class="n">ogr</span><span class="o">.</span><span class="n">OLCIgnoreFields</span>
+<span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;Layer Capabilities:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">cap</span> <span class="ow">in</span> <span class="n">capabilities</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cap</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">TestCapability</span><span class="p">(</span><span class="n">cap</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="read-a-csv-of-coordinates-as-an-ogrvrtlayer">
 <h2>Read a CSV of Coordinates as an OGRVRTLayer<a class="headerlink" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer" title="Permalink to this headline">¶</a></h2>
 <p>GDAL/OGR has a <a class="reference external" href="http://www.gdal.org/ogr/drv_vrt.html">Virtual Format spec</a> that allows you to derive layers from flat tables such as a CSV &#8211; it does a lot more than that too so go read about it. In the example below we are reading in a CSV with X,Y columns and values. That CSV file is wrapped by an XML file that describes it as an OGR layer. Below are all the necessary pieces and a script that reads the XML file and prints out point geometries.</p>
@@ -505,6 +535,55 @@ be the best way to scan the API&#8217;s class methods. For a detailed descriptio
 <span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
 <span class="n">feature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
 <span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+<span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+
+<span class="c"># Close DataSource</span>
+<span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="save-the-convex-hull-of-all-geometry-from-an-input-layer-to-an-output-layer">
+<h2>Save the convex hull of all geometry from an input Layer to an output Layer<a class="headerlink" href="#save-the-convex-hull-of-all-geometry-from-an-input-layer-to-an-output-layer" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/layer_convexhull.png" src="_images/layer_convexhull.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c"># Get a Layer</span>
+<span class="n">inShapefile</span> <span class="o">=</span> <span class="s">&quot;states.shp&quot;</span>
+<span class="n">inDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="n">inDriver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">inShapefile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">inLayer</span> <span class="o">=</span> <span class="n">inDataSource</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+<span class="c"># Collect all Geometry</span>
+<span class="n">geomcol</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbGeometryCollection</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">inLayer</span><span class="p">:</span>
+    <span class="n">geomcol</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">())</span>
+
+<span class="c"># Calculate convex hull</span>
+<span class="n">convexhull</span> <span class="o">=</span> <span class="n">geomcol</span><span class="o">.</span><span class="n">ConvexHull</span><span class="p">()</span>
+
+<span class="c"># Save extent to a new Shapefile</span>
+<span class="n">outShapefile</span> <span class="o">=</span> <span class="s">&quot;states_convexhull.shp&quot;</span>
+<span class="n">outDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+
+<span class="c"># Remove output shapefile if it already exists</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">):</span>
+    <span class="n">outDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+
+<span class="c"># Create the output shapefile</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">outDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outShapefile</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&quot;states_convexhull&quot;</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+
+<span class="c"># Add an ID field</span>
+<span class="n">idField</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTInteger</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">idField</span><span class="p">)</span>
+
+<span class="c"># Create the feature and set values</span>
+<span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+<span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">convexhull</span><span class="p">)</span>
 <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
 
@@ -923,8 +1002,10 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#get-shapefile-fields-and-types-get-the-user-defined-fields">Get Shapefile Fields and Types - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-fields-get-the-user-defined-fields">Get PostGIS Layer Fields - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-fields-and-types-get-the-user-defined-fields">Get PostGIS Layer Fields and Types - Get the user defined fields</a></li>
+<li><a class="reference internal" href="#get-a-layer-s-capabilities">Get a Layer&#8217;s Capabilities</a></li>
 <li><a class="reference internal" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer">Read a CSV of Coordinates as an OGRVRTLayer</a></li>
 <li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
+<li><a class="reference internal" href="#save-the-convex-hull-of-all-geometry-from-an-input-layer-to-an-output-layer">Save the convex hull of all geometry from an input Layer to an output Layer</a></li>
 <li><a class="reference internal" href="#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
 <li><a class="reference internal" href="#create-a-new-shapefile-and-add-data">Create a New Shapefile and Add Data</a></li>
 <li><a class="reference internal" href="#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI</a></li>
