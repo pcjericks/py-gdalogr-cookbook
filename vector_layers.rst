@@ -979,5 +979,43 @@ This recipe creates a fishnet grid.
         main( sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7] )
 
     
+Convert polygon shapefile to line shapefile
+-------------------
+This recipe converts a poylgon shapefile to a line shapefile
 
+.. code-block:: python    
+
+    import ogr, os
+
+    def poly2line(input_poly,output_line):
+    
+        source_ds = ogr.Open(input_poly)
+        source_layer = source_ds.GetLayer()
+    
+        # polygon2geometryCollection
+        geomcol =  ogr.Geometry(ogr.wkbGeometryCollection)
+        for feat in source_layer:
+            geom = feat.GetGeometryRef()
+            ring = geom.GetGeometryRef(0)
+            geomcol.AddGeometry(ring)
+            
+        # geometryCollection2shp
+        shpDriver = ogr.GetDriverByName("ESRI Shapefile")
+        if os.path.exists(output_line):
+        	shpDriver.DeleteDataSource(output_line)
+        outDataSource = shpDriver.CreateDataSource(output_line)
+        outLayer = outDataSource.CreateLayer(output_line, geom_type=ogr.wkbMultiLineString)
+        featureDefn = outLayer.GetLayerDefn()
+        outFeature = ogr.Feature(featureDefn)
+        outFeature.SetGeometry(geomcol)
+        outLayer.CreateFeature(outFeature)
+
+    def main(input_poly,output_line):
+        poly2line(input_poly,output_line)
+
+    if __name__ == "__main__":
+        input_poly = 'test_polygon.shp'
+        output_line = 'test_line.shp'
+    
+        main(input_poly,output_line)
 
