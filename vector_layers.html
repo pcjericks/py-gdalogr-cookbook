@@ -976,6 +976,45 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 </pre></div>
 </div>
 </div>
+<div class="section" id="convert-polygon-shapefile-to-line-shapefile">
+<h2>Convert polygon shapefile to line shapefile<a class="headerlink" href="#convert-polygon-shapefile-to-line-shapefile" title="Permalink to this headline">¶</a></h2>
+<p>This recipe converts a poylgon shapefile to a line shapefile</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">os</span>
+
+<span class="k">def</span> <span class="nf">poly2line</span><span class="p">(</span><span class="n">input_poly</span><span class="p">,</span><span class="n">output_line</span><span class="p">):</span>
+
+    <span class="n">source_ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">input_poly</span><span class="p">)</span>
+    <span class="n">source_layer</span> <span class="o">=</span> <span class="n">source_ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+
+    <span class="c"># polygon2geometryCollection</span>
+    <span class="n">geomcol</span> <span class="o">=</span>  <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbGeometryCollection</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">source_layer</span><span class="p">:</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+        <span class="n">ring</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">geomcol</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+    <span class="c"># geometryCollection2shp</span>
+    <span class="n">shpDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_line</span><span class="p">):</span>
+            <span class="n">shpDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">output_line</span><span class="p">)</span>
+    <span class="n">outDataSource</span> <span class="o">=</span> <span class="n">shpDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">output_line</span><span class="p">)</span>
+    <span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="n">output_line</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiLineString</span><span class="p">)</span>
+    <span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+    <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+    <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geomcol</span><span class="p">)</span>
+    <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">input_poly</span><span class="p">,</span><span class="n">output_line</span><span class="p">):</span>
+    <span class="n">poly2line</span><span class="p">(</span><span class="n">input_poly</span><span class="p">,</span><span class="n">output_line</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">input_poly</span> <span class="o">=</span> <span class="s">&#39;test_polygon.shp&#39;</span>
+    <span class="n">output_line</span> <span class="o">=</span> <span class="s">&#39;test_line.shp&#39;</span>
+
+    <span class="n">main</span><span class="p">(</span><span class="n">input_poly</span><span class="p">,</span><span class="n">output_line</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -1012,6 +1051,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#merge-geojson-files">Merge GeoJSON files</a></li>
 <li><a class="reference internal" href="#get-a-list-of-the-street-names-in-a-osm-file">Get a list of the street names in a OSM file</a></li>
 <li><a class="reference internal" href="#create-fishnet-grid">Create fishnet grid</a></li>
+<li><a class="reference internal" href="#convert-polygon-shapefile-to-line-shapefile">Convert polygon shapefile to line shapefile</a></li>
 </ul>
 </li>
 </ul>
