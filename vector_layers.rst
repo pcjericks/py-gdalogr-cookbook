@@ -1055,3 +1055,42 @@ This recipe creates a new shapefiles, adds a point to it, and adds a attribute c
 	outFeature.SetGeometry(point)
 	outFeature.SetField(fieldName, fieldValue)
 	outLayer.CreateFeature(outFeature)
+
+
+Create buffer
+-------------------
+This recipe buffers features of a layer and saves them to a new Layer
+
+.. code-block:: python 
+
+    import ogr, os
+
+    def createBuffer(inputfn, outputBufferfn, bufferDist):
+        inputds = ogr.Open(inputfn)
+        inputlyr = inputds.GetLayer()
+    
+        shpdriver = ogr.GetDriverByName('ESRI Shapefile')
+        if os.path.exists(outputBufferfn):
+            shpdriver.DeleteDataSource(outputBufferfn)
+        outputBufferds = shpdriver.CreateDataSource(outputBufferfn)
+        bufferlyr = outputBufferds.CreateLayer(outputBufferfn, geom_type=ogr.wkbPolygon)
+        featureDefn = bufferlyr.GetLayerDefn()
+
+        for feature in inputlyr:
+            ingeom = feature.GetGeometryRef()
+            geomBuffer = ingeom.Buffer(bufferDist)
+        
+            outFeature = ogr.Feature(featureDefn)
+            outFeature.SetGeometry(geomBuffer)
+            bufferlyr.CreateFeature(outFeature)
+
+    def main(inputfn, outputBufferfn, bufferDist):
+        createBuffer(inputfn, outputBufferfn, bufferDist)
+   
+    
+    if __name__ == "__main__":
+        inputfn = 'test.shp'
+        outputBufferfn = 'testBuffer.shp'
+        bufferDist = 10.0
+
+        main(inputfn, outputBufferfn, bufferDist)
