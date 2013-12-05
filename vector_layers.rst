@@ -799,65 +799,41 @@ The `ogr2ogr command line tool <http://www.gdal.org/ogr2ogr.html>`_ is an easy w
         
         main( sys.argv[1:] )
         
-Merge GeoJSON files
+Merge OGR Layers
 -------------------
-This recipe merges all GeoJSON files within the current directory and saves it to a new file.
+This recipe merges OGR Layers within a directory. Files can be specfied based on with what they start and end.
 
 .. code-block:: python      
         
-    # import modules
-    import ogr, os, glob
 
-    # get the driver
-    driver = ogr.GetDriverByName('GeoJSON')
+    import os, ogr, osr
 
-    # out file name
-    fn = 'merge.geojson'
+    outputMergefn = 'merge.shp'
+    directory = "/Users/UserName/Downloads/"
+    fileStartsWith = 'test'
+    fileEndsWith = '.shp'
+    driverName = 'ESRI Shapefile'
+    geometryType = ogr.wkbPolygon
 
-    # delete existing file
-    if os.path.exists(fn):
-      driver.DeleteDataSource(fn)
+    out_driver = ogr.GetDriverByName( driverName )
+    if os.path.exists(outputMergefn):
+        out_driver.DeleteDataSource(outputMergefn)
+    out_ds = out_driver.CreateDataSource(outputMergefn)
+    out_layer = out_ds.CreateLayer(outputMergefn, geom_type=geometryType) 
 
-    # get list of input files
-    file_list = glob.glob('*.geojson')
+    fileList = os.listdir(directory) 
 
-    # create a new data source and layer
-    outDS = driver.CreateDataSource(fn)
-    outLayer = outDS.CreateLayer('merge', geom_type=ogr.wkbLineString)
-    # get the FeatureDefn for the output layer
-    featureDefn = outLayer.GetLayerDefn()
+    for file in fileList:
+        if file.startswith(fileStartsWith) and file.endswith(fileEndsWith):
+            print file
+            ds = ogr.Open(directory+file)
+            lyr = ds.GetLayer()
+            for feat in lyr:
+                out_feat = ogr.Feature(out_layer.GetLayerDefn())
+                out_feat.SetGeometry(feat.GetGeometryRef().Clone())
+                out_layer.CreateFeature(out_feat)
+                out_layer.SyncToDisk()
 
-    # loop through files and merge
-    for item in file_list:
-        inDS = driver.Open(item, 0)
-        inLayer = inDS.GetLayer()
-        
-        # loop through the input features
-        inFeature = inLayer.GetNextFeature()
-        while inFeature is not None:
-
-            # create a new feature
-            outFeature = ogr.Feature(featureDefn)
-
-            # set the geometry
-            geom = inFeature.GetGeometryRef()
-            outFeature.SetGeometry(geom)
-
-            # add the feature to the output layer
-            outLayer.CreateFeature(outFeature)
-            outLayer.SyncToDisk()
-
-
-            # destroy the output feature
-            outFeature.Destroy()
-
-            # destroy the input feature and get a new one
-            inFeature.Destroy()
-            inFeature = inLayer.GetNextFeature()
-        
-        inDS.Destroy()
-
-    outDS.Destroy()
 
 Get a list of the street names in a OSM file
 --------------------------------------------
