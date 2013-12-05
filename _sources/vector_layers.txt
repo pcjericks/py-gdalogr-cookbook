@@ -1018,4 +1018,40 @@ This recipe converts a poylgon shapefile to a line shapefile
         output_line = 'test_line.shp'
     
         main(input_poly,output_line)
+        
+Create point shapefile with attribute data 
+-------------------
+This recipe creates a new shapefiles, adds a point to it, and adds a attribute column with a value to it.
 
+.. code-block:: python 
+
+	import ogr, os
+
+	# Input data
+	pointCoord = -124.4577,48.0135
+	fieldName = 'test'
+	fieldType = ogr.OFTString
+	fieldValue = 'test'
+	outSHPfn = 'test.shp'
+
+	# Create the output shapefile
+	shpDriver = ogr.GetDriverByName("ESRI Shapefile")
+	if os.path.exists(outSHPfn):
+	    shpDriver.DeleteDataSource(outSHPfn)
+	outDataSource = shpDriver.CreateDataSource(outSHPfn)
+	outLayer = outDataSource.CreateLayer(outSHPfn, geom_type=ogr.wkbPoint )
+
+	#create point geometry
+	point = ogr.Geometry(ogr.wkbPoint)
+	point.AddPoint(pointCoord[0],pointCoord[1])
+
+	# create a field
+	idField = ogr.FieldDefn(fieldName, fieldType)    
+	outLayer.CreateField(idField)
+
+	# Create the feature and set values
+	featureDefn = outLayer.GetLayerDefn()
+	outFeature = ogr.Feature(featureDefn)
+	outFeature.SetGeometry(point)
+	outFeature.SetField(fieldName, fieldValue)
+	outLayer.CreateFeature(outFeature)

@@ -1015,6 +1015,42 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 </pre></div>
 </div>
 </div>
+<div class="section" id="create-point-shapefile-with-attribute-data">
+<h2>Create point shapefile with attribute data<a class="headerlink" href="#create-point-shapefile-with-attribute-data" title="Permalink to this headline">¶</a></h2>
+<p>This recipe creates a new shapefiles, adds a point to it, and adds a attribute column with a value to it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">os</span>
+
+<span class="c"># Input data</span>
+<span class="n">pointCoord</span> <span class="o">=</span> <span class="o">-</span><span class="mf">124.4577</span><span class="p">,</span><span class="mf">48.0135</span>
+<span class="n">fieldName</span> <span class="o">=</span> <span class="s">&#39;test&#39;</span>
+<span class="n">fieldType</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTString</span>
+<span class="n">fieldValue</span> <span class="o">=</span> <span class="s">&#39;test&#39;</span>
+<span class="n">outSHPfn</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
+
+<span class="c"># Create the output shapefile</span>
+<span class="n">shpDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">):</span>
+    <span class="n">shpDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">)</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">shpDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span> <span class="p">)</span>
+
+<span class="c">#create point geometry</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+<span class="n">point</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">pointCoord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pointCoord</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="c"># create a field</span>
+<span class="n">idField</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="n">fieldName</span><span class="p">,</span> <span class="n">fieldType</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">idField</span><span class="p">)</span>
+
+<span class="c"># Create the feature and set values</span>
+<span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+<span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+<span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+<span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="n">fieldName</span><span class="p">,</span> <span class="n">fieldValue</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -1052,6 +1088,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#get-a-list-of-the-street-names-in-a-osm-file">Get a list of the street names in a OSM file</a></li>
 <li><a class="reference internal" href="#create-fishnet-grid">Create fishnet grid</a></li>
 <li><a class="reference internal" href="#convert-polygon-shapefile-to-line-shapefile">Convert polygon shapefile to line shapefile</a></li>
+<li><a class="reference internal" href="#create-point-shapefile-with-attribute-data">Create point shapefile with attribute data</a></li>
 </ul>
 </li>
 </ul>
