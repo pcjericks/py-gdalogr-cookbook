@@ -145,7 +145,7 @@ Create an ESRI.prj file
 
 	spatialRef.MorphToESRI()
 	file = open('yourshpfile.prj', 'w')
-	file.write(outSpatialRef.ExportToWkt())
+	file.write(spatialRef.ExportToWkt())
 	file.close()
 
 
