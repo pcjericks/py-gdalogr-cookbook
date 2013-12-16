@@ -53,6 +53,21 @@
             
   <div class="section" id="raster-layers">
 <h1>Raster Layers<a class="headerlink" href="#raster-layers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="close-a-raster-dataset">
+<h2>Close a raster dataset<a class="headerlink" href="#close-a-raster-dataset" title="Permalink to this headline">¶</a></h2>
+<p>This recipe shows how to close a raster dataset.
+It is useful in the middle of a script, to recover the resources held by accessing the dataset, remove file locks, etc. It is not necessary at the end of the script, as the Python garbage collector will do the same thing automatically when the script exits.
+Further discussion of this topic can be found in this <a class="reference external" href="http://gis.stackexchange.com/questions/80366/why-close-a-dataset-in-gdal-python">GIS StackExchange question</a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gdal</span>
+
+<span class="c"># open dataset</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;test.tif&#39;</span><span class="p">)</span>
+
+<span class="c"># close dataset</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="get-raster-metadata">
 <h2>Get Raster Metadata<a class="headerlink" href="#get-raster-metadata" title="Permalink to this headline">¶</a></h2>
 <p>Get raster metadata for quick-and-dirty resolution checks</p>
@@ -814,6 +829,7 @@ In the example below, a cost path between point 1 and point 2 is created based o
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Raster Layers</a><ul>
+<li><a class="reference internal" href="#close-a-raster-dataset">Close a raster dataset</a></li>
 <li><a class="reference internal" href="#get-raster-metadata">Get Raster Metadata</a></li>
 <li><a class="reference internal" href="#get-raster-band">Get Raster Band</a></li>
 <li><a class="reference internal" href="#loop-through-all-raster-bands">Loop Through All Raster Bands</a></li>

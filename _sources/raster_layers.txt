@@ -1,6 +1,24 @@
 Raster Layers
 ===============
 
+Close a raster dataset
+-------------------
+
+This recipe shows how to close a raster dataset. 
+It is useful in the middle of a script, to recover the resources held by accessing the dataset, remove file locks, etc. It is not necessary at the end of the script, as the Python garbage collector will do the same thing automatically when the script exits. 
+Further discussion of this topic can be found in this `GIS StackExchange question <http://gis.stackexchange.com/questions/80366/why-close-a-dataset-in-gdal-python>`_.
+
+.. code-block:: python
+
+	import gdal
+
+	# open dataset
+	ds = gdal.Open('test.tif')
+
+	# close dataset
+	ds = None
+
+
 Get Raster Metadata
 -------------------
 
