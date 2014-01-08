@@ -13,7 +13,7 @@ in existing recipes please add an issue to the `issue tracker <https://github.co
 For a detailed description of the whole Python GDAL/OGR API, see the useful `API docs <http://gdal.org/python/>`_.
 
 We heavily relied on Chris Garrard's excellent `Geoprocessing with Python using Open Source GIS <http://www.gis.usu.edu/~chrisg/python/2009/>`_
-and the official `GDAL/OGR Python documentation <http://gdal.org/python/>`_.
+and the official `GDAL/OGR Python documentation <http://gdal.org/python/>`_. Another great source of examples is OGR's `autotest directory <https://svn.osgeo.org/gdal/trunk/autotest/ogr/>`_.
 
 .. toctree::
    :maxdepth: 2
