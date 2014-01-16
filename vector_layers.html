@@ -53,6 +53,19 @@
             
   <div class="section" id="vector-layers">
 <h1>Vector Layers<a class="headerlink" href="#vector-layers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="delete-a-file">
+<h2>Delete a file<a class="headerlink" href="#delete-a-file" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">DriverName</span> <span class="o">=</span> <span class="s">&quot;ESRI Shapefile&quot;</span>      <span class="c"># e.g.: GeoJSON, ESRI Shapefile</span>
+<span class="n">FileName</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="n">DriverName</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">FileName</span><span class="p">):</span>
+     <span class="n">driver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">FileName</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="is-ogr-installed">
 <h2>Is Ogr Installed<a class="headerlink" href="#is-ogr-installed" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
@@ -1073,6 +1086,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Vector Layers</a><ul>
+<li><a class="reference internal" href="#delete-a-file">Delete a file</a></li>
 <li><a class="reference internal" href="#is-ogr-installed">Is Ogr Installed</a></li>
 <li><a class="reference internal" href="#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
 <li><a class="reference internal" href="#get-list-of-ogr-drivers-alphabetically-a-z">Get List of Ogr Drivers Alphabetically (A- Z)</a></li>
