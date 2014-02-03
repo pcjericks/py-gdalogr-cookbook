@@ -1108,6 +1108,8 @@ The following polygon is converted to an array.
 	 [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0]]
 
 
+.. code-block:: python 
+
     import ogr, gdal
 
     vector_fn = 'test.shp'
