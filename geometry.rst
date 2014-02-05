@@ -499,6 +499,7 @@ Quarter polygon and create centroids
     geom_poly = ogr.CreateGeometryFromWkt(poly_Wkt)
 	
 .. image:: images/quarter1.png
+.. code-block:: python
 
 
     # Create 4 square polygons
