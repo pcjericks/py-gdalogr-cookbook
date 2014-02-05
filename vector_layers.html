@@ -1078,7 +1078,6 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <div class="section" id="convert-vector-layer-to-array">
 <h2>Convert vector layer to array<a class="headerlink" href="#convert-vector-layer-to-array" title="Permalink to this headline">¶</a></h2>
 <p>This recipe converts a vector layer to an array.</p>
-<p>The following polygon is converted to an array.</p>
 <img alt="_images/vector2array.png" src="_images/vector2array.png" />
 <div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">]</span>
  <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">]</span>
@@ -1137,6 +1136,76 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 </pre></div>
 </div>
 </div>
+<div class="section" id="convert-polygon-to-points">
+<h2>Convert polygon to points<a class="headerlink" href="#convert-polygon-to-points" title="Permalink to this headline">¶</a></h2>
+<p>This recipe converts a polygon to points.</p>
+<img alt="_images/poly2point1.png" src="_images/poly2point1.png" />
+<img alt="_images/poly2point2.png" src="_images/poly2point2.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">gdal</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">polygon_fn</span> <span class="o">=</span> <span class="s">&#39;test_polygon.shp&#39;</span>
+
+<span class="c"># Define pixel_size which equals distance betweens points</span>
+<span class="n">pixel_size</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c"># Open the data source and read in the extent</span>
+<span class="n">source_ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">polygon_fn</span><span class="p">)</span>
+<span class="n">source_layer</span> <span class="o">=</span> <span class="n">source_ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">()</span>
+<span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">source_layer</span><span class="o">.</span><span class="n">GetExtent</span><span class="p">()</span>
+
+<span class="c"># Create the destination data source</span>
+<span class="n">x_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
+<span class="n">y_res</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">pixel_size</span><span class="p">)</span>
+<span class="n">target_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;GTiff&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&#39;temp.tif&#39;</span><span class="p">,</span> <span class="n">x_res</span><span class="p">,</span> <span class="n">y_res</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">)</span>
+<span class="n">target_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">((</span><span class="n">x_min</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">pixel_size</span><span class="p">))</span>
+<span class="n">band</span> <span class="o">=</span> <span class="n">target_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">band</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>
+
+<span class="c"># Rasterize</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">RasterizeLayer</span><span class="p">(</span><span class="n">target_ds</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source_layer</span><span class="p">,</span> <span class="n">burn_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="c"># Read as array</span>
+<span class="n">array</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">()</span>
+
+<span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;temp.tif&#39;</span><span class="p">)</span>
+<span class="n">geotransform</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+
+<span class="c"># Convert array to point coordinates</span>
+<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">roadList</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">array</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">multipoint</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPoint</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">indexY</span> <span class="ow">in</span> <span class="n">roadList</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+    <span class="n">indexX</span> <span class="o">=</span> <span class="n">roadList</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">count</span><span class="p">]</span>
+    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">originX</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">originY</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pixelHeight</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">Xcoord</span> <span class="o">=</span> <span class="n">originX</span><span class="o">+</span><span class="n">pixelWidth</span><span class="o">*</span><span class="n">indexX</span>
+    <span class="n">Ycoord</span> <span class="o">=</span> <span class="n">originY</span><span class="o">+</span><span class="n">pixelHeight</span><span class="o">*</span><span class="n">indexY</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+    <span class="n">point</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">Xcoord</span><span class="p">,</span> <span class="n">Ycoord</span><span class="p">)</span>
+    <span class="n">multipoint</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="c"># Write point coordinates to Shapefile</span>
+<span class="n">shpDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">&#39;points.shp&#39;</span><span class="p">):</span>
+    <span class="n">shpDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="s">&#39;points.shp&#39;</span><span class="p">)</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">shpDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="s">&#39;points.shp&#39;</span><span class="p">)</span>
+<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="s">&#39;points.shp&#39;</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPoint</span><span class="p">)</span>
+<span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+<span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+<span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">multipoint</span><span class="p">)</span>
+<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+
+<span class="c"># Remove temporary files</span>
+<span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&#39;temp.tif&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -1178,6 +1247,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#create-point-shapefile-with-attribute-data">Create point shapefile with attribute data</a></li>
 <li><a class="reference internal" href="#create-buffer">Create buffer</a></li>
 <li><a class="reference internal" href="#convert-vector-layer-to-array">Convert vector layer to array</a></li>
+<li><a class="reference internal" href="#convert-polygon-to-points">Convert polygon to points</a></li>
 </ul>
 </li>
 </ul>
