@@ -486,7 +486,6 @@ Write Geometry to WKB
     print wkb
 	
 Quarter polygon and create centroids
-
 ---------------------
 
     This recipe quarters a polygon and creates the centroid of the four quarters 
