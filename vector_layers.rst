@@ -1092,7 +1092,6 @@ Convert vector layer to array
 -------------------
 This recipe converts a vector layer to an array.
 
-The following polygon is converted to an array.
 
 .. image:: images/vector2array.png
 
@@ -1154,5 +1153,83 @@ The following polygon is converted to an array.
     # Read as array
     array = band.ReadAsArray()
     print array
+
+Convert polygon to points
+-------------------
+This recipe converts a polygon to points.
+
+
+.. image:: images/poly2point1.png
+
+.. image:: images/poly2point2.png
+
+.. code-block:: python
+
+    import ogr, gdal
+    import numpy as np
+    import os
+
+    polygon_fn = 'test_polygon.shp'
+
+    # Define pixel_size which equals distance betweens points
+    pixel_size = 10
+
+    # Open the data source and read in the extent
+    source_ds = ogr.Open(polygon_fn)
+    source_layer = source_ds.GetLayer()
+    x_min, x_max, y_min, y_max = source_layer.GetExtent()
+
+    # Create the destination data source
+    x_res = int((x_max - x_min) / pixel_size)
+    y_res = int((y_max - y_min) / pixel_size)
+    target_ds = gdal.GetDriverByName('GTiff').Create('temp.tif', x_res, y_res, gdal.GDT_Byte)
+    target_ds.SetGeoTransform((x_min, pixel_size, 0, y_max, 0, -pixel_size))
+    band = target_ds.GetRasterBand(1)
+    band.SetNoDataValue(255)
+
+    # Rasterize
+    gdal.RasterizeLayer(target_ds, [1], source_layer, burn_values=[1])
+
+    # Read as array
+    array = band.ReadAsArray()
+
+    raster = gdal.Open('temp.tif')
+    geotransform = raster.GetGeoTransform()
+
+    # Convert array to point coordinates
+    count = 0
+    roadList = np.where(array == 1)
+    multipoint = ogr.Geometry(ogr.wkbMultiPoint)
+    for indexY in roadList[0]:
+        indexX = roadList[1][count]
+        geotransform = raster.GetGeoTransform()
+        originX = geotransform[0]
+        originY = geotransform[3]
+        pixelWidth = geotransform[1]
+        pixelHeight = geotransform[5]
+        Xcoord = originX+pixelWidth*indexX
+        Ycoord = originY+pixelHeight*indexY
+        point = ogr.Geometry(ogr.wkbPoint)
+        point.AddPoint(Xcoord, Ycoord)
+        multipoint.AddGeometry(point)
+        count += 1
+
+    # Write point coordinates to Shapefile
+    shpDriver = ogr.GetDriverByName("ESRI Shapefile")
+    if os.path.exists('points.shp'):
+        shpDriver.DeleteDataSource('points.shp')
+    outDataSource = shpDriver.CreateDataSource('points.shp')
+    outLayer = outDataSource.CreateLayer('points.shp', geom_type=ogr.wkbMultiPoint)
+    featureDefn = outLayer.GetLayerDefn()
+    outFeature = ogr.Feature(featureDefn)
+    outFeature.SetGeometry(multipoint)
+    outLayer.CreateFeature(outFeature)
+
+    # Remove temporary files
+    os.remove('temp.tif')
+
+
+    
+	
 
 
