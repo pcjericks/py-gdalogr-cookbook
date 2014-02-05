@@ -484,3 +484,116 @@ Write Geometry to WKB
     # Export geometry to WKT
     wkb = geom_poly.ExportToWkb()
     print wkb
+	
+Quarter polygon and create centroids
+
+---------------------
+
+    This recipe quarters a polygon and creates the centroid of the four quarters 
+
+.. code-block:: python
+
+    import ogr
+	
+	# Given a test polygon
+    poly_Wkt= "POLYGON((-107.42631019589980212 40.11971708125970082,-107.42455436683293613 40.12061219666851741,-107.42020981542387403 40.12004414402532859,-107.41789122063043749 40.12149008687303819,-107.41419947746419439 40.11811617239460048,-107.41915181585792993 40.11761695654455906,-107.41998470913324581 40.11894245264452508,-107.42203317637793702 40.1184088144647788,-107.42430674991324224 40.1174448122981957,-107.42430674991324224 40.1174448122981957,-107.42631019589980212 40.11971708125970082))"
+    geom_poly = ogr.CreateGeometryFromWkt(poly_Wkt)
+	
+.. image:: images/quarter1.png
+
+
+    # Create 4 square polygons
+    geom_poly_envelope = geom_poly.GetEnvelope()
+    minX = geom_poly_envelope[0] 
+    minY = geom_poly_envelope[2] 
+    maxX = geom_poly_envelope[1] 
+    maxY = geom_poly_envelope[3]
+
+    '''
+    coord0----coord1----coord2
+    |			|			|
+    |           |           |
+    coord3----coord4----coord5
+    |			|           |
+    |           |           |
+    coord6----coord7----coord8
+    '''
+    coord0 = minX, maxY
+    coord1 = minX+(maxX-minX)/2, maxY
+    coord2 = maxX, maxY
+    coord3 = minX, minY+(maxY-minY)/2
+    coord4 = minX+(maxX-minX)/2, minY+(maxY-minY)/2
+    coord5 = maxX, minY+(maxY-minY)/2
+    coord6 = minX, minY
+    coord7 = minX+(maxX-minX)/2, minY
+    coord8 = maxX, minY
+
+    ringTopLeft = ogr.Geometry(ogr.wkbLinearRing)
+    ringTopLeft.AddPoint_2D(*coord0)
+    ringTopLeft.AddPoint_2D(*coord1)
+    ringTopLeft.AddPoint_2D(*coord4)
+    ringTopLeft.AddPoint_2D(*coord3)
+    ringTopLeft.AddPoint_2D(*coord0)
+    polyTopLeft = ogr.Geometry(ogr.wkbPolygon)
+    polyTopLeft.AddGeometry(ringTopLeft)
+	
+.. image:: images/quarter2.png
+
+
+    ringTopRight = ogr.Geometry(ogr.wkbLinearRing)
+    ringTopRight.AddPoint_2D(*coord1)
+    ringTopRight.AddPoint_2D(*coord2)
+    ringTopRight.AddPoint_2D(*coord5)
+    ringTopRight.AddPoint_2D(*coord4)
+    ringTopRight.AddPoint_2D(*coord1)
+    polyTopRight = ogr.Geometry(ogr.wkbPolygon)
+    polyTopRight.AddGeometry(ringTopRight)
+	
+.. image:: images/quarter3.png
+
+
+    ringBottomLeft = ogr.Geometry(ogr.wkbLinearRing)
+    ringBottomLeft.AddPoint_2D(*coord3)
+    ringBottomLeft.AddPoint_2D(*coord4)
+    ringBottomLeft.AddPoint_2D(*coord7)
+    ringBottomLeft.AddPoint_2D(*coord6)
+    ringBottomLeft.AddPoint_2D(*coord3)
+    polyBottomLeft = ogr.Geometry(ogr.wkbPolygon)
+    polyBottomLeft.AddGeometry(ringBottomLeft)
+
+.. image:: images/quarter4.png
+
+
+    ringBottomRight = ogr.Geometry(ogr.wkbLinearRing)
+    ringBottomRight.AddPoint_2D(*coord4)
+    ringBottomRight.AddPoint_2D(*coord5)
+    ringBottomRight.AddPoint_2D(*coord8)
+    ringBottomRight.AddPoint_2D(*coord7)
+    ringBottomRight.AddPoint_2D(*coord4)
+    polyBottomRight = ogr.Geometry(ogr.wkbPolygon)
+    polyBottomRight.AddGeometry(ringBottomRight)
+	
+.. image:: images/quarter5.png
+
+
+    # Intersect 4 squares polygons with test polygon
+    quaterPolyTopLeft = polyTopLeft.Intersection(geom_poly)
+	
+.. image:: images/quarter6.png
+
+
+    quaterPolyTopRight =  polyTopRight.Intersection(geom_poly)
+    quaterPolyBottomLeft =  polyBottomLeft.Intersection(geom_poly)
+    quaterPolyBottomRight =  polyBottomRight.Intersection(geom_poly)
+	
+
+
+    # Create centroids of each intersected polygon
+    centroidTopLeft = quaterPolyTopLeft.Centroid()
+    centroidTopRight =  quaterPolyTopRight.Centroid()
+    centroidBottomLeft =  quaterPolyBottomLeft.Centroid()
+    centroidBottomRight =  quaterPolyBottomRight.Centroid()
+
+.. image:: images/quarter9.png
+
+
