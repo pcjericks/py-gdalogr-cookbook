@@ -511,10 +511,8 @@ Quarter polygon and create centroids
 
     '''
     coord0----coord1----coord2
-    |			|			|
     |           |           |
     coord3----coord4----coord5
-    |			|           |
     |           |           |
     coord6----coord7----coord8
     '''
@@ -537,9 +535,6 @@ Quarter polygon and create centroids
     polyTopLeft = ogr.Geometry(ogr.wkbPolygon)
     polyTopLeft.AddGeometry(ringTopLeft)
 	
-.. image:: images/quarter2.png
-.. code-block:: python
-
 
     ringTopRight = ogr.Geometry(ogr.wkbLinearRing)
     ringTopRight.AddPoint_2D(*coord1)
@@ -550,9 +545,6 @@ Quarter polygon and create centroids
     polyTopRight = ogr.Geometry(ogr.wkbPolygon)
     polyTopRight.AddGeometry(ringTopRight)
 	
-.. image:: images/quarter3.png
-.. code-block:: python
-
 
     ringBottomLeft = ogr.Geometry(ogr.wkbLinearRing)
     ringBottomLeft.AddPoint_2D(*coord3)
@@ -563,9 +555,6 @@ Quarter polygon and create centroids
     polyBottomLeft = ogr.Geometry(ogr.wkbPolygon)
     polyBottomLeft.AddGeometry(ringBottomLeft)
 
-.. image:: images/quarter4.png
-.. code-block:: python
-
 
     ringBottomRight = ogr.Geometry(ogr.wkbLinearRing)
     ringBottomRight.AddPoint_2D(*coord4)
@@ -575,22 +564,18 @@ Quarter polygon and create centroids
     ringBottomRight.AddPoint_2D(*coord4)
     polyBottomRight = ogr.Geometry(ogr.wkbPolygon)
     polyBottomRight.AddGeometry(ringBottomRight)
-	
-.. image:: images/quarter5.png
-.. code-block:: python
 
+.. image:: images/quarter4.png
+.. code-block:: python	 
 
     # Intersect 4 squares polygons with test polygon
     quaterPolyTopLeft = polyTopLeft.Intersection(geom_poly)
-	
-.. image:: images/quarter6.png
-.. code-block:: python
-
-
     quaterPolyTopRight =  polyTopRight.Intersection(geom_poly)
     quaterPolyBottomLeft =  polyBottomLeft.Intersection(geom_poly)
     quaterPolyBottomRight =  polyBottomRight.Intersection(geom_poly)
 	
+.. image:: images/quarter6.png
+.. code-block:: python
 
 
     # Create centroids of each intersected polygon
