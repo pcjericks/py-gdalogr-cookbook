@@ -508,6 +508,100 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="quarter-polygon-and-create-centroids">
+<h2>Quarter polygon and create centroids<a class="headerlink" href="#quarter-polygon-and-create-centroids" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This recipe quarters a polygon and creates the centroid of the four quarters</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span>
+
+    <span class="c"># Given a test polygon</span>
+<span class="n">poly_Wkt</span><span class="o">=</span> <span class="s">&quot;POLYGON((-107.42631019589980212 40.11971708125970082,-107.42455436683293613 40.12061219666851741,-107.42020981542387403 40.12004414402532859,-107.41789122063043749 40.12149008687303819,-107.41419947746419439 40.11811617239460048,-107.41915181585792993 40.11761695654455906,-107.41998470913324581 40.11894245264452508,-107.42203317637793702 40.1184088144647788,-107.42430674991324224 40.1174448122981957,-107.42430674991324224 40.1174448122981957,-107.42631019589980212 40.11971708125970082))&quot;</span>
+<span class="n">geom_poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">poly_Wkt</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quarter1.png" src="_images/quarter1.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Create 4 square polygons</span>
+<span class="n">geom_poly_envelope</span> <span class="o">=</span> <span class="n">geom_poly</span><span class="o">.</span><span class="n">GetEnvelope</span><span class="p">()</span>
+<span class="n">minX</span> <span class="o">=</span> <span class="n">geom_poly_envelope</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">minY</span> <span class="o">=</span> <span class="n">geom_poly_envelope</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">maxX</span> <span class="o">=</span> <span class="n">geom_poly_envelope</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">maxY</span> <span class="o">=</span> <span class="n">geom_poly_envelope</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">coord0----coord1----coord2</span>
+<span class="sd">|           |           |</span>
+<span class="sd">coord3----coord4----coord5</span>
+<span class="sd">|           |           |</span>
+<span class="sd">coord6----coord7----coord8</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="n">coord0</span> <span class="o">=</span> <span class="n">minX</span><span class="p">,</span> <span class="n">maxY</span>
+<span class="n">coord1</span> <span class="o">=</span> <span class="n">minX</span><span class="o">+</span><span class="p">(</span><span class="n">maxX</span><span class="o">-</span><span class="n">minX</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">maxY</span>
+<span class="n">coord2</span> <span class="o">=</span> <span class="n">maxX</span><span class="p">,</span> <span class="n">maxY</span>
+<span class="n">coord3</span> <span class="o">=</span> <span class="n">minX</span><span class="p">,</span> <span class="n">minY</span><span class="o">+</span><span class="p">(</span><span class="n">maxY</span><span class="o">-</span><span class="n">minY</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">coord4</span> <span class="o">=</span> <span class="n">minX</span><span class="o">+</span><span class="p">(</span><span class="n">maxX</span><span class="o">-</span><span class="n">minX</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">minY</span><span class="o">+</span><span class="p">(</span><span class="n">maxY</span><span class="o">-</span><span class="n">minY</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">coord5</span> <span class="o">=</span> <span class="n">maxX</span><span class="p">,</span> <span class="n">minY</span><span class="o">+</span><span class="p">(</span><span class="n">maxY</span><span class="o">-</span><span class="n">minY</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">coord6</span> <span class="o">=</span> <span class="n">minX</span><span class="p">,</span> <span class="n">minY</span>
+<span class="n">coord7</span> <span class="o">=</span> <span class="n">minX</span><span class="o">+</span><span class="p">(</span><span class="n">maxX</span><span class="o">-</span><span class="n">minX</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">minY</span>
+<span class="n">coord8</span> <span class="o">=</span> <span class="n">maxX</span><span class="p">,</span> <span class="n">minY</span>
+
+<span class="n">ringTopLeft</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ringTopLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord0</span><span class="p">)</span>
+<span class="n">ringTopLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord1</span><span class="p">)</span>
+<span class="n">ringTopLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord4</span><span class="p">)</span>
+<span class="n">ringTopLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord3</span><span class="p">)</span>
+<span class="n">ringTopLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord0</span><span class="p">)</span>
+<span class="n">polyTopLeft</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">polyTopLeft</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ringTopLeft</span><span class="p">)</span>
+
+
+<span class="n">ringTopRight</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ringTopRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord1</span><span class="p">)</span>
+<span class="n">ringTopRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord2</span><span class="p">)</span>
+<span class="n">ringTopRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord5</span><span class="p">)</span>
+<span class="n">ringTopRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord4</span><span class="p">)</span>
+<span class="n">ringTopRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord1</span><span class="p">)</span>
+<span class="n">polyTopRight</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">polyTopRight</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ringTopRight</span><span class="p">)</span>
+
+
+<span class="n">ringBottomLeft</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ringBottomLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord3</span><span class="p">)</span>
+<span class="n">ringBottomLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord4</span><span class="p">)</span>
+<span class="n">ringBottomLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord7</span><span class="p">)</span>
+<span class="n">ringBottomLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord6</span><span class="p">)</span>
+<span class="n">ringBottomLeft</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord3</span><span class="p">)</span>
+<span class="n">polyBottomLeft</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">polyBottomLeft</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ringBottomLeft</span><span class="p">)</span>
+
+
+<span class="n">ringBottomRight</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ringBottomRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord4</span><span class="p">)</span>
+<span class="n">ringBottomRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord5</span><span class="p">)</span>
+<span class="n">ringBottomRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord8</span><span class="p">)</span>
+<span class="n">ringBottomRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord7</span><span class="p">)</span>
+<span class="n">ringBottomRight</span><span class="o">.</span><span class="n">AddPoint_2D</span><span class="p">(</span><span class="o">*</span><span class="n">coord4</span><span class="p">)</span>
+<span class="n">polyBottomRight</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">polyBottomRight</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ringBottomRight</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quarter4.png" src="_images/quarter4.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Intersect 4 squares polygons with test polygon</span>
+<span class="n">quaterPolyTopLeft</span> <span class="o">=</span> <span class="n">polyTopLeft</span><span class="o">.</span><span class="n">Intersection</span><span class="p">(</span><span class="n">geom_poly</span><span class="p">)</span>
+<span class="n">quaterPolyTopRight</span> <span class="o">=</span>  <span class="n">polyTopRight</span><span class="o">.</span><span class="n">Intersection</span><span class="p">(</span><span class="n">geom_poly</span><span class="p">)</span>
+<span class="n">quaterPolyBottomLeft</span> <span class="o">=</span>  <span class="n">polyBottomLeft</span><span class="o">.</span><span class="n">Intersection</span><span class="p">(</span><span class="n">geom_poly</span><span class="p">)</span>
+<span class="n">quaterPolyBottomRight</span> <span class="o">=</span>  <span class="n">polyBottomRight</span><span class="o">.</span><span class="n">Intersection</span><span class="p">(</span><span class="n">geom_poly</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quarter6.png" src="_images/quarter6.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Create centroids of each intersected polygon</span>
+<span class="n">centroidTopLeft</span> <span class="o">=</span> <span class="n">quaterPolyTopLeft</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span>
+<span class="n">centroidTopRight</span> <span class="o">=</span>  <span class="n">quaterPolyTopRight</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span>
+<span class="n">centroidBottomLeft</span> <span class="o">=</span>  <span class="n">quaterPolyBottomLeft</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span>
+<span class="n">centroidBottomRight</span> <span class="o">=</span>  <span class="n">quaterPolyBottomRight</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/quarter9.png" src="_images/quarter9.png" />
+</div>
 </div>
 
 
@@ -546,6 +640,7 @@
 <li><a class="reference internal" href="#write-geometry-to-wkt">Write Geometry to WKT</a></li>
 <li><a class="reference internal" href="#write-geometry-to-kml">Write Geometry to KML</a></li>
 <li><a class="reference internal" href="#write-geometry-to-wkb">Write Geometry to WKB</a></li>
+<li><a class="reference internal" href="#quarter-polygon-and-create-centroids">Quarter polygon and create centroids</a></li>
 </ul>
 </li>
 </ul>
