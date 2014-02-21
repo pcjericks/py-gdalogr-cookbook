@@ -822,6 +822,57 @@ In the example below, a cost path between point 1 and point 2 is created based o
 <h2>Replace No Data Value of Raster with new value<a class="headerlink" href="#replace-no-data-value-of-raster-with-new-value" title="Permalink to this headline">¶</a></h2>
 <p>This recipe replaces the No Data Value with a new specified value</p>
 <img alt="_images/costpath1.png" src="_images/costpath1.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gdal</span><span class="o">,</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">osr</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">raster2array</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">):</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">getNoDataValue</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">):</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">band</span><span class="o">.</span><span class="n">GetNoDataValue</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">array2raster</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">,</span><span class="n">newRasterfn</span><span class="p">,</span><span class="n">array</span><span class="p">):</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">originX</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">originY</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pixelHeight</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">RasterXSize</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">RasterYSize</span>
+
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;GTiff&#39;</span><span class="p">)</span>
+    <span class="n">outRaster</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">newRasterfn</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Float32</span><span class="p">)</span>
+    <span class="n">outRaster</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">((</span><span class="n">originX</span><span class="p">,</span> <span class="n">pixelWidth</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">originY</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pixelHeight</span><span class="p">))</span>
+    <span class="n">outband</span> <span class="o">=</span> <span class="n">outRaster</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">outband</span><span class="o">.</span><span class="n">WriteArray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">outRasterSRS</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+    <span class="n">outRasterSRS</span><span class="o">.</span><span class="n">ImportFromWkt</span><span class="p">(</span><span class="n">raster</span><span class="o">.</span><span class="n">GetProjectionRef</span><span class="p">())</span>
+    <span class="n">outRaster</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span><span class="n">outRasterSRS</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">())</span>
+    <span class="n">outband</span><span class="o">.</span><span class="n">FlushCache</span><span class="p">()</span>
+
+
+<span class="n">rasterfn</span> <span class="o">=</span> <span class="s">&#39;Slope.tif&#39;</span>
+<span class="n">newValue</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">newRasterfn</span> <span class="o">=</span> <span class="s">&#39;SlopeNew.tif&#39;</span>
+
+<span class="c"># Convert Raster to array</span>
+<span class="n">rasterArray</span> <span class="o">=</span> <span class="n">raster2array</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+
+<span class="c"># Get no data value of array</span>
+<span class="n">noDataValue</span> <span class="o">=</span> <span class="n">getNoDataValue</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">)</span>
+
+<span class="c"># Updata no data value in array with new value</span>
+<span class="n">rasterArray</span><span class="p">[</span><span class="n">rasterArray</span> <span class="o">==</span> <span class="n">noDataValue</span><span class="p">]</span> <span class="o">=</span> <span class="n">newValue</span>
+
+<span class="c"># Write updated array to new raster</span>
+<span class="n">array2raster</span><span class="p">(</span><span class="n">rasterfn</span><span class="p">,</span><span class="n">newRasterfn</span><span class="p">,</span><span class="n">rasterArray</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 

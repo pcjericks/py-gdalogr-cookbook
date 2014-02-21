@@ -837,6 +837,7 @@ This recipe replaces the No Data Value with a new specified value
 .. image:: images/costpath1.png
 
 .. code-block:: python 
+
     import gdal, ogr, osr, os
     import numpy as np
 
