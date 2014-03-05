@@ -519,7 +519,7 @@ This recipe calculates statistics on values of a raster within the zones of a ve
         ycount = int((ymax - ymin)/pixelWidth)+1
 
         # Create memory target raster
-        target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount, gdal.GDT_Byte)
+        target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount, 1, gdal.GDT_Byte)
         target_ds.SetGeoTransform((
             xmin, pixelWidth, 0,
             ymax, 0, pixelHeight,
@@ -698,7 +698,7 @@ This recipe creates a raster from an array
         originY = rasterOrigin[1]
     
         driver = gdal.GetDriverByName('GTiff')
-        outRaster = driver.Create(newRasterfn, cols, rows, gdal.GDT_Byte)
+        outRaster = driver.Create(newRasterfn, cols, rows, 1, gdal.GDT_Byte)
         outRaster.SetGeoTransform((originX, pixelWidth, 0, originY, 0, pixelHeight))
         outband = outRaster.GetRasterBand(1)
         outband.WriteArray(array)
@@ -799,7 +799,7 @@ In the example below, a cost path between point 1 and point 2 is created based o
         rows = array.shape[0]
     
         driver = gdal.GetDriverByName('GTiff')
-        outRaster = driver.Create(newRasterfn, cols, rows, gdal.GDT_Byte)
+        outRaster = driver.Create(newRasterfn, cols, rows, 1, gdal.GDT_Byte)
         outRaster.SetGeoTransform((originX, pixelWidth, 0, originY, 0, pixelHeight))
         outband = outRaster.GetRasterBand(1)
         outband.WriteArray(array)
