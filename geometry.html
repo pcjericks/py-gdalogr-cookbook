@@ -328,7 +328,7 @@
 
 <span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)&quot;</span>
 <span class="n">geom</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
-<span class="c"># Get Evenlope return a tuple (minX, maxX, minY, maxY)</span>
+<span class="c"># Get Envelope returns a tuple (minX, maxX, minY, maxY)</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetEnvelope</span><span class="p">()</span>
 <span class="k">print</span> <span class="s">&quot;minX: </span><span class="si">%d</span><span class="s">, minY: </span><span class="si">%d</span><span class="s">, maxX: </span><span class="si">%d</span><span class="s">, maxY: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">env</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">env</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">env</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
 </pre></div>
