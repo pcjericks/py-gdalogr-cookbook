@@ -406,6 +406,8 @@
 </div>
 <div class="section" id="write-geometry-to-geojson">
 <h2>Write Geometry to GeoJSON<a class="headerlink" href="#write-geometry-to-geojson" title="Permalink to this headline">¶</a></h2>
+<p>There are two options to create a GeoJSON from a geometry.</p>
+<p>You can either create a new GeoJSON file or simply export the geometry to Json and print it. Both options are explained below.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
 
 <span class="c"># Create test polygon</span>
@@ -443,6 +445,23 @@
 
 <span class="c"># Close DataSources</span>
 <span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Create test polygon</span>
+<span class="n">ring</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1161053.0218226474</span><span class="p">,</span> <span class="mf">667456.2684348812</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1214704.933941905</span><span class="p">,</span> <span class="mf">641092.8288590391</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1228580.428455506</span><span class="p">,</span> <span class="mf">682719.3123998424</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1218405.0658121984</span><span class="p">,</span> <span class="mf">721108.1805541387</span><span class="p">)</span>
+<span class="n">ring</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="mf">1179091.1646903288</span><span class="p">,</span> <span class="mf">712782.8838459781</span><span class="p">)</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">)</span>
+<span class="n">poly</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+
+<span class="n">geojson</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">ExportToJSON</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">geojson</span>
 </pre></div>
 </div>
 </div>
