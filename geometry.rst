@@ -380,6 +380,10 @@ Calculate union between two Geometries
 Write Geometry to GeoJSON
 -------------------------
 
+There are two options to create a GeoJSON from a geometry.
+
+You can either create a new GeoJSON file or simply export the geometry to Json and print it. Both options are explained below.
+
 .. code-block:: python
 
     from osgeo import ogr
@@ -419,6 +423,24 @@ Write Geometry to GeoJSON
 
     # Close DataSources
     outDataSource.Destroy()
+    
+.. code-block:: python
+
+    from osgeo import ogr
+
+    # Create test polygon
+    ring = ogr.Geometry(ogr.wkbLinearRing)
+    ring.AddPoint(1179091.1646903288, 712782.8838459781)
+    ring.AddPoint(1161053.0218226474, 667456.2684348812)
+    ring.AddPoint(1214704.933941905, 641092.8288590391)
+    ring.AddPoint(1228580.428455506, 682719.3123998424)
+    ring.AddPoint(1218405.0658121984, 721108.1805541387)
+    ring.AddPoint(1179091.1646903288, 712782.8838459781)
+    poly = ogr.Geometry(ogr.wkbPolygon)
+    poly.AddGeometry(ring)
+    
+    geojson = poly.ExportToJSON()
+    print geojson
 
 Write Geometry to WKT
 ---------------------
