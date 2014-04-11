@@ -232,7 +232,7 @@ This recipe takes in a OGR file (e.g. shapefile) and creates a new raster Tiff f
     # Create the destination data source
     x_res = int((x_max - x_min) / pixel_size)
     y_res = int((y_max - y_min) / pixel_size)
-    target_ds = gdal.GetDriverByName('GTiff').Create(raster_fn, x_res, y_res, gdal.GDT_Byte)
+    target_ds = gdal.GetDriverByName('GTiff').Create(raster_fn, x_res, y_res, 1, gdal.GDT_Byte)
     target_ds.SetGeoTransform((x_min, pixel_size, 0, y_max, 0, -pixel_size))
     band = target_ds.GetRasterBand(1)
     band.SetNoDataValue(NoData_value)
