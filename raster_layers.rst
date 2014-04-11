@@ -227,7 +227,6 @@ This recipe takes in a OGR file (e.g. shapefile) and creates a new raster Tiff f
     # Open the data source and read in the extent
     source_ds = ogr.Open(vector_fn)
     source_layer = source_ds.GetLayer()
-    source_srs = source_layer.GetSpatialRef()
     x_min, x_max, y_min, y_max = source_layer.GetExtent()
 
     # Create the destination data source
