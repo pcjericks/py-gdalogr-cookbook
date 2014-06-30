@@ -730,6 +730,42 @@ The CSV file ``volcano_data.txt`` contains the following fields, separated by a 
   # Destroy the data source to free resources
   data_source.Destroy() 
    
+   
+Create a PostGIS table from WKT
+-----------------------------------------------------------------------------
+This recipe creates a new table in an existing PostGIS database.
+
+.. code-block:: python
+
+    import ogr, osr
+
+    database = 'test'
+    usr = 'postgres'
+    pw = ''
+    table = 'test'
+
+    wkt = "POINT (1120351.5712494177 741921.4223245403)"
+    point = ogr.CreateGeometryFromWkt(wkt)
+
+    connectionString = "PG:dbname='%s' user='%s' password='%s'" % (database,usr,pw) 
+    ogrds = ogr.Open(connectionString) 
+
+    srs = osr.SpatialReference()
+    srs.ImportFromEPSG(4326)
+
+    layer = ogrds.CreateLayer(table, srs, ogr.wkbPoint, ['OVERWRITE=YES'] )
+
+    layerDefn = layer.GetLayerDefn()
+
+    feature = ogr.Feature(layerDefn)
+    feature.SetGeometry(point)
+
+    layer.StartTransaction()
+    layer.CreateFeature(feature)
+    layer.CommitTransaction() 
+       
+
+
 
 Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI 
 -----------------------------------------------------------------------------
