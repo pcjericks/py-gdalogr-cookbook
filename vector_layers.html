@@ -737,6 +737,38 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 </pre></div>
 </div>
 </div>
+<div class="section" id="create-a-postgis-table-from-wkt">
+<h2>Create a PostGIS table from WKT<a class="headerlink" href="#create-a-postgis-table-from-wkt" title="Permalink to this headline">¶</a></h2>
+<p>This recipe creates a new table in an existing PostGIS database.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">osr</span>
+
+<span class="n">database</span> <span class="o">=</span> <span class="s">&#39;test&#39;</span>
+<span class="n">usr</span> <span class="o">=</span> <span class="s">&#39;postgres&#39;</span>
+<span class="n">pw</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">table</span> <span class="o">=</span> <span class="s">&#39;test&#39;</span>
+
+<span class="n">wkt</span> <span class="o">=</span> <span class="s">&quot;POINT (1120351.5712494177 741921.4223245403)&quot;</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">wkt</span><span class="p">)</span>
+
+<span class="n">connectionString</span> <span class="o">=</span> <span class="s">&quot;PG:dbname=&#39;</span><span class="si">%s</span><span class="s">&#39; user=&#39;</span><span class="si">%s</span><span class="s">&#39; password=&#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">database</span><span class="p">,</span><span class="n">usr</span><span class="p">,</span><span class="n">pw</span><span class="p">)</span>
+<span class="n">ogrds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">connectionString</span><span class="p">)</span>
+
+<span class="n">srs</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+<span class="n">srs</span><span class="o">.</span><span class="n">ImportFromEPSG</span><span class="p">(</span><span class="mi">4326</span><span class="p">)</span>
+
+<span class="n">layer</span> <span class="o">=</span> <span class="n">ogrds</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">srs</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;OVERWRITE=YES&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+<span class="n">layerDefn</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">layerDefn</span><span class="p">)</span>
+<span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+
+<span class="n">layer</span><span class="o">.</span><span class="n">StartTransaction</span><span class="p">()</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">CommitTransaction</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">
 <h2>Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI<a class="headerlink" href="#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference external" href="http://www.gdal.org/ogr2ogr.html">ogr2ogr command line tool</a> is an easy way to filter, reproject and trim columns in a shapefile. The workflow below shows how we can approximate the following ogr2ogr command with the OGR api using a decently large <a class="reference external" href="http://www5.kingcounty.gov/sdc/Metadata.aspx?Layer=parcel_address">parcel shapefile from King County GIS</a> .</p>
@@ -1239,6 +1271,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#save-the-convex-hull-of-all-geometry-from-an-input-layer-to-an-output-layer">Save the convex hull of all geometry from an input Layer to an output Layer</a></li>
 <li><a class="reference internal" href="#save-centroids-of-input-layer-to-an-output-layer">Save centroids of input Layer to an output Layer</a></li>
 <li><a class="reference internal" href="#create-a-new-shapefile-and-add-data">Create a New Shapefile and Add Data</a></li>
+<li><a class="reference internal" href="#create-a-postgis-table-from-wkt">Create a PostGIS table from WKT</a></li>
 <li><a class="reference internal" href="#filter-and-select-input-shapefile-to-new-output-shapefile-like-ogr2ogr-cli">Filter and Select Input Shapefile to New Output Shapefile Like ogr2ogr CLI</a></li>
 <li><a class="reference internal" href="#merge-ogr-layers">Merge OGR Layers</a></li>
 <li><a class="reference internal" href="#get-a-list-of-the-street-names-in-a-osm-file">Get a list of the street names in a OSM file</a></li>
