@@ -18,6 +18,7 @@ and the official `GDAL/OGR Python documentation <http://gdal.org/python/>`_. Ano
 .. toctree::
    :maxdepth: 2
    
+   gdal_general.rst
    geometry.rst
    vector_layers.rst
    raster_layers.rst
