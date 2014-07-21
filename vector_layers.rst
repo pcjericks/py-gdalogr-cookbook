@@ -445,10 +445,10 @@ Get a Layer's Capabilities
 
 
 Set HTTP Proxy options before fetching a web datasource
------------------------------------------
+---------------------------------------------------------
 This recipe sets options for a HTTP proxy service that using NTLM authentication (typical 
 for corporate environments that using Active directory for single sign-on proxy support). 
-More information about the GDAL HTTP proxy options can be found `here: <http://trac.osgeo.org/gdal/wiki/ConfigOptions#GDALOGRHTTPoptions>`_
+More information about the GDAL HTTP proxy options can be found `here <http://trac.osgeo.org/gdal/wiki/ConfigOptions#GDALOGRHTTPoptions>`_
 
 
 .. code-block:: python
@@ -472,6 +472,8 @@ More information about the GDAL HTTP proxy options can be found `here: <http://t
     
     # now fetch a HTTP datasource and do something...
     ds = ogr.Open('http://featureserver/cities/.geojson')
+    if not ds:
+        sys.exit('ERROR: can not open GeoJSON datasource')
     lyr = ds.GetLayer('OGRGeoJSON')
     for feat in lyr:
         geom = feat.GetGeometryRef()
