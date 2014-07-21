@@ -444,6 +444,46 @@ Get a Layer's Capabilities
         print("  %s = %s" % (cap, layer.TestCapability(cap)))
 
 
+Get WFS layer and iterate over features
+-----------------------------------------
+This recipe queries a WFS services and fetches features from a large layer. It sets up the GDAL 
+configuration to using WFS paging if it is supported.
+
+.. code-block:: python
+
+    import sys
+    
+    try:
+        from osgeo import ogr, osr, gdal
+    except:
+        sys.exit('ERROR: cannot find GDAL/OGR modules')
+
+    wfs_drv = ogr.GetDriverByName('WFS')
+
+    # Speeds up querying WFS capabilities for services with alot of layers
+    gdal.SetConfigOption('OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN', 'NO')
+
+    # Set config for paging. Works on WFS 2.0 services and WFS 1.0 and 1.1 with some other services.
+    gdal.SetConfigOption('OGR_WFS_PAGING_ALLOWED', 'YES')
+    gdal.SetConfigOption('OGR_WFS_PAGE_SIZE', '10000')
+
+    url = 'http://example-service.com/wfs'
+    wfs_ds = wfs_drv.Open('WFS:' + url)
+    if not wfs_ds:
+        sys.exit('ERROR: can not open WFS datasource')
+
+    layer = wfs_ds.GetLayerByName("largelayer")
+    if not layer:
+         sys.exit('ERROR: can not find layer in service')
+
+    # now do something interesting with the features
+    feat = layer.GetNextFeature()
+    while feat is not None:
+        feat = layer.GetNextFeature()
+        # do something more..
+    feat = None
+
+
 Read a CSV of Coordinates as an OGRVRTLayer
 ------------------------------------------------
 

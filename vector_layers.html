@@ -470,6 +470,44 @@ be the best way to scan the API&#8217;s class methods. For a detailed descriptio
 </pre></div>
 </div>
 </div>
+<div class="section" id="get-wfs-layer-and-iterate-over-features">
+<h2>Get WFS layer and iterate over features<a class="headerlink" href="#get-wfs-layer-and-iterate-over-features" title="Permalink to this headline">¶</a></h2>
+<p>This recipe queries a WFS services and fetches features from a large layer. It sets up the GDAL
+configuration to using WFS paging if it is supported.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span><span class="p">,</span> <span class="n">gdal</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: cannot find GDAL/OGR modules&#39;</span><span class="p">)</span>
+
+<span class="n">wfs_drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;WFS&#39;</span><span class="p">)</span>
+
+<span class="c"># Speeds up querying WFS capabilities for services with alot of layers</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN&#39;</span><span class="p">,</span> <span class="s">&#39;NO&#39;</span><span class="p">)</span>
+
+<span class="c"># Set config for paging. Works on WFS 2.0 services and WFS 1.0 and 1.1 with some other services.</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;OGR_WFS_PAGING_ALLOWED&#39;</span><span class="p">,</span> <span class="s">&#39;YES&#39;</span><span class="p">)</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;OGR_WFS_PAGE_SIZE&#39;</span><span class="p">,</span> <span class="s">&#39;10000&#39;</span><span class="p">)</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://example-service.com/wfs&#39;</span>
+<span class="n">wfs_ds</span> <span class="o">=</span> <span class="n">wfs_drv</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;WFS:&#39;</span> <span class="o">+</span> <span class="n">url</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">wfs_ds</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: can not open WFS datasource&#39;</span><span class="p">)</span>
+
+<span class="n">layer</span> <span class="o">=</span> <span class="n">wfs_ds</span><span class="o">.</span><span class="n">GetLayerByName</span><span class="p">(</span><span class="s">&quot;largelayer&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span><span class="p">:</span>
+     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: can not find layer in service&#39;</span><span class="p">)</span>
+
+<span class="c"># now do something interesting with the features</span>
+<span class="n">feat</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+<span class="k">while</span> <span class="n">feat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="n">feat</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+    <span class="c"># do something more..</span>
+<span class="n">feat</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="read-a-csv-of-coordinates-as-an-ogrvrtlayer">
 <h2>Read a CSV of Coordinates as an OGRVRTLayer<a class="headerlink" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer" title="Permalink to this headline">¶</a></h2>
 <p>GDAL/OGR has a <a class="reference external" href="http://www.gdal.org/ogr/drv_vrt.html">Virtual Format spec</a> that allows you to derive layers from flat tables such as a CSV &#8211; it does a lot more than that too so go read about it. In the example below we are reading in a CSV with X,Y columns and values. That CSV file is wrapped by an XML file that describes it as an OGR layer. Below are all the necessary pieces and a script that reads the XML file and prints out point geometries.</p>
@@ -1266,6 +1304,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#get-postgis-layer-fields-get-the-user-defined-fields">Get PostGIS Layer Fields - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-fields-and-types-get-the-user-defined-fields">Get PostGIS Layer Fields and Types - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-a-layer-s-capabilities">Get a Layer&#8217;s Capabilities</a></li>
+<li><a class="reference internal" href="#get-wfs-layer-and-iterate-over-features">Get WFS layer and iterate over features</a></li>
 <li><a class="reference internal" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer">Read a CSV of Coordinates as an OGRVRTLayer</a></li>
 <li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
 <li><a class="reference internal" href="#save-the-convex-hull-of-all-geometry-from-an-input-layer-to-an-output-layer">Save the convex hull of all geometry from an input Layer to an output Layer</a></li>
