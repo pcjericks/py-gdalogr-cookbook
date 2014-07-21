@@ -506,7 +506,29 @@ Write Geometry to WKB
     # Export geometry to WKT
     wkb = geom_poly.ExportToWkb()
     print wkb
-	
+
+
+Force polygon to multipolygon
+-------------------------------
+
+.. code-block:: python
+    from osgeo import ogr
+
+    # Given a test polygon
+    poly_wkt= "POLYGON ((1179091.164690328761935 712782.883845978067257,1161053.021822647424415 667456.268434881232679,1214704.933941904921085 641092.828859039116651,1228580.428455505985767 682719.312399842427112,1218405.065812198445201 721108.180554138729349,1179091.164690328761935 712782.883845978067257))"
+    geom_poly = ogr.CreateGeometryFromWkt(poly_wkt)
+
+    # Force a polygon to multipolygon
+    if geom_poly.GetGeometryType() == ogr.wkbPolygon:
+       geom_poly = ogr.ForceToMultiPolygon(geom_poly)
+       # if are iterating over features just to update the geometry 
+       # to multipolygon you can update the geometry using "feature.SetGeometryDirectly(geom_poly)"
+
+    # Then export geometry to WKT
+    wkt = geom_poly.ExportToWkt()
+    print wkt
+
+
 Quarter polygon and create centroids
 ---------------------
 
