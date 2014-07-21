@@ -508,6 +508,39 @@ configuration to using WFS paging if it is supported.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="set-http-proxy-options-before-fetching-a-web-datasource">
+<h2>Set HTTP Proxy options before fetching a web datasource<a class="headerlink" href="#set-http-proxy-options-before-fetching-a-web-datasource" title="Permalink to this headline">¶</a></h2>
+<p>This recipe sets options for a HTTP proxy service that using NTLM authentication (typical
+for corporate environments that using Active directory for single sign-on proxy support).
+More information about the GDAL HTTP proxy options can be found <a class="reference external" href="http://trac.osgeo.org/gdal/wiki/ConfigOptions#GDALOGRHTTPoptions">here</a></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span><span class="p">,</span> <span class="n">gdal</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: cannot find GDAL/OGR modules&#39;</span><span class="p">)</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="s">&#39;proxy.example.com&#39;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">3128</span>
+
+<span class="c"># specify proxy server</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;GDAL_HTTP_PROXY&#39;</span><span class="p">,</span> <span class="n">server</span> <span class="o">+</span> <span class="s">&#39;:&#39;</span> <span class="o">+</span> <span class="n">port</span><span class="p">)</span>
+
+<span class="c"># setup proxy authentication option for NTLM with no username or password so single sign-on works</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;GDAL_PROXY_AUTH&#39;</span><span class="p">,</span> <span class="s">&#39;NTLM&#39;</span><span class="p">)</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;GDAL_HTTP_PROXYUSERPWD&#39;</span><span class="p">,</span> <span class="s">&#39; : &#39;</span><span class="p">)</span>
+
+<span class="c"># now fetch a HTTP datasource and do something...</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;http://featureserver/cities/.geojson&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">ds</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: can not open GeoJSON datasource&#39;</span><span class="p">)</span>
+<span class="n">lyr</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="s">&#39;OGRGeoJSON&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">lyr</span><span class="p">:</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">geom</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="read-a-csv-of-coordinates-as-an-ogrvrtlayer">
 <h2>Read a CSV of Coordinates as an OGRVRTLayer<a class="headerlink" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer" title="Permalink to this headline">¶</a></h2>
 <p>GDAL/OGR has a <a class="reference external" href="http://www.gdal.org/ogr/drv_vrt.html">Virtual Format spec</a> that allows you to derive layers from flat tables such as a CSV &#8211; it does a lot more than that too so go read about it. In the example below we are reading in a CSV with X,Y columns and values. That CSV file is wrapped by an XML file that describes it as an OGR layer. Below are all the necessary pieces and a script that reads the XML file and prints out point geometries.</p>
@@ -1305,6 +1338,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#get-postgis-layer-fields-and-types-get-the-user-defined-fields">Get PostGIS Layer Fields and Types - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-a-layer-s-capabilities">Get a Layer&#8217;s Capabilities</a></li>
 <li><a class="reference internal" href="#get-wfs-layer-and-iterate-over-features">Get WFS layer and iterate over features</a></li>
+<li><a class="reference internal" href="#set-http-proxy-options-before-fetching-a-web-datasource">Set HTTP Proxy options before fetching a web datasource</a></li>
 <li><a class="reference internal" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer">Read a CSV of Coordinates as an OGRVRTLayer</a></li>
 <li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
 <li><a class="reference internal" href="#save-the-convex-hull-of-all-geometry-from-an-input-layer-to-an-output-layer">Save the convex hull of all geometry from an input Layer to an output Layer</a></li>
