@@ -482,7 +482,40 @@ configuration to using WFS paging if it is supported.
         feat = layer.GetNextFeature()
         # do something more..
     feat = None
+  
+Set HTTP Proxy options before fetching a web datasource
+---------------------------------------------------------
+This recipe sets options for a HTTP proxy service that using NTLM authentication (typical 
+for corporate environments that using Active directory for single sign-on proxy support). 
+More information about the GDAL HTTP proxy options can be found `here <http://trac.osgeo.org/gdal/wiki/ConfigOptions#GDALOGRHTTPoptions>`_  
+  
+.. code-block:: python
 
+    import sys
+    
+    try:
+        from osgeo import ogr, osr, gdal
+    except:
+        sys.exit('ERROR: cannot find GDAL/OGR modules')
+    
+    server = 'proxy.example.com'
+    port = 3128
+
+    # specify proxy server
+    gdal.SetConfigOption('GDAL_HTTP_PROXY', server + ':' + port)
+    
+    # setup proxy authentication option for NTLM with no username or password so single sign-on works
+    gdal.SetConfigOption('GDAL_PROXY_AUTH', 'NTLM')
+    gdal.SetConfigOption('GDAL_HTTP_PROXYUSERPWD', ' : ')
+    
+    # now fetch a HTTP datasource and do something...
+    ds = ogr.Open('http://featureserver/cities/.geojson')
+    if not ds:
+        sys.exit('ERROR: can not open GeoJSON datasource')
+    lyr = ds.GetLayer('OGRGeoJSON')
+    for feat in lyr:
+        geom = feat.GetGeometryRef()
+        print geom.ExportToWkt()
 
 Read a CSV of Coordinates as an OGRVRTLayer
 ------------------------------------------------
