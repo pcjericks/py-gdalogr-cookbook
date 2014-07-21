@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>GDAL/OGR General &mdash; Python GDAL/OGR Cookbook 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
+    <link rel="next" title="Geometry" href="geometry.html" />
+    <link rel="prev" title="Welcome to the Python GDAL/OGR Cookbook!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="geometry.html" title="Geometry"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to the Python GDAL/OGR Cookbook!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="gdal-ogr-general">
+<h1>GDAL/OGR General<a class="headerlink" href="#gdal-ogr-general" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="is-gdal-ogr-installed">
+<h2>Is GDAL/OGR Installed<a class="headerlink" href="#is-gdal-ogr-installed" title="Permalink to this headline">¶</a></h2>
+<p>Imports python GDAL and exits the program if the modules are not found.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span><span class="p">,</span> <span class="n">gdal</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: cannot find GDAL/OGR modules&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="check-version-of-gdal-ogr-installed">
+<h2>Check Version of GDAL/OGR installed<a class="headerlink" href="#check-version-of-gdal-ogr-installed" title="Permalink to this headline">¶</a></h2>
+<p>This code checks the version of the GDAL/OGR on the imported module</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+
+<span class="n">version_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">VersionInfo</span><span class="p">(</span><span class="s">&#39;VERSION_NUM&#39;</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">version_num</span> <span class="o">&lt;</span> <span class="mi">1100000</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: Python bindings of GDAL 1.10 or later required&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="enable-python-exceptions">
+<h2>Enable python exceptions<a class="headerlink" href="#enable-python-exceptions" title="Permalink to this headline">¶</a></h2>
+<p>By default the GDAL/OGR Python bindings do not raise exceptions when errors occur. Instead they return an error value
+such as None and write an error message to sys.stdout. You can enable exceptions by calling the UseExceptions() function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+
+<span class="c"># Enable GDAL/OGR exceptions</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+
+<span class="c"># open dataset that does not exist</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;test.tif&#39;</span><span class="p">)</span>
+<span class="c"># results in python RuntimeError exception that</span>
+<span class="c"># `test.tif&#39; does not exist in the file system</span>
+</pre></div>
+</div>
+<p>You can disable using GDAL/OGR exceptions at any point during runtime using:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">DontUseExceptions</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-gdal-ogr-error-handler">
+<h2>Install GDAL/OGR error handler<a class="headerlink" href="#install-gdal-ogr-error-handler" title="Permalink to this headline">¶</a></h2>
+<p>This recipe installs a GDAL error handler function that captures the GDAL error, class and message.
+Only works with GDAL version &gt;= 1.10</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span><span class="p">,</span> <span class="n">gdal</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: cannot find GDAL/OGR modules&#39;</span><span class="p">)</span>
+
+<span class="c"># example GDAL error handler function</span>
+<span class="k">def</span> <span class="nf">gdal_error_handler</span><span class="p">(</span><span class="n">err_class</span><span class="p">,</span> <span class="n">err_num</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">):</span>
+    <span class="n">errtype</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">gdal</span><span class="o">.</span><span class="n">CE_None</span><span class="p">:</span><span class="s">&#39;None&#39;</span><span class="p">,</span>
+            <span class="n">gdal</span><span class="o">.</span><span class="n">CE_Debug</span><span class="p">:</span><span class="s">&#39;Debug&#39;</span><span class="p">,</span>
+            <span class="n">gdal</span><span class="o">.</span><span class="n">CE_Warning</span><span class="p">:</span><span class="s">&#39;Warning&#39;</span><span class="p">,</span>
+            <span class="n">gdal</span><span class="o">.</span><span class="n">CE_Failure</span><span class="p">:</span><span class="s">&#39;Failure&#39;</span><span class="p">,</span>
+            <span class="n">gdal</span><span class="o">.</span><span class="n">CE_Fatal</span><span class="p">:</span><span class="s">&#39;Fatal&#39;</span>
+    <span class="p">}</span>
+    <span class="n">err_msg</span> <span class="o">=</span> <span class="n">err_msg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+    <span class="n">err_class</span> <span class="o">=</span> <span class="n">errtype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">err_class</span><span class="p">,</span> <span class="s">&#39;None&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Error Number: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err_num</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Error Type: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err_class</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Error Message: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span><span class="o">==</span><span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c"># install error handler</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">PushErrorHandler</span><span class="p">(</span><span class="n">gdal_error_handler</span><span class="p">)</span>
+
+    <span class="c"># Raise a dummy error</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;test error&#39;</span><span class="p">)</span>
+
+    <span class="c">#uninstall error handler</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">PopErrorHandler</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GDAL/OGR General</a><ul>
+<li><a class="reference internal" href="#is-gdal-ogr-installed">Is GDAL/OGR Installed</a></li>
+<li><a class="reference internal" href="#check-version-of-gdal-ogr-installed">Check Version of GDAL/OGR installed</a></li>
+<li><a class="reference internal" href="#enable-python-exceptions">Enable python exceptions</a></li>
+<li><a class="reference internal" href="#install-gdal-ogr-error-handler">Install GDAL/OGR error handler</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to the Python GDAL/OGR Cookbook!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="geometry.html"
+                        title="next chapter">Geometry</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/gdal_general.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="geometry.html" title="Geometry"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to the Python GDAL/OGR Cookbook!"
+             >previous</a> |</li>
+        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Jared Erickson, Cort Daniel, Michael Payne.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
