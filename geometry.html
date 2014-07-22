@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Python GDAL/OGR Cookbook 1.0 documentation" href="index.html" />
     <link rel="next" title="Vector Layers" href="vector_layers.html" />
-    <link rel="prev" title="Welcome to the Python GDAL/OGR Cookbook!" href="index.html" /> 
+    <link rel="prev" title="GDAL/OGR General" href="gdal_general.html" /> 
   </head>
   <body>
     <div class="related">
@@ -40,7 +40,7 @@
           <a href="vector_layers.html" title="Vector Layers"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to the Python GDAL/OGR Cookbook!"
+          <a href="gdal_general.html" title="GDAL/OGR General"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -527,6 +527,26 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="force-polygon-to-multipolygon">
+<h2>Force polygon to multipolygon<a class="headerlink" href="#force-polygon-to-multipolygon" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># Given a test polygon</span>
+<span class="n">poly_wkt</span><span class="o">=</span> <span class="s">&quot;POLYGON ((1179091.164690328761935 712782.883845978067257,1161053.021822647424415 667456.268434881232679,1214704.933941904921085 641092.828859039116651,1228580.428455505985767 682719.312399842427112,1218405.065812198445201 721108.180554138729349,1179091.164690328761935 712782.883845978067257))&quot;</span>
+<span class="n">geom_poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="n">poly_wkt</span><span class="p">)</span>
+
+<span class="c"># Force a polygon to multipolygon</span>
+<span class="k">if</span> <span class="n">geom_poly</span><span class="o">.</span><span class="n">GetGeometryType</span><span class="p">()</span> <span class="o">==</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">:</span>
+   <span class="n">geom_poly</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">ForceToMultiPolygon</span><span class="p">(</span><span class="n">geom_poly</span><span class="p">)</span>
+   <span class="c"># if are iterating over features just to update the geometry</span>
+   <span class="c"># to multipolygon you can update the geometry using &quot;feature.SetGeometryDirectly(geom_poly)&quot;</span>
+
+<span class="c"># Then export geometry to WKT</span>
+<span class="n">wkt</span> <span class="o">=</span> <span class="n">geom_poly</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">wkt</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="quarter-polygon-and-create-centroids">
 <h2>Quarter polygon and create centroids<a class="headerlink" href="#quarter-polygon-and-create-centroids" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -659,14 +679,15 @@
 <li><a class="reference internal" href="#write-geometry-to-wkt">Write Geometry to WKT</a></li>
 <li><a class="reference internal" href="#write-geometry-to-kml">Write Geometry to KML</a></li>
 <li><a class="reference internal" href="#write-geometry-to-wkb">Write Geometry to WKB</a></li>
+<li><a class="reference internal" href="#force-polygon-to-multipolygon">Force polygon to multipolygon</a></li>
 <li><a class="reference internal" href="#quarter-polygon-and-create-centroids">Quarter polygon and create centroids</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to the Python GDAL/OGR Cookbook!</a></p>
+  <p class="topless"><a href="gdal_general.html"
+                        title="previous chapter">GDAL/OGR General</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="vector_layers.html"
                         title="next chapter">Vector Layers</a></p>
@@ -702,7 +723,7 @@
           <a href="vector_layers.html" title="Vector Layers"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to the Python GDAL/OGR Cookbook!"
+          <a href="gdal_general.html" title="GDAL/OGR General"
              >previous</a> |</li>
         <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
