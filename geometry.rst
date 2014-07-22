@@ -512,6 +512,7 @@ Force polygon to multipolygon
 -------------------------------
 
 .. code-block:: python
+
     from osgeo import ogr
 
     # Given a test polygon
