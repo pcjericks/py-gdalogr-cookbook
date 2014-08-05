@@ -242,6 +242,50 @@ be the best way to scan the API&#8217;s class methods. For a detailed descriptio
 </pre></div>
 </div>
 </div>
+<div class="section" id="get-all-layers-in-an-esri-file-geodatabase">
+<h2>Get all layers in an Esri File GeoDataBase<a class="headerlink" href="#get-all-layers-in-an-esri-file-geodatabase" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This returns all the layers in a Esri FileGDB in alphabetical order (of course). It needs GDAL/OGR 1.11.0 + but not any Esri dependency.
+That&#8217;s the benefit of the <a class="reference external" href="http://www.gdal.org/drv_openfilegdb.html">OpenFileGDB driver developed by Ewen Rouault</a> relative to the <a class="reference external" href="http://www.gdal.org/drv_filegdb.html">FileGDB driver</a>.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># standard imports</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c"># import OGR</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c"># use OGR specific exceptions</span>
+<span class="n">ogr</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+
+<span class="c"># get the driver</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;OpenFileGDB&quot;</span><span class="p">)</span>
+
+<span class="c"># opening the FileGDB</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">gdb</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">gdb_path</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">e</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+<span class="c"># list to store layers&#39;names</span>
+<span class="n">featsClassList</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c"># parsing layers by index</span>
+<span class="k">for</span> <span class="n">featsClass_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gdb</span><span class="o">.</span><span class="n">GetLayerCount</span><span class="p">()):</span>
+    <span class="n">featsClass</span> <span class="o">=</span> <span class="n">gdb</span><span class="o">.</span><span class="n">GetLayerByIndex</span><span class="p">(</span><span class="n">featsClass_idx</span><span class="p">)</span>
+    <span class="n">featsClassList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">featsClass</span><span class="o">.</span><span class="n">GetName</span><span class="p">())</span>
+
+<span class="c"># sorting</span>
+<span class="n">featsClassList</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+<span class="c"># printing</span>
+<span class="k">for</span> <span class="n">featsClass</span> <span class="ow">in</span> <span class="n">featsClassList</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">featsClass</span>
+
+<span class="c"># clean close</span>
+<span class="k">del</span> <span class="n">gdb</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="iterate-over-features">
 <h2>Iterate over Features<a class="headerlink" href="#iterate-over-features" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
@@ -1328,6 +1372,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
 <li><a class="reference internal" href="#get-all-postgis-layers-in-a-postgresql-database">Get All PostGIS layers in a PostgreSQL Database</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-feature-count-by-layer-name">Get PostGIS Layer Feature Count By Layer Name</a></li>
+<li><a class="reference internal" href="#get-all-layers-in-an-esri-file-geodatabase">Get all layers in an Esri File GeoDataBase</a></li>
 <li><a class="reference internal" href="#iterate-over-features">Iterate over Features</a></li>
 <li><a class="reference internal" href="#get-geometry-from-each-feature-in-a-layer">Get Geometry from each Feature in a Layer</a></li>
 <li><a class="reference internal" href="#filter-by-attribute">Filter by attribute</a></li>

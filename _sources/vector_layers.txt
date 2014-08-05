@@ -202,6 +202,51 @@ Get PostGIS Layer Feature Count By Layer Name
         lyr_name = sys.argv[1]
         GetPGLayer( lyr_name )
 
+
+Get all layers in an Esri File GeoDataBase
+--------------------------------------------------
+
+    This returns all the layers in a Esri FileGDB in alphabetical order (of course). It needs GDAL/OGR 1.11.0 + but not any Esri dependency.
+    That's the benefit of the `OpenFileGDB driver developed by Ewen Rouault <http://www.gdal.org/drv_openfilegdb.html>`_ relative to the `FileGDB driver <http://www.gdal.org/drv_filegdb.html>`_.
+    
+.. code-block:: python
+
+    # standard imports
+    import sys
+
+    # import OGR
+    from osgeo import ogr
+
+    # use OGR specific exceptions
+    ogr.UseExceptions()
+
+    # get the driver
+    driver = ogr.GetDriverByName("OpenFileGDB")
+
+    # opening the FileGDB
+    try:
+        gdb = driver.Open(gdb_path, 0)
+    except Exception, e:
+        print e
+        sys.exit()
+
+    # list to store layers'names
+    featsClassList = []
+
+    # parsing layers by index
+    for featsClass_idx in range(gdb.GetLayerCount()):
+        featsClass = gdb.GetLayerByIndex(featsClass_idx)
+        featsClassList.append(featsClass.GetName())
+
+    # sorting
+    featsClassList.sort()
+
+    # printing
+    for featsClass in featsClassList:
+        print featsClass
+        
+    # clean close
+    del gdb
         
 Iterate over Features
 ------------------------
