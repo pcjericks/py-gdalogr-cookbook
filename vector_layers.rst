@@ -206,7 +206,7 @@ Get PostGIS Layer Feature Count By Layer Name
 Get all layers in an Esri File GeoDataBase
 --------------------------------------------------
 
-    This returns all the layers in a Esri FileGDB in alphabetical order (of course). It needs GDAL/OGR 1.11.0 + but any Esri dependency.
+    This returns all the layers in a Esri FileGDB in alphabetical order (of course). It needs GDAL/OGR 1.11.0 + but not any Esri dependency.
     That's the benefit of the `OpenFileGDB driver developed by Ewen Rouault <http://www.gdal.org/drv_openfilegdb.html>`_ relative to the `FileGDB driver <http://www.gdal.org/drv_filegdb.html>`_.
     
 .. code-block:: python
