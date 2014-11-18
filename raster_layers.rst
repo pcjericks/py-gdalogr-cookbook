@@ -450,6 +450,7 @@ Calculate zonal statistics
 
 This recipe calculates statistics on values of a raster within the zones of a vector dataset. It returns for each feature a dictionary item (FID) with the statistical values in the following order: Average, Mean, Medain, Standard Deviation, Variance
 
+While this recipe works and is a good example, it is generally recommended to use [rasterstats](https://github.com/perrygeo/python-raster-stats) for calculating zonal statistics with Python.
 
 .. code-block:: python 
 
