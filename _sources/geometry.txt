@@ -439,7 +439,7 @@ You can either create a new GeoJSON file or simply export the geometry to Json a
     poly = ogr.Geometry(ogr.wkbPolygon)
     poly.AddGeometry(ring)
     
-    geojson = poly.ExportToJSON()
+    geojson = poly.ExportToJson()
     print geojson
 
 Write Geometry to WKT
