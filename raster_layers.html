@@ -465,6 +465,7 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
 <div class="section" id="calculate-zonal-statistics">
 <h2>Calculate zonal statistics<a class="headerlink" href="#calculate-zonal-statistics" title="Permalink to this headline">¶</a></h2>
 <p>This recipe calculates statistics on values of a raster within the zones of a vector dataset. It returns for each feature a dictionary item (FID) with the statistical values in the following order: Average, Mean, Medain, Standard Deviation, Variance</p>
+<p>While this recipe works and is a good example, it is generally recommended to use [rasterstats](<a class="reference external" href="https://github.com/perrygeo/python-raster-stats">https://github.com/perrygeo/python-raster-stats</a>) for calculating zonal statistics with Python.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gdal</span><span class="o">,</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">osr</span><span class="o">,</span> <span class="nn">numpy</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
