@@ -105,11 +105,9 @@ Is Ogr Driver Available by Driver Name
 
 Force Ogr Use Named Driver 
 --------------------------------------------      
-    Use only the specified driver to attempt to read the data file, 
-	taking into account special nature of the CSV driver which normally 
-	requires a .csv extension.
+    Use only the specified driver to attempt to read the data file, taking into account special nature of the CSV driver which normally requires a .csv extension.
 	    
-    Code Source: [`website  <http://gis.stackexchange.com/questions/141905/force-ogr-to-use-specific-driver-for-input-format> `_]
+    Code Source: [`website <http://gis.stackexchange.com/questions/141905/force-ogr-to-use-specific-driver-for-input-format>`_]
     
 .. code-block:: python
     
@@ -128,6 +126,8 @@ Force Ogr Use Named Driver
 Usage:
 
 	python ogr-convert.py [in file] [format driver] [out file/dir] {out format}
+	
+	python ogr-convert.py x:\incoming\coolstuff.txt CSV d:\shapefiles
 
         
 Get Shapefile Feature Count
