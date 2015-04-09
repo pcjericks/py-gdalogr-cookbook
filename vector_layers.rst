@@ -107,7 +107,7 @@ Force Ogr Use Named Driver
 --------------------------------------------      
     Use only the specified driver to attempt to read the data file, taking into account special nature of the CSV driver which normally requires a .csv extension.
 	    
-    Code Source: [`website <http://gis.stackexchange.com/questions/141905/force-ogr-to-use-specific-driver-for-input-format>`_]
+    Source, Luke Pinner on GIS Stack Exchange: [`website <http://gis.stackexchange.com/questions/141905/force-ogr-to-use-specific-driver-for-input-format>`_]
     
 .. code-block:: python
     
