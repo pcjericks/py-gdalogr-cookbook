@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -10,12 +8,12 @@
     
     <title>Vector Layers &mdash; Python GDAL/OGR Cookbook 1.0 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -29,8 +27,8 @@
     <link rel="next" title="Raster Layers" href="raster_layers.html" />
     <link rel="prev" title="Geometry" href="geometry.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,14 +40,14 @@
         <li class="right" >
           <a href="geometry.html" title="Geometry"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="vector-layers">
 <h1>Vector Layers<a class="headerlink" href="#vector-layers" title="Permalink to this headline">¶</a></h1>
@@ -110,7 +108,7 @@ be the best way to scan the API&#8217;s class methods. For a detailed descriptio
 <div class="section" id="is-ogr-driver-available-by-driver-name">
 <h2>Is Ogr Driver Available by Driver Name<a class="headerlink" href="#is-ogr-driver-available-by-driver-name" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the &#8220;Code&#8221; column  ([<a class="reference external" href="http://www.gdal.org/ogr/ogr_formats.html">formats website</a>]).  This is the same names returned when you enter <tt class="docutils literal"><span class="pre">ogrinfo</span> <span class="pre">--formats</span></tt> on the command line.</p>
+<div><p>This code shows if a particular OGR driver is available.  The exact names are the ones used on the OGR Vector Formats page in the &#8220;Code&#8221; column  ([<a class="reference external" href="http://www.gdal.org/ogr/ogr_formats.html">formats website</a>]).  This is the same names returned when you enter <code class="docutils literal"><span class="pre">ogrinfo</span> <span class="pre">--formats</span></code> on the command line.</p>
 <p>Code Example Source: [<a class="reference external" href="http://www.gdal.org/ogr/ogr_apitut.html">website</a>]</p>
 </div></blockquote>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
@@ -148,6 +146,31 @@ be the best way to scan the API&#8217;s class methods. For a detailed descriptio
     <span class="k">print</span>  <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver IS available.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">driverName</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="force-ogr-use-named-driver">
+<h2>Force Ogr Use Named Driver<a class="headerlink" href="#force-ogr-use-named-driver" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Use only the specified driver to attempt to read the data file, taking into account special nature of the CSV driver which normally requires a .csv extension.</p>
+<p>Source, Luke Pinner on GIS Stack Exchange: [<a class="reference external" href="http://gis.stackexchange.com/questions/141905/force-ogr-to-use-specific-driver-for-input-format">website</a>]</p>
+</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">in_format</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">out_format</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">in_format</span> <span class="o">==</span> <span class="s">&#39;CSV&#39;</span> <span class="ow">and</span> <span class="n">in_file</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s">&#39;csv&#39;</span><span class="p">:</span>
+                <span class="n">in_file</span> <span class="o">=</span> <span class="s">&#39;CSV:&#39;</span> <span class="o">+</span> <span class="n">in_file</span>
+        <span class="n">in_ds</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="n">in_format</span><span class="p">)</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
+        <span class="n">out_ds</span>  <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="n">out_format</span><span class="p">)</span><span class="o">.</span><span class="n">CopyDataSource</span><span class="p">(</span><span class="n">in_ds</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="o">*</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</pre></div>
+</div>
+<p>Usage:</p>
+<blockquote>
+<div><p>python ogr-convert.py [in file] [format driver] [out file/dir] {out format}</p>
+<p>python ogr-convert.py x:incomingcoolstuff.txt CSV d:shapefiles</p>
+</div></blockquote>
 </div>
 <div class="section" id="get-shapefile-feature-count">
 <h2>Get Shapefile Feature Count<a class="headerlink" href="#get-shapefile-feature-count" title="Permalink to this headline">¶</a></h2>
@@ -780,7 +803,7 @@ More information about the GDAL HTTP proxy options can be found <a class="refere
 <div class="section" id="create-a-new-shapefile-and-add-data">
 <h2>Create a New Shapefile and Add Data<a class="headerlink" href="#create-a-new-shapefile-and-add-data" title="Permalink to this headline">¶</a></h2>
 <p>This recipe parses a delimited text file of volcano location data and creates a shapefile.
-The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</span></tt> contains the following fields, separated by a tab character (\t):</p>
+The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</span></code> contains the following fields, separated by a tab character (\t):</p>
 <ul class="simple">
 <li>Name</li>
 <li>Region</li>
@@ -1020,7 +1043,8 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <div class="section" id="create-fishnet-grid">
 <h2>Create fishnet grid<a class="headerlink" href="#create-fishnet-grid" title="Permalink to this headline">¶</a></h2>
 <p>This recipe creates a fishnet grid.</p>
-<div class="highlight-shell"><pre>python grid.py grid.shp 992325.66 1484723.41 494849.32 781786.14 10000 10000</pre>
+<div class="highlight-shell"><div class="highlight"><pre>python grid.py grid.shp 992325.66 1484723.41 494849.32 781786.14 <span class="m">10000</span> 10000
+</pre></div>
 </div>
 <img alt="_images/layer_fishnet.png" src="_images/layer_fishnet.png" />
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
@@ -1359,7 +1383,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -1369,6 +1393,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
 <li><a class="reference internal" href="#view-auto-generated-ogr-help">View Auto Generated Ogr Help</a></li>
 <li><a class="reference internal" href="#get-list-of-ogr-drivers-alphabetically-a-z">Get List of Ogr Drivers Alphabetically (A- Z)</a></li>
 <li><a class="reference internal" href="#is-ogr-driver-available-by-driver-name">Is Ogr Driver Available by Driver Name</a></li>
+<li><a class="reference internal" href="#force-ogr-use-named-driver">Force Ogr Use Named Driver</a></li>
 <li><a class="reference internal" href="#get-shapefile-feature-count">Get Shapefile Feature Count</a></li>
 <li><a class="reference internal" href="#get-all-postgis-layers-in-a-postgresql-database">Get All PostGIS layers in a PostgreSQL Database</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-feature-count-by-layer-name">Get PostGIS Layer Feature Count By Layer Name</a></li>
@@ -1409,12 +1434,14 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
   <h4>Next topic</h4>
   <p class="topless"><a href="raster_layers.html"
                         title="next chapter">Raster Layers</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/vector_layers.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/vector_layers.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -1431,7 +1458,7 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -1443,12 +1470,12 @@ The CSV file <tt class="docutils literal"><span class="pre">volcano_data.txt</sp
         <li class="right" >
           <a href="geometry.html" title="Geometry"
              >previous</a> |</li>
-        <li><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Python GDAL/OGR Cookbook 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2013, Jared Erickson, Cort Daniel, Michael Payne.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>
