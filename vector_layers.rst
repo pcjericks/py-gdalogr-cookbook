@@ -101,7 +101,34 @@ Is Ogr Driver Available by Driver Name
         print "%s driver not available.\n" % driverName
     else:
         print  "%s driver IS available.\n" % driverName
-        
+
+
+Force Ogr Use Named Driver 
+--------------------------------------------      
+    Use only the specified driver to attempt to read the data file, taking into account special nature of the CSV driver which normally requires a .csv extension.
+	    
+    Source, Luke Pinner on GIS Stack Exchange: [`website <http://gis.stackexchange.com/questions/141905/force-ogr-to-use-specific-driver-for-input-format>`_]
+    
+.. code-block:: python
+    
+	import sys
+	from osgeo import ogr
+
+	def main(in_file, in_format, out_file, out_format):
+		if in_format == 'CSV' and in_file[-3:].lower() != 'csv':
+			in_file = 'CSV:' + in_file
+		in_ds = ogr.GetDriverByName(in_format).Open(in_file)
+		out_ds  = ogr.GetDriverByName(out_format).CopyDataSource(in_ds, out_file)
+
+	if __name__ == '__main__':
+		main(*sys.argv[1:])
+
+Usage:
+
+	python ogr-convert.py [in file] [format driver] [out file/dir] {out format}
+	
+	python ogr-convert.py x:\incoming\coolstuff.txt CSV d:\shapefiles
+
         
 Get Shapefile Feature Count
 -------------------------------
