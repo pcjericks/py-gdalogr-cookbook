@@ -274,7 +274,34 @@ Get all layers in an Esri File GeoDataBase
         
     # clean close
     del gdb
-        
+
+Load data to memory
+--------------------------------------------
+    This illustrates how to copy a dataset to memory with write access, providing fast data access.
+
+.. code-block:: python
+
+    from osgeo import ogr
+
+    #open an input datasource
+    indriver=ogr.GetDriverByName('SQLite')
+    srcdb = indriver.Open(“OUTDATA.sqlite”,0)
+    
+    #create an output datasource in memory
+    outdriver=ogr.GetDriverByName('MEMORY')
+    source=outdriver.CreateDataSource('memData')    
+    
+    #open the memory datasource with write access
+    tmp=outdriver.Open('memData',1)
+    
+    #copy a layer to memory
+    pipes_mem=source.CopyLayer(srcdb.GetLayer(‘pipes’),'pipes',['OVERWRITE=YES'])
+    
+    #the new layer can be directly accessed via the handle pipes_mem or as source.GetLayer(‘pipes’):
+    layer=source.GetLayer(‘pipes’)
+    for feature in layer:
+        feature.SetField(‘SOMETHING’,1)
+    
 Iterate over Features
 ------------------------
  
