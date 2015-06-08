@@ -285,7 +285,7 @@ Load data to memory
 
     #open an input datasource
     indriver=ogr.GetDriverByName('SQLite')
-    srcdb = indriver.Open(“OUTDATA.sqlite”,0)
+    srcdb = indriver.Open('OUTDATA.sqlite',0)
     
     #create an output datasource in memory
     outdriver=ogr.GetDriverByName('MEMORY')
@@ -295,12 +295,12 @@ Load data to memory
     tmp=outdriver.Open('memData',1)
     
     #copy a layer to memory
-    pipes_mem=source.CopyLayer(srcdb.GetLayer(‘pipes’),'pipes',['OVERWRITE=YES'])
+    pipes_mem=source.CopyLayer(srcdb.GetLayer('pipes'),'pipes',['OVERWRITE=YES'])
     
-    #the new layer can be directly accessed via the handle pipes_mem or as source.GetLayer(‘pipes’):
-    layer=source.GetLayer(‘pipes’)
+    #the new layer can be directly accessed via the handle pipes_mem or as source.GetLayer('pipes'):
+    layer=source.GetLayer('pipes')
     for feature in layer:
-        feature.SetField(‘SOMETHING’,1)
+        feature.SetField('SOMETHING',1)
     
 Iterate over Features
 ------------------------
