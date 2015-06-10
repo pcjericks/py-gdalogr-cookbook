@@ -309,6 +309,33 @@ That&#8217;s the benefit of the <a class="reference external" href="http://www.g
 </pre></div>
 </div>
 </div>
+<div class="section" id="load-data-to-memory">
+<h2>Load data to memory<a class="headerlink" href="#load-data-to-memory" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>This illustrates how to copy a dataset to memory with write access, providing fast data access.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+
+<span class="c">#open an input datasource</span>
+<span class="n">indriver</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;SQLite&#39;</span><span class="p">)</span>
+<span class="n">srcdb</span> <span class="o">=</span> <span class="n">indriver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;OUTDATA.sqlite&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c">#create an output datasource in memory</span>
+<span class="n">outdriver</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;MEMORY&#39;</span><span class="p">)</span>
+<span class="n">source</span><span class="o">=</span><span class="n">outdriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="s">&#39;memData&#39;</span><span class="p">)</span>
+
+<span class="c">#open the memory datasource with write access</span>
+<span class="n">tmp</span><span class="o">=</span><span class="n">outdriver</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;memData&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c">#copy a layer to memory</span>
+<span class="n">pipes_mem</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">CopyLayer</span><span class="p">(</span><span class="n">srcdb</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="s">&#39;pipes&#39;</span><span class="p">),</span><span class="s">&#39;pipes&#39;</span><span class="p">,[</span><span class="s">&#39;OVERWRITE=YES&#39;</span><span class="p">])</span>
+
+<span class="c">#the new layer can be directly accessed via the handle pipes_mem or as source.GetLayer(&#39;pipes&#39;):</span>
+<span class="n">layer</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">GetLayer</span><span class="p">(</span><span class="s">&#39;pipes&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&#39;SOMETHING&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="iterate-over-features">
 <h2>Iterate over Features<a class="headerlink" href="#iterate-over-features" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
@@ -537,8 +564,8 @@ That&#8217;s the benefit of the <a class="reference external" href="http://www.g
 </pre></div>
 </div>
 </div>
-<div class="section" id="get-wfs-layer-and-iterate-over-features">
-<h2>Get WFS layer and iterate over features<a class="headerlink" href="#get-wfs-layer-and-iterate-over-features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="get-wfs-layers-and-iterate-over-features">
+<h2>Get WFS layers and iterate over features<a class="headerlink" href="#get-wfs-layers-and-iterate-over-features" title="Permalink to this headline">¶</a></h2>
 <p>This recipe queries a WFS services and fetches features from a large layer. It sets up the GDAL
 configuration to using WFS paging if it is supported.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
@@ -548,6 +575,7 @@ configuration to using WFS paging if it is supported.</p>
 <span class="k">except</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: cannot find GDAL/OGR modules&#39;</span><span class="p">)</span>
 
+<span class="c"># Set the driver (optional)</span>
 <span class="n">wfs_drv</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;WFS&#39;</span><span class="p">)</span>
 
 <span class="c"># Speeds up querying WFS capabilities for services with alot of layers</span>
@@ -557,21 +585,33 @@ configuration to using WFS paging if it is supported.</p>
 <span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;OGR_WFS_PAGING_ALLOWED&#39;</span><span class="p">,</span> <span class="s">&#39;YES&#39;</span><span class="p">)</span>
 <span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;OGR_WFS_PAGE_SIZE&#39;</span><span class="p">,</span> <span class="s">&#39;10000&#39;</span><span class="p">)</span>
 
+<span class="c"># Open the webservice</span>
 <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://example-service.com/wfs&#39;</span>
 <span class="n">wfs_ds</span> <span class="o">=</span> <span class="n">wfs_drv</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;WFS:&#39;</span> <span class="o">+</span> <span class="n">url</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">wfs_ds</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: can not open WFS datasource&#39;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">pass</span>
 
+<span class="c"># iterate over available layers</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">wfs</span><span class="o">.</span><span class="n">GetLayerCount</span><span class="p">()):</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">wfs</span><span class="o">.</span><span class="n">GetLayerByIndex</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">srs</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&#39;Layer: </span><span class="si">%s</span><span class="s">, Features: </span><span class="si">%s</span><span class="s">, SR: </span><span class="si">%s</span><span class="s">...&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">GetName</span><span class="p">(),</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">(),</span> <span class="n">sr</span><span class="o">.</span><span class="n">ExportToWkt</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">50</span><span class="p">])</span>
+
+    <span class="c"># iterate over features</span>
+    <span class="n">feat</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">feat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">feat</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
+        <span class="c"># do something more..</span>
+    <span class="n">feat</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="c"># Get a specific layer</span>
 <span class="n">layer</span> <span class="o">=</span> <span class="n">wfs_ds</span><span class="o">.</span><span class="n">GetLayerByName</span><span class="p">(</span><span class="s">&quot;largelayer&quot;</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span><span class="p">:</span>
-     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: can not find layer in service&#39;</span><span class="p">)</span>
-
-<span class="c"># now do something interesting with the features</span>
-<span class="n">feat</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
-<span class="k">while</span> <span class="n">feat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-    <span class="n">feat</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
-    <span class="c"># do something more..</span>
-<span class="n">feat</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&#39;ERROR: can not find layer in service&#39;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -1398,6 +1438,7 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
 <li><a class="reference internal" href="#get-all-postgis-layers-in-a-postgresql-database">Get All PostGIS layers in a PostgreSQL Database</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-feature-count-by-layer-name">Get PostGIS Layer Feature Count By Layer Name</a></li>
 <li><a class="reference internal" href="#get-all-layers-in-an-esri-file-geodatabase">Get all layers in an Esri File GeoDataBase</a></li>
+<li><a class="reference internal" href="#load-data-to-memory">Load data to memory</a></li>
 <li><a class="reference internal" href="#iterate-over-features">Iterate over Features</a></li>
 <li><a class="reference internal" href="#get-geometry-from-each-feature-in-a-layer">Get Geometry from each Feature in a Layer</a></li>
 <li><a class="reference internal" href="#filter-by-attribute">Filter by attribute</a></li>
@@ -1407,7 +1448,7 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
 <li><a class="reference internal" href="#get-postgis-layer-fields-get-the-user-defined-fields">Get PostGIS Layer Fields - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-postgis-layer-fields-and-types-get-the-user-defined-fields">Get PostGIS Layer Fields and Types - Get the user defined fields</a></li>
 <li><a class="reference internal" href="#get-a-layer-s-capabilities">Get a Layer&#8217;s Capabilities</a></li>
-<li><a class="reference internal" href="#get-wfs-layer-and-iterate-over-features">Get WFS layer and iterate over features</a></li>
+<li><a class="reference internal" href="#get-wfs-layers-and-iterate-over-features">Get WFS layers and iterate over features</a></li>
 <li><a class="reference internal" href="#set-http-proxy-options-before-fetching-a-web-datasource">Set HTTP Proxy options before fetching a web datasource</a></li>
 <li><a class="reference internal" href="#read-a-csv-of-coordinates-as-an-ogrvrtlayer">Read a CSV of Coordinates as an OGRVRTLayer</a></li>
 <li><a class="reference internal" href="#create-a-new-layer-from-the-extent-of-an-existing-layer">Create a new Layer from the extent of an existing Layer</a></li>
