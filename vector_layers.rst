@@ -516,7 +516,7 @@ Get a Layer's Capabilities
         print("  %s = %s" % (cap, layer.TestCapability(cap)))
 
 
-Get WFS layer and iterate over features
+Get WFS layers and iterate over features
 -----------------------------------------
 This recipe queries a WFS services and fetches features from a large layer. It sets up the GDAL 
 configuration to using WFS paging if it is supported.
@@ -530,6 +530,7 @@ configuration to using WFS paging if it is supported.
     except:
         sys.exit('ERROR: cannot find GDAL/OGR modules')
 
+    # Set the driver (optional)
     wfs_drv = ogr.GetDriverByName('WFS')
 
     # Speeds up querying WFS capabilities for services with alot of layers
@@ -539,21 +540,33 @@ configuration to using WFS paging if it is supported.
     gdal.SetConfigOption('OGR_WFS_PAGING_ALLOWED', 'YES')
     gdal.SetConfigOption('OGR_WFS_PAGE_SIZE', '10000')
 
+    # Open the webservice
     url = 'http://example-service.com/wfs'
     wfs_ds = wfs_drv.Open('WFS:' + url)
     if not wfs_ds:
         sys.exit('ERROR: can not open WFS datasource')
+    else:
+        pass
 
+    # iterate over available layers
+    for i in range(wfs.GetLayerCount()):
+        layer = wfs.GetLayerByIndex(i)
+        srs = layer.GetSpatialRef()
+        print 'Layer: %s, Features: %s, SR: %s...' % (layer.GetName(), layer.GetFeatureCount(), sr.ExportToWkt()[0:50])
+
+        # iterate over features
+        feat = layer.GetNextFeature()
+        while feat is not None:
+            feat = layer.GetNextFeature()
+            # do something more..
+        feat = None
+
+    # Get a specific layer
     layer = wfs_ds.GetLayerByName("largelayer")
     if not layer:
-         sys.exit('ERROR: can not find layer in service')
-
-    # now do something interesting with the features
-    feat = layer.GetNextFeature()
-    while feat is not None:
-        feat = layer.GetNextFeature()
-        # do something more..
-    feat = None
+        sys.exit('ERROR: can not find layer in service')
+    else:
+        pass
   
 Set HTTP Proxy options before fetching a web datasource
 ---------------------------------------------------------
