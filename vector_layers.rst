@@ -576,10 +576,10 @@ configuration to using WFS paging if it is supported.
         pass
 
     # iterate over available layers
-    for i in range(wfs.GetLayerCount()):
-        layer = wfs.GetLayerByIndex(i)
+    for i in range(wfs_ds.GetLayerCount()):
+        layer = wfs_ds.GetLayerByIndex(i)
         srs = layer.GetSpatialRef()
-        print 'Layer: %s, Features: %s, SR: %s...' % (layer.GetName(), layer.GetFeatureCount(), sr.ExportToWkt()[0:50])
+        print 'Layer: %s, Features: %s, SR: %s...' % (layer.GetName(), layer.GetFeatureCount(), srs.ExportToWkt()[0:50])
 
         # iterate over features
         feat = layer.GetNextFeature()
