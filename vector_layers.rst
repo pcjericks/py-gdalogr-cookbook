@@ -317,6 +317,9 @@ Iterate over Features
 
     for feature in layer:
         print feature.GetField("STATE_NAME")
+    layer.ResetReading()
+
+You must call `ResetReading <http://gdal.org/python/osgeo.ogr.Layer-class.html#ResetReading>`_ if you want to start iterating over the layer again.
 
 Get Geometry from each Feature in a Layer
 --------------------------------------------
