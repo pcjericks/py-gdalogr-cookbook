@@ -187,8 +187,9 @@ Get All PostGIS layers in a PostgreSQL Database
 
     for j in layerList:
         print j
-        
-    conn.Destroy()
+
+    # Close connection
+    conn = None
 
 Get PostGIS Layer Feature Count By Layer Name
 ------------------------------------------------
@@ -217,7 +218,8 @@ Get PostGIS Layer Feature Count By Layer Name
         featureCount = lyr.GetFeatureCount()
         print "Number of features in %s: %d" % ( lyr_name , featureCount )
 
-        conn.Destroy()
+        # Close connection
+        conn = None
 
 
     if __name__ == '__main__':
@@ -454,7 +456,8 @@ Get PostGIS Layer Fields - Get the user defined fields
         for i in range( lyrDefn.GetFieldCount() ):
             print lyrDefn.GetFieldDefn( i ).GetName()
 
-        conn.Destroy()
+        # Close connection
+        conn = None
 
 
     if __name__ == '__main__':
@@ -502,7 +505,8 @@ Get PostGIS Layer Fields and Types - Get the user defined fields
 
             print fieldName + " - " + fieldType+ " " + str(fieldWidth) + " " + str(GetPrecision)
 
-        conn.Destroy()
+        # Close connection
+        conn = None
 
 
     if __name__ == '__main__':
@@ -725,11 +729,12 @@ Create a new Layer from the extent of an existing Layer
     feature.SetGeometry(poly)
     feature.SetField("id", 1)
     outLayer.CreateFeature(feature)
+    feature = None
 
-    # Close DataSource
-    inDataSource.Destroy()
-    outDataSource.Destroy()
-    
+    # Save and close DataSource
+    inDataSource = None
+    outDataSource = None
+
 Save the convex hull of all geometry from an input Layer to an output Layer
 ---------------------------------------------------------------------------
 
@@ -776,10 +781,11 @@ Save the convex hull of all geometry from an input Layer to an output Layer
     feature.SetGeometry(convexhull)
     feature.SetField("id", 1)
     outLayer.CreateFeature(feature)
+    feature = None
 
-    # Close DataSource
-    inDataSource.Destroy()
-    outDataSource.Destroy()
+    # Save and close DataSource
+    inDataSource = None
+    outDataSource = None
 
 
 Save centroids of input Layer to an output Layer
@@ -832,15 +838,17 @@ Inspired by: http://www.kralidis.ca/blog/2010/04/28/batch-centroid-calculations-
             outFeature.SetField(outLayerDefn.GetFieldDefn(i).GetNameRef(), inFeature.GetField(i))
         # Set geometry as centroid    
         geom = inFeature.GetGeometryRef()
+        inFeature = None
         centroid = geom.Centroid()
         outFeature.SetGeometry(centroid)
         # Add new feature to output Layer
         outLayer.CreateFeature(outFeature)
+        outFeature = None
 
-    # Close DataSources
-    inDataSource.Destroy()
-    outDataSource.Destroy()
-    
+    # Save and close DataSources
+    inDataSource = None
+    outDataSource = None
+
 Create a New Shapefile and Add Data
 ---------------------------------------
 
@@ -912,13 +920,13 @@ The CSV file ``volcano_data.txt`` contains the following fields, separated by a 
     feature.SetGeometry(point) 
     # Create the feature in the layer (shapefile)
     layer.CreateFeature(feature) 
-    # Destroy the feature to free resources
-    feature.Destroy() 
+    # Dereference the feature
+    feature = None
 
-  # Destroy the data source to free resources
-  data_source.Destroy() 
-   
-   
+  # Save and close the data source
+  data_source = None
+
+
 Create a PostGIS table from WKT
 -----------------------------------------------------------------------------
 This recipe creates a new table in an existing PostGIS database.
@@ -950,6 +958,7 @@ This recipe creates a new table in an existing PostGIS database.
 
     layer.StartTransaction()
     layer.CreateFeature(feature)
+    feature = None
     layer.CommitTransaction() 
        
 
@@ -1026,10 +1035,11 @@ The `ogr2ogr command line tool <http://www.gdal.org/ogr2ogr.html>`_ is an easy w
             outFeature.SetGeometry(geom.Clone())
             # Add new feature to output Layer
             outLayer.CreateFeature(outFeature)
+            outFeature = None
 
-        # Close DataSources
-        inDataSource.Destroy()
-        outDataSource.Destroy()
+        # Save and close DataSources
+        inDataSource = None
+        outDataSource = None
 
     if __name__ == '__main__':
         
@@ -1072,6 +1082,7 @@ This recipe merges OGR Layers within a directory. Files can be specfied based on
                 out_feat = ogr.Feature(out_layer.GetLayerDefn())
                 out_feat.SetGeometry(feat.GetGeometryRef().Clone())
                 out_layer.CreateFeature(out_feat)
+                out_feat = None
                 out_layer.SyncToDisk()
 
 
@@ -1168,7 +1179,7 @@ This recipe creates a fishnet grid.
                 outFeature = ogr.Feature(featureDefn)
                 outFeature.SetGeometry(poly)
                 outLayer.CreateFeature(outFeature)
-                outFeature.Destroy
+                outFeature = None
     
                 # new envelope for next poly
                 ringYtop = ringYtop - gridHeight
@@ -1178,8 +1189,8 @@ This recipe creates a fishnet grid.
             ringXleftOrigin = ringXleftOrigin + gridWidth
             ringXrightOrigin = ringXrightOrigin + gridWidth
 
-        # Close DataSources
-        outDataSource.Destroy()
+        # Save and close DataSources
+        outDataSource = None
 
 
     if __name__ == "__main__":
@@ -1225,6 +1236,7 @@ This recipe converts a poylgon shapefile to a line shapefile
         outFeature = ogr.Feature(featureDefn)
         outFeature.SetGeometry(geomcol)
         outLayer.CreateFeature(outFeature)
+        outFeature = None
 
     def main(input_poly,output_line):
         poly2line(input_poly,output_line)
@@ -1271,6 +1283,7 @@ This recipe creates a new shapefiles, adds a point to it, and adds a attribute c
 	outFeature.SetGeometry(point)
 	outFeature.SetField(fieldName, fieldValue)
 	outLayer.CreateFeature(outFeature)
+    outFeature = None
 
 
 Create buffer
@@ -1299,6 +1312,7 @@ This recipe buffers features of a layer and saves them to a new Layer
             outFeature = ogr.Feature(featureDefn)
             outFeature.SetGeometry(geomBuffer)
             bufferlyr.CreateFeature(outFeature)
+            outFeature = None
 
     def main(inputfn, outputBufferfn, bufferDist):
         createBuffer(inputfn, outputBufferfn, bufferDist)
@@ -1448,6 +1462,7 @@ This recipe converts a polygon to points.
     outFeature = ogr.Feature(featureDefn)
     outFeature.SetGeometry(multipoint)
     outLayer.CreateFeature(outFeature)
+    outFeature = None
 
     # Remove temporary files
     os.remove('temp.tif')

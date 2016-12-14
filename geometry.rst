@@ -418,12 +418,12 @@ You can either create a new GeoJSON file or simply export the geometry to Json a
     # Add new feature to output Layer
     outLayer.CreateFeature(outFeature)
 
-    # destroy the feature
-    outFeature.Destroy
+    # dereference the feature
+    outFeature = None
 
-    # Close DataSources
-    outDataSource.Destroy()
-    
+    # Save and close DataSources
+    outDataSource = None
+
 .. code-block:: python
 
     from osgeo import ogr

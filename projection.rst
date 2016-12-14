@@ -106,14 +106,13 @@ Reproject a Layer
             outFeature.SetField(outLayerDefn.GetFieldDefn(i).GetNameRef(), inFeature.GetField(i))
         # add the feature to the shapefile
         outLayer.CreateFeature(outFeature)
-        # destroy the features and get the next input feature
-        outFeature.Destroy()
-        inFeature.Destroy()
+        # dereference the features and get the next input feature
+        outFeature = None
         inFeature = inLayer.GetNextFeature()
 
-    # close the shapefiles
-    inDataSet.Destroy()
-    outDataSet.Destroy()
+    # Save and close the shapefiles
+    inDataSet = None
+    outDataSet = None
 
 Export Projection
 -----------------
