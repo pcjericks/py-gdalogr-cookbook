@@ -30,6 +30,18 @@ If you read the documentation for any of the filter setters you will see the cav
         feat = lyr.GetFeature( i )
         print feat                                    # this will print one feat, but it's the first feat in the Layer and NOT our target filtered feat  
 
+Iterating over features
+.......................
+
+You can treat a layer as an iterator, which calls GetNextFeature().  Iterating over a layer a second time will not work, unless you call `ResetReading() <http://gdal.org/python/osgeo.ogr.Layer-class.html#ResetReading>`_ first, like:
+
+.. code-block:: python
+
+    for feature in layer:
+        print feature.GetField("STATE_NAME")
+    layer.ResetReading()
+    for feature in layer:
+        print feature.GetField("STATE_NAME")
 
 Features and Geometries Have a Relationship You Don't Want to Break
 -----------------------------------------------------------------------

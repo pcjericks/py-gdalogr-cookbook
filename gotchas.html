@@ -71,6 +71,17 @@ or spatial filter ( <a class="reference external" href="http://gdal.org/python/o
     <span class="k">print</span> <span class="n">feat</span>                                    <span class="c"># this will print one feat, but it&#39;s the first feat in the Layer and NOT our target filtered feat</span>
 </pre></div>
 </div>
+<div class="section" id="iterating-over-features">
+<h3>Iterating over features<a class="headerlink" href="#iterating-over-features" title="Permalink to this headline">¶</a></h3>
+<p>You can treat a layer as an iterator, which calls GetNextFeature().  Iterating over a layer a second time will not work, unless you call <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#ResetReading">ResetReading()</a> first, like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">ResetReading</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="features-and-geometries-have-a-relationship-you-don-t-want-to-break">
 <h2>Features and Geometries Have a Relationship You Don&#8217;t Want to Break<a class="headerlink" href="#features-and-geometries-have-a-relationship-you-don-t-want-to-break" title="Permalink to this headline">¶</a></h2>
@@ -113,7 +124,10 @@ or spatial filter ( <a class="reference external" href="http://gdal.org/python/o
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">API Tricks and Trapdoors</a><ul>
-<li><a class="reference internal" href="#filtered-features-are-only-respected-using-getnextfeature">Filtered Features Are Only Respected Using GetNextFeature()</a></li>
+<li><a class="reference internal" href="#filtered-features-are-only-respected-using-getnextfeature">Filtered Features Are Only Respected Using GetNextFeature()</a><ul>
+<li><a class="reference internal" href="#iterating-over-features">Iterating over features</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#features-and-geometries-have-a-relationship-you-don-t-want-to-break">Features and Geometries Have a Relationship You Don&#8217;t Want to Break</a></li>
 </ul>
 </li>

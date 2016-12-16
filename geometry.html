@@ -438,11 +438,11 @@
 <span class="c"># Add new feature to output Layer</span>
 <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
 
-<span class="c"># destroy the feature</span>
-<span class="n">outFeature</span><span class="o">.</span><span class="n">Destroy</span>
+<span class="c"># dereference the feature</span>
+<span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
 
-<span class="c"># Close DataSources</span>
-<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="c"># Save and close DataSources</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>

@@ -148,14 +148,13 @@
         <span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetNameRef</span><span class="p">(),</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
     <span class="c"># add the feature to the shapefile</span>
     <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
-    <span class="c"># destroy the features and get the next input feature</span>
-    <span class="n">outFeature</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
-    <span class="n">inFeature</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+    <span class="c"># dereference the features and get the next input feature</span>
+    <span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">inFeature</span> <span class="o">=</span> <span class="n">inLayer</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
 
-<span class="c"># close the shapefiles</span>
-<span class="n">inDataSet</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
-<span class="n">outDataSet</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="c"># Save and close the shapefiles</span>
+<span class="n">inDataSet</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">outDataSet</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </div>
 </div>

@@ -223,7 +223,8 @@ be the best way to scan the API&#8217;s class methods. For a detailed descriptio
 <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">layerList</span><span class="p">:</span>
     <span class="k">print</span> <span class="n">j</span>
 
-<span class="n">conn</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="c"># Close connection</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </div>
 </div>
@@ -251,7 +252,8 @@ be the best way to scan the API&#8217;s class methods. For a detailed descriptio
     <span class="n">featureCount</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()</span>
     <span class="k">print</span> <span class="s">&quot;Number of features in </span><span class="si">%s</span><span class="s">: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">lyr_name</span> <span class="p">,</span> <span class="n">featureCount</span> <span class="p">)</span>
 
-    <span class="n">conn</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+    <span class="c"># Close connection</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="bp">None</span>
 
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
@@ -348,8 +350,10 @@ That&#8217;s the benefit of the <a class="reference external" href="http://www.g
 
 <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
     <span class="k">print</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="s">&quot;STATE_NAME&quot;</span><span class="p">)</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">ResetReading</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>You must call <a class="reference external" href="http://gdal.org/python/osgeo.ogr.Layer-class.html#ResetReading">ResetReading</a> if you want to start iterating over the layer again.</p>
 </div>
 <div class="section" id="get-geometry-from-each-feature-in-a-layer">
 <h2>Get Geometry from each Feature in a Layer<a class="headerlink" href="#get-geometry-from-each-feature-in-a-layer" title="Permalink to this headline">¶</a></h2>
@@ -473,7 +477,8 @@ That&#8217;s the benefit of the <a class="reference external" href="http://www.g
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldCount</span><span class="p">()</span> <span class="p">):</span>
         <span class="k">print</span> <span class="n">lyrDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span> <span class="n">i</span> <span class="p">)</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
 
-    <span class="n">conn</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+    <span class="c"># Close connection</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="bp">None</span>
 
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
@@ -520,7 +525,8 @@ That&#8217;s the benefit of the <a class="reference external" href="http://www.g
 
         <span class="k">print</span> <span class="n">fieldName</span> <span class="o">+</span> <span class="s">&quot; - &quot;</span> <span class="o">+</span> <span class="n">fieldType</span><span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fieldWidth</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">GetPrecision</span><span class="p">)</span>
 
-    <span class="n">conn</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+    <span class="c"># Close connection</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="bp">None</span>
 
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
@@ -728,10 +734,11 @@ More information about the GDAL HTTP proxy options can be found <a class="refere
 <span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
 <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="bp">None</span>
 
-<span class="c"># Close DataSource</span>
-<span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
-<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="c"># Save and close DataSource</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </div>
 </div>
@@ -777,10 +784,11 @@ More information about the GDAL HTTP proxy options can be found <a class="refere
 <span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">convexhull</span><span class="p">)</span>
 <span class="n">feature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="bp">None</span>
 
-<span class="c"># Close DataSource</span>
-<span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
-<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="c"># Save and close DataSource</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </div>
 </div>
@@ -829,14 +837,16 @@ More information about the GDAL HTTP proxy options can be found <a class="refere
         <span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="n">outLayerDefn</span><span class="o">.</span><span class="n">GetFieldDefn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">GetNameRef</span><span class="p">(),</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetField</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
     <span class="c"># Set geometry as centroid</span>
     <span class="n">geom</span> <span class="o">=</span> <span class="n">inFeature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+    <span class="n">inFeature</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">centroid</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">Centroid</span><span class="p">()</span>
     <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">centroid</span><span class="p">)</span>
     <span class="c"># Add new feature to output Layer</span>
     <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+    <span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
 
-<span class="c"># Close DataSources</span>
-<span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
-<span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="c"># Save and close DataSources</span>
+<span class="n">inDataSource</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">outDataSource</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </div>
 </div>
@@ -907,11 +917,11 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
   <span class="n">feature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
   <span class="c"># Create the feature in the layer (shapefile)</span>
   <span class="n">layer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
-  <span class="c"># Destroy the feature to free resources</span>
-  <span class="n">feature</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+  <span class="c"># Dereference the feature</span>
+  <span class="n">feature</span> <span class="o">=</span> <span class="bp">None</span>
 
-<span class="c"># Destroy the data source to free resources</span>
-<span class="n">data_source</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+<span class="c"># Save and close the data source</span>
+<span class="n">data_source</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </div>
 </div>
@@ -943,6 +953,7 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
 
 <span class="n">layer</span><span class="o">.</span><span class="n">StartTransaction</span><span class="p">()</span>
 <span class="n">layer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="bp">None</span>
 <span class="n">layer</span><span class="o">.</span><span class="n">CommitTransaction</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1013,10 +1024,11 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
         <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">Clone</span><span class="p">())</span>
         <span class="c"># Add new feature to output Layer</span>
         <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+        <span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="c"># Close DataSources</span>
-    <span class="n">inDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
-    <span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+    <span class="c"># Save and close DataSources</span>
+    <span class="n">inDataSource</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">outDataSource</span> <span class="o">=</span> <span class="bp">None</span>
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
 
@@ -1057,6 +1069,7 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
             <span class="n">out_feat</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">out_layer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">())</span>
             <span class="n">out_feat</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span><span class="o">.</span><span class="n">Clone</span><span class="p">())</span>
             <span class="n">out_layer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">out_feat</span><span class="p">)</span>
+            <span class="n">out_feat</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="n">out_layer</span><span class="o">.</span><span class="n">SyncToDisk</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1146,7 +1159,7 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
             <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
             <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
             <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
-            <span class="n">outFeature</span><span class="o">.</span><span class="n">Destroy</span>
+            <span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
 
             <span class="c"># new envelope for next poly</span>
             <span class="n">ringYtop</span> <span class="o">=</span> <span class="n">ringYtop</span> <span class="o">-</span> <span class="n">gridHeight</span>
@@ -1156,8 +1169,8 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
         <span class="n">ringXleftOrigin</span> <span class="o">=</span> <span class="n">ringXleftOrigin</span> <span class="o">+</span> <span class="n">gridWidth</span>
         <span class="n">ringXrightOrigin</span> <span class="o">=</span> <span class="n">ringXrightOrigin</span> <span class="o">+</span> <span class="n">gridWidth</span>
 
-    <span class="c"># Close DataSources</span>
-    <span class="n">outDataSource</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+    <span class="c"># Save and close DataSources</span>
+    <span class="n">outDataSource</span> <span class="o">=</span> <span class="bp">None</span>
 
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
@@ -1201,6 +1214,7 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
     <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
     <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geomcol</span><span class="p">)</span>
     <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+    <span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">input_poly</span><span class="p">,</span><span class="n">output_line</span><span class="p">):</span>
     <span class="n">poly2line</span><span class="p">(</span><span class="n">input_poly</span><span class="p">,</span><span class="n">output_line</span><span class="p">)</span>
@@ -1216,36 +1230,37 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
 <div class="section" id="create-point-shapefile-with-attribute-data">
 <h2>Create point shapefile with attribute data<a class="headerlink" href="#create-point-shapefile-with-attribute-data" title="Permalink to this headline">¶</a></h2>
 <p>This recipe creates a new shapefiles, adds a point to it, and adds a attribute column with a value to it.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">os</span>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="kn">import</span> <span class="nn">ogr</span><span class="o">,</span> <span class="nn">os</span>
 
-<span class="c"># Input data</span>
-<span class="n">pointCoord</span> <span class="o">=</span> <span class="o">-</span><span class="mf">124.4577</span><span class="p">,</span><span class="mf">48.0135</span>
-<span class="n">fieldName</span> <span class="o">=</span> <span class="s">&#39;test&#39;</span>
-<span class="n">fieldType</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTString</span>
-<span class="n">fieldValue</span> <span class="o">=</span> <span class="s">&#39;test&#39;</span>
-<span class="n">outSHPfn</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
+    <span class="c"># Input data</span>
+    <span class="n">pointCoord</span> <span class="o">=</span> <span class="o">-</span><span class="mf">124.4577</span><span class="p">,</span><span class="mf">48.0135</span>
+    <span class="n">fieldName</span> <span class="o">=</span> <span class="s">&#39;test&#39;</span>
+    <span class="n">fieldType</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">OFTString</span>
+    <span class="n">fieldValue</span> <span class="o">=</span> <span class="s">&#39;test&#39;</span>
+    <span class="n">outSHPfn</span> <span class="o">=</span> <span class="s">&#39;test.shp&#39;</span>
 
-<span class="c"># Create the output shapefile</span>
-<span class="n">shpDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">):</span>
-    <span class="n">shpDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">)</span>
-<span class="n">outDataSource</span> <span class="o">=</span> <span class="n">shpDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">)</span>
-<span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span> <span class="p">)</span>
+    <span class="c"># Create the output shapefile</span>
+    <span class="n">shpDriver</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&quot;ESRI Shapefile&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">):</span>
+        <span class="n">shpDriver</span><span class="o">.</span><span class="n">DeleteDataSource</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">)</span>
+    <span class="n">outDataSource</span> <span class="o">=</span> <span class="n">shpDriver</span><span class="o">.</span><span class="n">CreateDataSource</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">)</span>
+    <span class="n">outLayer</span> <span class="o">=</span> <span class="n">outDataSource</span><span class="o">.</span><span class="n">CreateLayer</span><span class="p">(</span><span class="n">outSHPfn</span><span class="p">,</span> <span class="n">geom_type</span><span class="o">=</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span> <span class="p">)</span>
 
-<span class="c">#create point geometry</span>
-<span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
-<span class="n">point</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">pointCoord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pointCoord</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c">#create point geometry</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+    <span class="n">point</span><span class="o">.</span><span class="n">AddPoint</span><span class="p">(</span><span class="n">pointCoord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pointCoord</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="c"># create a field</span>
-<span class="n">idField</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="n">fieldName</span><span class="p">,</span> <span class="n">fieldType</span><span class="p">)</span>
-<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">idField</span><span class="p">)</span>
+    <span class="c"># create a field</span>
+    <span class="n">idField</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">FieldDefn</span><span class="p">(</span><span class="n">fieldName</span><span class="p">,</span> <span class="n">fieldType</span><span class="p">)</span>
+    <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateField</span><span class="p">(</span><span class="n">idField</span><span class="p">)</span>
 
-<span class="c"># Create the feature and set values</span>
-<span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
-<span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
-<span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
-<span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="n">fieldName</span><span class="p">,</span> <span class="n">fieldValue</span><span class="p">)</span>
-<span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+    <span class="c"># Create the feature and set values</span>
+    <span class="n">featureDefn</span> <span class="o">=</span> <span class="n">outLayer</span><span class="o">.</span><span class="n">GetLayerDefn</span><span class="p">()</span>
+    <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
+    <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">outFeature</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="n">fieldName</span><span class="p">,</span> <span class="n">fieldValue</span><span class="p">)</span>
+    <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+<span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </div>
 </div>
@@ -1272,6 +1287,7 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
         <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
         <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">geomBuffer</span><span class="p">)</span>
         <span class="n">bufferlyr</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+        <span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">inputfn</span><span class="p">,</span> <span class="n">outputBufferfn</span><span class="p">,</span> <span class="n">bufferDist</span><span class="p">):</span>
     <span class="n">createBuffer</span><span class="p">(</span><span class="n">inputfn</span><span class="p">,</span> <span class="n">outputBufferfn</span><span class="p">,</span> <span class="n">bufferDist</span><span class="p">)</span>
@@ -1411,6 +1427,7 @@ The CSV file <code class="docutils literal"><span class="pre">volcano_data.txt</
 <span class="n">outFeature</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="n">featureDefn</span><span class="p">)</span>
 <span class="n">outFeature</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">multipoint</span><span class="p">)</span>
 <span class="n">outLayer</span><span class="o">.</span><span class="n">CreateFeature</span><span class="p">(</span><span class="n">outFeature</span><span class="p">)</span>
+<span class="n">outFeature</span> <span class="o">=</span> <span class="bp">None</span>
 
 <span class="c"># Remove temporary files</span>
 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&#39;temp.tif&#39;</span><span class="p">)</span>
