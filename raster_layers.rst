@@ -111,7 +111,7 @@ write a script that dumps out single band information
     def main( band_num, input_file ):
         src_ds = gdal.Open( input_file )
         if src_ds is None:
-            print 'Unable to open %s' % src_filename
+            print 'Unable to open %s' % input_file
             sys.exit(1)
 
         try:
