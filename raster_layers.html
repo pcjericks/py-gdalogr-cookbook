@@ -145,7 +145,7 @@ write a script that dumps out single band information</p>
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span> <span class="n">band_num</span><span class="p">,</span> <span class="n">input_file</span> <span class="p">):</span>
     <span class="n">src_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span> <span class="n">input_file</span> <span class="p">)</span>
     <span class="k">if</span> <span class="n">src_ds</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">&#39;Unable to open </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">src_filename</span>
+        <span class="k">print</span> <span class="s">&#39;Unable to open </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">input_file</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
