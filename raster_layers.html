@@ -487,7 +487,6 @@ def main<span class="o">(</span> shapefile_path, raster_path <span class="o">)</
     <span class="n">targetSR</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
     <span class="n">targetSR</span><span class="o">.</span><span class="n">ImportFromWkt</span><span class="p">(</span><span class="n">raster</span><span class="o">.</span><span class="n">GetProjectionRef</span><span class="p">())</span>
     <span class="n">coordTrans</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">sourceSR</span><span class="p">,</span><span class="n">targetSR</span><span class="p">)</span>
-    <span class="n">feat</span> <span class="o">=</span> <span class="n">lyr</span><span class="o">.</span><span class="n">GetNextFeature</span><span class="p">()</span>
     <span class="n">geom</span> <span class="o">=</span> <span class="n">feat</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
     <span class="n">geom</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">coordTrans</span><span class="p">)</span>
 
