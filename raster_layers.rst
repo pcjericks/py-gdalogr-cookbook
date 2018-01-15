@@ -477,7 +477,6 @@ While this recipe works and is a good example, it is generally recommended to us
         targetSR = osr.SpatialReference()
         targetSR.ImportFromWkt(raster.GetProjectionRef())
         coordTrans = osr.CoordinateTransformation(sourceSR,targetSR)
-        feat = lyr.GetNextFeature()
         geom = feat.GetGeometryRef()
         geom.Transform(coordTrans)
     
