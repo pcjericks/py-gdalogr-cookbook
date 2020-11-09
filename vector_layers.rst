@@ -24,9 +24,9 @@ Is Ogr Installed
 
     try:
       from osgeo import ogr
-      print 'Import of ogr from osgeo worked.  Hurray!\n'
+      print('Import of ogr from osgeo worked.  Hurray!\n')
     except:
-      print 'Import of ogr from osgeo failed\n\n'
+      print('Import of ogr from osgeo failed\n\n')
 
 View Auto Generated Ogr Help
 ------------------------------      
@@ -36,7 +36,7 @@ View Auto Generated Ogr Help
 .. code-block:: python
     
     import osgeo.ogr
-    print help(osgeo.ogr)
+    print(help(osgeo.ogr))
 
 Get List of Ogr Drivers Alphabetically (A- Z)
 -----------------------------------------------
@@ -58,7 +58,7 @@ Get List of Ogr Drivers Alphabetically (A- Z)
     formatsList.sort() # Sorting the messy list of ogr drivers 
 
     for i in formatsList:
-        print i
+        print(i)
      
 Is Ogr Driver Available by Driver Name
 --------------------------------------------      
@@ -74,33 +74,33 @@ Is Ogr Driver Available by Driver Name
     driverName = "ESRI Shapefile"
     drv = ogr.GetDriverByName( driverName )
     if drv is None:
-        print "%s driver not available.\n" % driverName
+        print("%s driver not available.\n" % driverName)
     else:
-        print  "%s driver IS available.\n" % driverName
+        print("%s driver IS available.\n" % driverName)
         
     ## PostgreSQL available?
     driverName = "PostgreSQL"
     drv = ogr.GetDriverByName( driverName )
     if drv is None:
-        print "%s driver not available.\n" % driverName
+        print("%s driver not available.\n" % driverName)
     else:
-        print  "%s driver IS available.\n" % driverName
+        print("%s driver IS available.\n" % driverName)
         
     ## Is File GeoDatabase available?
     driverName = "FileGDB"
     drv = ogr.GetDriverByName( driverName )
     if drv is None:
-        print "%s driver not available.\n" % driverName
+        print("%s driver not available.\n" % driverName)
     else:
-        print  "%s driver IS available.\n" % driverName
+        print("%s driver IS available.\n" % driverName)
         
     ## SDE available?
     driverName = "SDE"
     drv = ogr.GetDriverByName( driverName )
     if drv is None:
-        print "%s driver not available.\n" % driverName
+        print("%s driver not available.\n" % driverName)
     else:
-        print  "%s driver IS available.\n" % driverName
+        print("%s driver IS available.\n" % driverName)
 
 
 Force Ogr Use Named Driver 
@@ -149,12 +149,12 @@ Get Shapefile Feature Count
 
     # Check to see if shapefile is found.
     if dataSource is None:
-        print 'Could not open %s' % (daShapefile)
+        print('Could not open %s' % (daShapefile))
     else:
-        print 'Opened %s' % (daShapefile)
+        print('Opened %s' % (daShapefile))
         layer = dataSource.GetLayer()
         featureCount = layer.GetFeatureCount()  
-        print "Number of features in %s: %d" % (os.path.basename(daShapefile),featureCount)
+        print("Number of features in %s: %d" % (os.path.basename(daShapefile),featureCount))
 
         
     
@@ -186,7 +186,7 @@ Get All PostGIS layers in a PostgreSQL Database
     layerList.sort()
 
     for j in layerList:
-        print j
+        print(j)
 
     # Close connection
     conn = None
@@ -216,7 +216,7 @@ Get PostGIS Layer Feature Count By Layer Name
             sys.exit( 1 )
 
         featureCount = lyr.GetFeatureCount()
-        print "Number of features in %s: %d" % ( lyr_name , featureCount )
+        print("Number of features in %s: %d" % ( lyr_name , featureCount ))
 
         # Close connection
         conn = None
@@ -256,7 +256,7 @@ Get all layers in an Esri File GeoDataBase
     try:
         gdb = driver.Open(gdb_path, 0)
     except Exception, e:
-        print e
+        print(e)
         sys.exit()
 
     # list to store layers'names
@@ -272,7 +272,7 @@ Get all layers in an Esri File GeoDataBase
 
     # printing
     for featsClass in featsClassList:
-        print featsClass
+        print(featsClass)
         
     # clean close
     del gdb
@@ -318,7 +318,7 @@ Iterate over Features
     layer = dataSource.GetLayer()
 
     for feature in layer:
-        print feature.GetField("STATE_NAME")
+        print(feature.GetField("STATE_NAME"))
     layer.ResetReading()
 
 You must call `ResetReading <http://gdal.org/python/osgeo.ogr.Layer-class.html#ResetReading>`_ if you want to start iterating over the layer again.
@@ -338,7 +338,7 @@ Get Geometry from each Feature in a Layer
 
     for feature in layer:
         geom = feature.GetGeometryRef()
-        print geom.Centroid().ExportToWkt()
+        print(geom.Centroid().ExportToWkt())
 
 Filter by attribute
 ----------------------
@@ -356,7 +356,7 @@ Filter by attribute
     layer.SetAttributeFilter("SUB_REGION = 'Pacific'")
 
     for feature in layer:
-        print feature.GetField("STATE_NAME")
+        print(feature.GetField("STATE_NAME"))
 
 Spatial Filter
 -----------------
@@ -375,7 +375,7 @@ Spatial Filter
     layer.SetSpatialFilter(ogr.CreateGeometryFromWkt(wkt))
 
     for feature in layer:
-        print feature.GetField("STATE_NAME")
+        print(feature.GetField("STATE_NAME"))
 
 Get Shapefile Fields - Get the user defined fields
 ------------------------------------------------------
@@ -394,7 +394,7 @@ Get Shapefile Fields - Get the user defined fields
 
 
     for i in range(layerDefinition.GetFieldCount()):
-        print layerDefinition.GetFieldDefn(i).GetName() 
+        print(layerDefinition.GetFieldDefn(i).GetName() )
 
         
         
@@ -414,7 +414,7 @@ Get Shapefile Fields and Types - Get the user defined fields
     layerDefinition = daLayer.GetLayerDefn()
 
 
-    print "Name  -  Type  Width  Precision"
+    print("Name  -  Type  Width  Precision")
     for i in range(layerDefinition.GetFieldCount()):
         fieldName =  layerDefinition.GetFieldDefn(i).GetName()
         fieldTypeCode = layerDefinition.GetFieldDefn(i).GetType()
@@ -422,7 +422,7 @@ Get Shapefile Fields and Types - Get the user defined fields
         fieldWidth = layerDefinition.GetFieldDefn(i).GetWidth()
         GetPrecision = layerDefinition.GetFieldDefn(i).GetPrecision()
 
-        print fieldName + " - " + fieldType+ " " + str(fieldWidth) + " " + str(GetPrecision)  
+        print(fieldName + " - " + fieldType+ " " + str(fieldWidth) + " " + str(GetPrecision)  )
  
 
 Get PostGIS Layer Fields - Get the user defined fields
@@ -454,7 +454,7 @@ Get PostGIS Layer Fields - Get the user defined fields
 
 
         for i in range( lyrDefn.GetFieldCount() ):
-            print lyrDefn.GetFieldDefn( i ).GetName()
+            print(lyrDefn.GetFieldDefn( i ).GetName())
 
         # Close connection
         conn = None
@@ -503,7 +503,7 @@ Get PostGIS Layer Fields and Types - Get the user defined fields
             fieldWidth = lyrDefn.GetFieldDefn(i).GetWidth()
             GetPrecision = lyrDefn.GetFieldDefn(i).GetPrecision()
 
-            print fieldName + " - " + fieldType+ " " + str(fieldWidth) + " " + str(GetPrecision)
+            print(fieldName + " - " + fieldType+ " " + str(fieldWidth) + " " + str(GetPrecision))
 
         # Close connection
         conn = None
@@ -586,7 +586,7 @@ configuration to using WFS paging if it is supported.
     for i in range(wfs_ds.GetLayerCount()):
         layer = wfs_ds.GetLayerByIndex(i)
         srs = layer.GetSpatialRef()
-        print 'Layer: %s, Features: %s, SR: %s...' % (layer.GetName(), layer.GetFeatureCount(), srs.ExportToWkt()[0:50])
+        print('Layer: %s, Features: %s, SR: %s...' % (layer.GetName(), layer.GetFeatureCount(), srs.ExportToWkt()[0:50]))
 
         # iterate over features
         feat = layer.GetNextFeature()
@@ -634,7 +634,7 @@ More information about the GDAL HTTP proxy options can be found `here <http://tr
     lyr = ds.GetLayer('OGRGeoJSON')
     for feat in lyr:
         geom = feat.GetGeometryRef()
-        print geom.ExportToWkt()
+        print(geom.ExportToWkt())
 
 Read a CSV of Coordinates as an OGRVRTLayer
 ------------------------------------------------
@@ -666,7 +666,7 @@ Our OGRVRTLayer XML file called `example_wrapper.vrt` looks like this:
         </OGRVRTLayer>
     </OGRVRTDataSource>
 
-Now let's print out the point geometries:
+Now let's print(out the point geometries:)
 
 .. code-block:: python
 
@@ -677,7 +677,7 @@ Now let's print out the point geometries:
     lyr = inDataSource.GetLayer('example')
     for feat in lyr:
         geom = feat.GetGeometryRef()
-        print geom.ExportToWkt()
+        print(geom.ExportToWkt())
 
 
 Create a new Layer from the extent of an existing Layer
@@ -1044,7 +1044,7 @@ The `ogr2ogr command line tool <http://www.gdal.org/ogr2ogr.html>`_ is an easy w
     if __name__ == '__main__':
         
         if len( sys.argv ) < 2:
-            print "[ ERROR ]: you need to pass at least one arg -- the field_names to include in output"
+            print("[ ERROR ]: you need to pass at least one arg -- the field_names to include in output")
             sys.exit(1)
         
         main( sys.argv[1:] )
@@ -1075,7 +1075,7 @@ This recipe merges OGR Layers within a directory. Files can be specfied based on
 
     for file in fileList:
         if file.startswith(fileStartsWith) and file.endswith(fileEndsWith):
-            print file
+            print(file)
             ds = ogr.Open(directory+file)
             lyr = ds.GetLayer()
             for feat in lyr:
@@ -1105,7 +1105,7 @@ This recipe takes in an OSM file and prints a list of all the names of the stree
             if name != None and name not in nameList: # only streets that have a name and are not yet in the list
                 nameList.append(name)
 
-    print nameList
+    print(nameList)
     
     
 Create fishnet grid
@@ -1200,7 +1200,7 @@ This recipe creates a fishnet grid.
         #
     
         if len( sys.argv ) != 8:
-            print "[ ERROR ] you must supply seven arguments: output-shapefile-name.shp xmin xmax ymin ymax gridHeight gridWidth"
+            print("[ ERROR ] you must supply seven arguments: output-shapefile-name.shp xmin xmax ymin ymax gridHeight gridWidth")
             sys.exit( 1 )
 
         main( sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7] )
@@ -1390,7 +1390,7 @@ This recipe converts a vector layer to an array.
 
     # Read as array
     array = band.ReadAsArray()
-    print array
+    print(array)
 
 Convert polygon to points
 -------------------

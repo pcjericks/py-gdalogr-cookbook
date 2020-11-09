@@ -30,7 +30,7 @@ Reproject a Geometry
     point = ogr.CreateGeometryFromWkt("POINT (1120351.57 741921.42)")
     point.Transform(transform)
 
-    print point.ExportToWkt()
+    print(point.ExportToWkt())
 
 Get Projection
 --------------

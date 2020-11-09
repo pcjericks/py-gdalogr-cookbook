@@ -28,7 +28,7 @@ Get raster metadata for quick-and-dirty resolution checks
 
     from osgeo import gdal
     gtif = gdal.Open( "INPUT.tif" )
-    print gtif.GetMetadata()
+    print(gtif.GetMetadata())
 
 
 Get Raster Band 
@@ -46,16 +46,16 @@ Get a raster band. Notice how we are handling runtime errors this function might
     try:
         src_ds = gdal.Open( "INPUT.tif" )
     except RuntimeError, e:
-        print 'Unable to open INPUT.tif'
-        print e
+        print('Unable to open INPUT.tif')
+        print(e)
         sys.exit(1)
 
     try:
         srcband = src_ds.GetRasterBand(1)
     except RuntimeError, e:
         # for example, try GetRasterBand(10)
-        print 'Band ( %i ) not found' % band_num
-        print e
+        print('Band ( %i ) not found' % band_num)
+        print(e)
         sys.exit(1)
 
 Loop Through All Raster Bands
@@ -70,13 +70,13 @@ Loop through all raster bands and do something useful like listing band statisti
 
     src_ds = gdal.Open( "INPUT.tif" )
     if src_ds is None:
-        print 'Unable to open INPUT.tif'
+        print('Unable to open INPUT.tif')
         sys.exit(1)
 
-    print "[ RASTER BAND COUNT ]: ", src_ds.RasterCount
+    print("[ RASTER BAND COUNT ]: ", src_ds.RasterCount)
     for band in range( src_ds.RasterCount ):
         band += 1
-        print "[ GETTING BAND ]: ", band
+        print("[ GETTING BAND ]: ", band)
         srcband = src_ds.GetRasterBand(band)
         if srcband is None:
             continue
@@ -85,7 +85,7 @@ Loop through all raster bands and do something useful like listing band statisti
         if stats is None:
             continue
 
-        print "[ STATS ] =  Minimum=%.3f, Maximum=%.3f, Mean=%.3f, StdDev=%.3f" % ( \
+        print("[ STATS ] =  Minimum=%.3f, Maximum=%.3f, Mean=%.3f, StdDev=%.3f" % ( \)
                     stats[0], stats[1], stats[2], stats[3] )
 
 
@@ -111,39 +111,39 @@ write a script that dumps out single band information
     def main( band_num, input_file ):
         src_ds = gdal.Open( input_file )
         if src_ds is None:
-            print 'Unable to open %s' % input_file
+            print('Unable to open %s' % input_file)
             sys.exit(1)
 
         try:
             srcband = src_ds.GetRasterBand(band_num)
         except RuntimeError, e:
-            print 'No band %i found' % band_num
-            print e
+            print('No band %i found' % band_num)
+            print(e)
             sys.exit(1)
 
 
-        print "[ NO DATA VALUE ] = ", srcband.GetNoDataValue()
-        print "[ MIN ] = ", srcband.GetMinimum()
-        print "[ MAX ] = ", srcband.GetMaximum()
-        print "[ SCALE ] = ", srcband.GetScale()
-        print "[ UNIT TYPE ] = ", srcband.GetUnitType()
+        print("[ NO DATA VALUE ] = ", srcband.GetNoDataValue())
+        print("[ MIN ] = ", srcband.GetMinimum())
+        print("[ MAX ] = ", srcband.GetMaximum())
+        print("[ SCALE ] = ", srcband.GetScale())
+        print("[ UNIT TYPE ] = ", srcband.GetUnitType())
         ctable = srcband.GetColorTable()
         
         if ctable is None:
-            print 'No ColorTable found'
+            print('No ColorTable found')
             sys.exit(1)
         
-        print "[ COLOR TABLE COUNT ] = ", ctable.GetCount()
+        print("[ COLOR TABLE COUNT ] = ", ctable.GetCount())
         for i in range( 0, ctable.GetCount() ):
             entry = ctable.GetColorEntry( i )
             if not entry:
                 continue
-            print "[ COLOR ENTRY RGB ] = ", ctable.GetColorEntryAsRGB( i, entry )
+            print("[ COLOR ENTRY RGB ] = ", ctable.GetColorEntryAsRGB( i, entry ))
 
     if __name__ == '__main__':
 
         if len( sys.argv ) < 3:
-            print """
+            print(""")
             [ ERROR ] you must supply at least two arguments: 
             1) the band number to retrieve and 2) input raster
             """
@@ -179,15 +179,15 @@ The raster we are going to polygonize:
     #
     src_ds = gdal.Open( "INPUT.tif" )
     if src_ds is None:
-        print 'Unable to open %s' % src_filename
+        print('Unable to open %s' % src_filename)
         sys.exit(1)
 
     try:
         srcband = src_ds.GetRasterBand(3)
     except RuntimeError, e:
         # for example, try GetRasterBand(10)
-        print 'Band ( %i ) not found' % band_num
-        print e
+        print('Band ( %i ) not found' % band_num)
+        print(e)
         sys.exit(1)
 
     #
@@ -370,7 +370,7 @@ Before Image: the input Natural Earth 10m geotiff with the timezone overlay we w
         #
         xoffset =  ulX 
         yoffset =  ulY
-        print "Xoffset, Yoffset = ( %f, %f )" % ( xoffset, yoffset )
+        print("Xoffset, Yoffset = ( %f, %f )" % ( xoffset, yoffset ))
 
         # Create a new geomatrix for the image
         geoTrans = list(geoTrans)
@@ -435,7 +435,7 @@ Before Image: the input Natural Earth 10m geotiff with the timezone overlay we w
         # example run : $ python clip.py /<full-path>/<shapefile-name>.shp /<full-path>/<raster-name>.tif
         #
         if len( sys.argv ) < 2:
-            print "[ ERROR ] you must two args. 1) the full shapefile path and 2) the full raster path"
+            print("[ ERROR ] you must two args. 1) the full shapefile path and 2) the full raster path")
             sys.exit( 1 )
 
         main( sys.argv[1], sys.argv[2] )
@@ -573,10 +573,10 @@ While this recipe works and is a good example, it is generally recommended to us
         #
     
         if len( sys.argv ) != 3:
-            print "[ ERROR ] you must supply two arguments: input-zone-shapefile-name.shp input-value-raster-name.tif "
+            print("[ ERROR ] you must supply two arguments: input-zone-shapefile-name.shp input-value-raster-name.tif ")
             sys.exit( 1 )
-        print 'Returns for each feature a dictionary item (FID) with the statistical values in the following order: Average, Mean, Medain, Standard Deviation, Variance'
-        print main( sys.argv[1], sys.argv[2] )
+        print('Returns for each feature a dictionary item (FID) with the statistical values in the following order: Average, Mean, Medain, Standard Deviation, Variance')
+        print(main( sys.argv[1], sys.argv[2] ))
     
 
 
@@ -619,7 +619,7 @@ This recipe converts raster pixels with a specified value to vector lines. For e
 	    geotransform = raster.GetGeoTransform()
 	    pixelWidth = geotransform[1] 
 	    maxDistance = ceil(sqrt(2*pixelWidth*pixelWidth))
-	    print maxDistance
+	    print(maxDistance)
     
 	    # array2dict
 	    count = 0

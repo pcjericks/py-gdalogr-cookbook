@@ -28,7 +28,7 @@ If you read the documentation for any of the filter setters you will see the cav
     lyr.SetAttributeFilter("PIN = '0000200001'")      # this is a unique attribute filter targeting only one record
     for i in range( 0, lyr.GetFeatureCount() ):       
         feat = lyr.GetFeature( i )
-        print feat                                    # this will print one feat, but it's the first feat in the Layer and NOT our target filtered feat  
+        print(feat)                                    # this will print one feat, but it's the first feat in the Layer and NOT our target filtered feat  
 
 Iterating over features
 .......................
@@ -38,10 +38,10 @@ You can treat a layer as an iterator, which calls GetNextFeature().  Iterating o
 .. code-block:: python
 
     for feature in layer:
-        print feature.GetField("STATE_NAME")
+        print(feature.GetField("STATE_NAME"))
     layer.ResetReading()
     for feature in layer:
-        print feature.GetField("STATE_NAME")
+        print(feature.GetField("STATE_NAME"))
 
 Features and Geometries Have a Relationship You Don't Want to Break
 -----------------------------------------------------------------------
@@ -53,7 +53,7 @@ The official gotchas have a good section on why `Python crashes when deleting fe
     from osgeo import ogr
     dSource = ogr.Open( "parcel_address.shp" )
     if dSource is None:
-        print "[ ERROR ]: datasource cannot be opened"
+        print("[ ERROR ]: datasource cannot be opened")
     layer = dSource.GetLayer()
     geom_collection = []
 
@@ -71,7 +71,7 @@ The official gotchas have a good section on why `Python crashes when deleting fe
     #  geometries collected
     #
     for g in geom_collection: 
-        print g.ExportToWkt()
+        print(g.ExportToWkt())
 
         <..PYTHON CRASHES..>
 
