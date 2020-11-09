@@ -9,7 +9,7 @@ Create a Point
     from osgeo import ogr
     point = ogr.Geometry(ogr.wkbPoint)
     point.AddPoint(1198054.34, 648493.09)
-    print point.ExportToWkt()
+    print(point.ExportToWkt())
 
 Create a LineString
 -------------------
@@ -22,7 +22,7 @@ Create a LineString
     line.AddPoint(1188804.0108498496, 652655.7409537067)
     line.AddPoint(1226730.3625203592, 634155.0816022386) 
     line.AddPoint(1281307.30760719, 636467.6640211721)
-    print line.ExportToWkt()
+    print(line.ExportToWkt())
 
 Create a Polygon
 ----------------
@@ -44,7 +44,7 @@ Create a Polygon
     poly = ogr.Geometry(ogr.wkbPolygon)
     poly.AddGeometry(ring)
 
-    print poly.ExportToWkt()
+    print(poly.ExportToWkt())
 
 Create a Polygon with holes
 ----------------------------
@@ -74,7 +74,7 @@ Create a Polygon with holes
     poly.AddGeometry(outRing)
     poly.AddGeometry(innerRing)
 
-    print poly.ExportToWkt()
+    print(poly.ExportToWkt())
 
 Create a MultiPoint
 -------------------
@@ -97,7 +97,7 @@ Create a MultiPoint
     point3.AddPoint(1250318.7031934808, 606404.0925750365)
     multipoint.AddGeometry(point3)
 
-    print multipoint.ExportToWkt()
+    print(multipoint.ExportToWkt())
 
 Create a MultiLineString
 ------------------------
@@ -118,7 +118,7 @@ Create a MultiLineString
     line1.AddPoint(1219792.6152635587, 606866.6090588232)
     multiline.AddGeometry(line1)
 
-    print multiline.ExportToWkt()
+    print(multiline.ExportToWkt())
 
 Create a MultiPolygon
 ---------------------
@@ -155,7 +155,7 @@ Create a MultiPolygon
     poly2.AddGeometry(ring2)
     multipolygon.AddGeometry(poly2)
 
-    print multipolygon.ExportToWkt()
+    print(multipolygon.ExportToWkt())
 
 Create a GeometryCollection
 ---------------------------
@@ -178,7 +178,7 @@ Create a GeometryCollection
     line.AddPoint(-122.48, 47.23)
     geomcol.AddGeometry(line)
 
-    print geomcol.ExportToWkt()
+    print(geomcol.ExportToWkt())
 
 Create Geometry from WKT
 ------------------------
@@ -189,7 +189,7 @@ Create Geometry from WKT
 
     wkt = "POINT (1120351.5712494177 741921.4223245403)"
     point = ogr.CreateGeometryFromWkt(wkt)
-    print "%d,%d" % (point.GetX(), point.GetY())
+    print("%d,%d" % (point.GetX(), point.GetY()))
 
 Create Geometry from GeoJSON
 ----------------------------
@@ -200,7 +200,7 @@ Create Geometry from GeoJSON
 
     geojson = """{"type":"Point","coordinates":[108420.33,753808.59]}"""
     point = ogr.CreateGeometryFromJson(geojson)
-    print "%d,%d" % (point.GetX(), point.GetY())
+    print("%d,%d" % (point.GetX(), point.GetY()))
 
 Create Geometry from GML
 ------------------------
@@ -211,7 +211,7 @@ Create Geometry from GML
 
     gml = """<gml:Point xmlns:gml="http://www.opengis.net/gml"><gml:coordinates>108420.33,753808.59</gml:coordinates></gml:Point>"""
     point = ogr.CreateGeometryFromGML(gml)
-    print "%d,%d" % (point.GetX(), point.GetY())
+    print("%d,%d" % (point.GetX(), point.GetY()))
 
 Create Geometry from WKB
 ------------------------
@@ -223,7 +223,7 @@ Create Geometry from WKB
 
     wkb = b64decode("AIAAAAFBMkfmVwo9cUEjylouFHrhAAAAAAAAAAA=")
     point = ogr.CreateGeometryFromWkb(wkb)
-    print "%d,%d" % (point.GetX(), point.GetY())
+    print("%d,%d" % (point.GetX(), point.GetY()))
 
 Count Points in a Geometry
 --------------------------
@@ -234,7 +234,7 @@ Count Points in a Geometry
 
     wkt = "LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
     geom = ogr.CreateGeometryFromWkt(wkt)
-    print "Geometry has %i points" % (geom.GetPointCount())
+    print("Geometry has %i points" % (geom.GetPointCount()))
 
 Count Geometries in a Geometry
 -------------------------------
@@ -245,7 +245,7 @@ Count Geometries in a Geometry
 
     wkt = "MULTIPOINT (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
     geom = ogr.CreateGeometryFromWkt(wkt)
-    print "Geometry has %i geometries" % (geom.GetGeometryCount())
+    print("Geometry has %i geometries" % (geom.GetGeometryCount()))
 
 Iterate over Geometries in a Geometry
 -------------------------------------
@@ -258,7 +258,7 @@ Iterate over Geometries in a Geometry
     geom = ogr.CreateGeometryFromWkt(wkt)
     for i in range(0, geom.GetGeometryCount()):
         g = geom.GetGeometryRef(i)
-        print "%i). %s" %(i, g.ExportToWkt())
+        print("%i). %s" %(i, g.ExportToWkt()))
 
 
 Iterate over Points in a Geometry
@@ -273,7 +273,7 @@ Iterate over Points in a Geometry
     for i in range(0, geom.GetPointCount()):
         # GetPoint returns a tuple not a Geometry
         pt = geom.GetPoint(i)
-        print "%i). POINT (%d %d)" %(i, pt[0], pt[1])
+        print("%i). POINT (%d %d)" %(i, pt[0], pt[1]))
 
 Buffer a Geometry
 -----------------
@@ -286,7 +286,7 @@ Buffer a Geometry
     pt = ogr.CreateGeometryFromWkt(wkt)
     bufferDistance = 500
     poly = pt.Buffer(bufferDistance)
-    print "%s buffered by %d is %s" % (pt.ExportToWkt(), bufferDistance, poly.ExportToWkt())
+    print("%s buffered by %d is %s" % (pt.ExportToWkt(), bufferDistance, poly.ExportToWkt()))
 
 Calculate Envelope of a Geometry
 --------------------------------
@@ -299,7 +299,7 @@ Calculate Envelope of a Geometry
     geom = ogr.CreateGeometryFromWkt(wkt)
     # Get Envelope returns a tuple (minX, maxX, minY, maxY)
     env = geom.GetEnvelope()
-    print "minX: %d, minY: %d, maxX: %d, maxY: %d" %(env[0],env[2],env[1],env[3])
+    print("minX: %d, minY: %d, maxX: %d, maxY: %d" %(env[0],env[2],env[1],env[3]))
 
 
 Calculate the Area of a Geometry
@@ -311,7 +311,7 @@ Calculate the Area of a Geometry
 
     wkt = "POLYGON ((1162440.5712740074 672081.4332727483, 1162440.5712740074 647105.5431482664, 1195279.2416228633 647105.5431482664, 1195279.2416228633 672081.4332727483, 1162440.5712740074 672081.4332727483))"
     poly = ogr.CreateGeometryFromWkt(wkt)
-    print "Area = %d" % poly.GetArea()
+    print("Area = %d" % poly.GetArea())
 
 Calculate the Length of a Geometry
 ----------------------------------
@@ -322,7 +322,7 @@ Calculate the Length of a Geometry
 
     wkt = "LINESTRING (1181866.263593049 615654.4222507705, 1205917.1207499576 623979.7189589312, 1227192.8790041457 643405.4112779726, 1224880.2965852122 665143.6860159477)"
     geom = ogr.CreateGeometryFromWkt(wkt)
-    print "Length = %d" % geom.Length()
+    print("Length = %d" % geom.Length())
 
 Get the geometry type (as a string) from a Geometry
 ---------------------------------------------------
@@ -339,7 +339,7 @@ Get the geometry type (as a string) from a Geometry
 
     for wkt in wkts:
         geom = ogr.CreateGeometryFromWkt(wkt)
-        print geom.GetGeometryName()
+        print(geom.GetGeometryName())
 
 Calculate intersection between two Geometries
 ---------------------------------------------
@@ -356,7 +356,7 @@ Calculate intersection between two Geometries
 
     intersection = poly1.Intersection(poly2)
 
-    print intersection.ExportToWkt()
+    print(intersection.ExportToWkt())
 
 Calculate union between two Geometries
 --------------------------------------
@@ -373,16 +373,16 @@ Calculate union between two Geometries
 
     union = poly1.Union(poly2)
 
-    print poly1
-    print poly2
-    print union.ExportToWkt()
+    print(poly1)
+    print(poly2)
+    print(union.ExportToWkt())
 
 Write Geometry to GeoJSON
 -------------------------
 
 There are two options to create a GeoJSON from a geometry.
 
-You can either create a new GeoJSON file or simply export the geometry to Json and print it. Both options are explained below.
+You can either create a new GeoJSON file or simply export the geometry to Json and print(it. Both options are explained below.)
 
 .. code-block:: python
 
@@ -440,7 +440,7 @@ You can either create a new GeoJSON file or simply export the geometry to Json a
     poly.AddGeometry(ring)
     
     geojson = poly.ExportToJson()
-    print geojson
+    print(geojson)
 
 Write Geometry to WKT
 ---------------------
@@ -462,7 +462,7 @@ Write Geometry to WKT
 
     # Export geometry to WKT
     wkt = geom_poly.ExportToWkt()
-    print wkt
+    print(wkt)
 
 Write Geometry to KML
 ---------------------
@@ -483,7 +483,7 @@ Write Geometry to KML
     geom_poly.AddGeometry(ring)
     
     kml = geom_poly.ExportToKML()
-    print kml
+    print(kml)
 
 Write Geometry to WKB
 ---------------------
@@ -505,7 +505,7 @@ Write Geometry to WKB
 
     # Export geometry to WKT
     wkb = geom_poly.ExportToWkb()
-    print wkb
+    print(wkb)
 
 
 Force polygon to multipolygon
@@ -527,7 +527,7 @@ Force polygon to multipolygon
 
     # Then export geometry to WKT
     wkt = geom_poly.ExportToWkt()
-    print wkt
+    print(wkt)
 
 
 Quarter polygon and create centroids

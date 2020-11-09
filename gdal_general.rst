@@ -75,9 +75,9 @@ Only works with GDAL version >= 1.10
         }
         err_msg = err_msg.replace('\n',' ')
         err_class = errtype.get(err_class, 'None')
-        print 'Error Number: %s' % (err_num)
-        print 'Error Type: %s' % (err_class)
-        print 'Error Message: %s' % (err_msg)
+        print('Error Number: %s' % (err_num))
+        print('Error Type: %s' % (err_class))
+        print('Error Message: %s' % (err_msg))
         
     if __name__=='__main__':
         
