@@ -483,34 +483,7 @@ While this recipe works and is a good example, it is generally recommended to us
     
         # Get extent of feat
         geom = feat.GetGeometryRef()
-        if (geom.GetGeometryName() == 'MULTIPOLYGON'):
-            count = 0
-            pointsX = []; pointsY = []
-            for polygon in geom:
-                geomInner = geom.GetGeometryRef(count)    
-                ring = geomInner.GetGeometryRef(0)
-                numpoints = ring.GetPointCount()
-                for p in range(numpoints):
-                        lon, lat, z = ring.GetPoint(p)
-                        pointsX.append(lon)
-                        pointsY.append(lat)    
-                count += 1
-        elif (geom.GetGeometryName() == 'POLYGON'):
-            ring = geom.GetGeometryRef(0)
-            numpoints = ring.GetPointCount()
-            pointsX = []; pointsY = []
-            for p in range(numpoints):
-                    lon, lat, z = ring.GetPoint(p)
-                    pointsX.append(lon)
-                    pointsY.append(lat)
-
-        else:
-            sys.exit("ERROR: Geometry needs to be either Polygon or Multipolygon")
-    
-        xmin = min(pointsX)
-        xmax = max(pointsX)
-        ymin = min(pointsY)
-        ymax = max(pointsY)
+        xmin, xmax, ymin, ymax = geom.GetEnvelope()
 
         # Specify offset and rows and columns to read
         xoff = int((xmin - xOrigin)/pixelWidth)
