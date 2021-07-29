@@ -55,9 +55,17 @@ Reproject a Layer
 
 .. code-block:: python
 
-    from osgeo import ogr, osr
     import os
+    from osgeo import ogr, osr
+    
+    # return more informative errors
+    ogr.UseExceptions()
 
+    # parameters
+    inputShapefile = r'c:\data\spatial\basemap.shp'
+    outputShapefile = r'c:\data\spatial\basemap_4326.shp'
+    outLayerName = 'basemap_4326'
+    
     driver = ogr.GetDriverByName('ESRI Shapefile')
 
     # input SpatialReference
@@ -72,15 +80,14 @@ Reproject a Layer
     coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
 
     # get the input layer
-    inDataSet = driver.Open(r'c:\data\spatial\basemap.shp')
+    inDataSet = driver.Open(inputShapefile)
     inLayer = inDataSet.GetLayer()
 
     # create the output layer
-    outputShapefile = r'c:\data\spatial\basemap_4326.shp'
     if os.path.exists(outputShapefile):
         driver.DeleteDataSource(outputShapefile)
     outDataSet = driver.CreateDataSource(outputShapefile)
-    outLayer = outDataSet.CreateLayer("basemap_4326", geom_type=ogr.wkbMultiPolygon)
+    outLayer = outDataSet.CreateLayer(outLayerName, geom_type=ogr.wkbMultiPolygon)
 
     # add fields
     inLayerDefn = inLayer.GetLayerDefn()
