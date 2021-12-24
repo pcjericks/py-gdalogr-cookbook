@@ -157,7 +157,7 @@ Polygonize a Raster Band
 
 Turn a single raster band into a vector polygon!
 
-If you haven't before, notice that some of the `gdal utilties <http://www.gdal.org/gdal_utilities.html>`_ 
+If you haven't before, notice that some of the `gdal utilities <http://www.gdal.org/gdal_utilities.html>`_ 
 are actually Python scripts. Go find them on your computer, read the source code and mine them for API tricks.
 It turns out the `gdal_polygonize utility <http://www.gdal.org/gdal_polygonize.html>`_ 
 just wraps a call to `GDALFPolygonize <http://www.gdal.org/gdal__alg_8h.html#a3f522a9035d3512b5d414fb4752671b1>`_

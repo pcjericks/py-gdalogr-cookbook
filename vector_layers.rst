@@ -1051,7 +1051,7 @@ The `ogr2ogr command line tool <http://www.gdal.org/ogr2ogr.html>`_ is an easy w
         
 Merge OGR Layers
 -------------------
-This recipe merges OGR Layers within a directory. Files can be specfied based on with what they start and end.
+This recipe merges OGR Layers within a directory. Files can be specified based on with what they start and end.
 
 .. code-block:: python      
         
@@ -1208,7 +1208,7 @@ This recipe creates a fishnet grid.
     
 Convert polygon shapefile to line shapefile
 -------------------
-This recipe converts a poylgon shapefile to a line shapefile
+This recipe converts a polygon shapefile to a line shapefile
 
 .. code-block:: python    
 
